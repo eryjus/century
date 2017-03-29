@@ -1,0 +1,8 @@
+.settings
+.project
+.cproject
+bin
+obj
+lib
+inc
+sysroot

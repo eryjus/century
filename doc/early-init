@@ -1,0 +1,27 @@
+Century OS Early Initialization End-State
+
+Since the early initialization will hand over control to a commonly maintained C-based 
+kernel, it is important to make sure that the early initialization put all CPUs into a 
+common state.  This document is intended to document this final early-init state.
+
+To be clear, this initialization is CPU-specific. 
+
+*  The screen will be initialized into a graphics mode.  The resolution will be
+   1280 x 1024 x 16.  In the event that this is not available, the kernel will 
+   hang with an appropriate indicator.
+
+*  The MMU will be properly initialized.  I'm not sure what that means yet, so stay 
+   tuned as this will be defined better as I learn the ARM MMU's architecture.  
+   Virtual memory will be enabled.  For x86, the A20 pin will be enabled.
+   
+*  During boot, COM1 (or appropriate) will take debug output.  The serial port will
+   be configured consistently (to be defined).
+   
+*  The CPU will be placed into its native bit mode (32 or 64).
+
+*  There is no requirement to use multi-boot at this point.  However, it will be
+   utilized on x86 architectures for now.  Later a consistent boot loader will be 
+   standardized. 
+   
+*  Any timer initialization will be completed so that a busy-wait function will be 
+   available for accurate wait times.
