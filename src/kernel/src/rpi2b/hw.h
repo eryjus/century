@@ -67,6 +67,8 @@
 #define AUXMUIIR_RXCLR      (1<<1)                      // Clear RX FIFO queue
 #define AUXMUIIR_TXCLR      (2<<1)                      // Clear RX FIFO queue
 
+#define SH_AUXMUIIR(x)    (((x)&0x3)<<1)                // Shift the bits for this field
+
 
 #define AUX_MU_LCR_REG      (HW_BASE+0x21504c)          // Mini UART Line Control
 //-------------------------------------------------------------------------------------------------------------------
@@ -108,6 +110,8 @@
 #define AUXMUCTL_ENBTX      (1<<1)                      // enable transmitter
 #define AUCMUCTL_RNBRX      (1<<0)                      // enable receiver
 
+#define SH_AUXMUCTLRTS(x)   (((x)&0x3)<<4)              // adjust RTS-AUTO to the right bits
+
 
 #define AUX_MU_STAT_REG     (HW_BASE+0x215064)          // Mini UART Extra Status
 //-------------------------------------------------------------------------------------------------------------------
@@ -124,6 +128,9 @@
 #define AUXMUST_SPACE       (1<<1)                      // TX FIFO has room
 #define AUXMUST_AVAIL       (1<<0)                      // RX FIFO has data
 
+#define SH_AUXMUSTTX(x)     (((x)&0xf)<<24)             // adjust TXLVL to the right bits
+#define SH_AUXMUSTRX(x)     (((x)&0xf)<<16)             // adjust RXLVL to the right bits
+
 
 #define AUX_MU_BAUD_REG     (HW_BASE+0x215068)          // Mini UART Baudrate
 //-------------------------------------------------------------------------------------------------------------------
@@ -134,19 +141,115 @@
 // -- The auxiliary SPI 1
 //    -------------------
 #define AUX_SPI0_CNTL0_REG  (HW_BASE+0x215080)          // SPI 1 Control register 0
+//-------------------------------------------------------------------------------------------------------------------
+#define AUXSPI0CTL0_SPD     (0xfff<<20)                 // Speed Control (System Clock Freq/(2 * (SPD+1)))
+#define AUXSPI0CTL0_CHP     (0x7<<17)                   // Chip Select
+#define AUXSPI0CTL0_PIM     (1<<16)                     // Post Input Mode
+#define AUXSPI0CTL0_VCS     (1<<15)                     // Variable Chip Sel (1=TX FIFO; 0=CHP)
+#define AUXSPI0CTL0_VWID    (1<<14)                     // Variable Width (1=TX FIFO; 0=SHL)
+#define AUXSPI0CTL0_DOUT    (3<<12)                     // Extra Hold clk cycles (00=None; 01=1clk; 10=4clk; 11=7clk)
+#define AUXSPI0CTL0_ENB     (1<<11)                     // Enabled
+#define AUXSPI0CTL0_IRIS    (1<<10)                     // in: data clocked on (1=rising; 0=falling) edge of cycle
+#define AUXSPI0CTL0_CLR     (1<<9)                      // Clear FIFO queues
+#define AUXSPI0CTL0_ORIS    (1<<8)                      // out: data clocked on (1=rising; 0=falling) edge of cycle
+#define AUXSPI0CTL0_INV     (1<<7)                      // invert clock (1=idle high)
+#define AUXSPI0CTL0_SBIT    (1<<6)                      // shift out starting with (1=MS; 0=LS) bit first
+#define AUXSPI0CTL0_SHL     (0x3f)                      // Shift length
+
+#define SH_AUXSPI0CTL0SPD(x) (((x)&0xfff)<<20)          // shift to the correct position
+#define SH_AUXSPI0CTL0CHP(x) (((x)&0x7)<<17)            // shift to the correct position
+
+
 #define AUX_SPI0_CNTL1_REG  (HW_BASE+0x215084)          // SPI 1 Control register 1
+//-------------------------------------------------------------------------------------------------------------------
+#define AUXSPI0CTL1_CSHI    (7<<8)                      // Additional clock cycles where CS is high
+#define AUXSPI0CTL1_TXIRQ   (1<<7)                      // Set for IRQ when TX FIFO empty
+#define AUXSPI0CTL1_DONE    (1<<6)                      // Set for IRQ when idle
+#define AUXSPI0CTL1_SBIT    (1<<1)                      // shift in starting with (1=MS; 0=LS) bit first (CTL0: out)
+#define AUXSPI0CTL1_KEEP    (1<<0)                      // set to keep input
+
+#define SH_AUXSPI0CTL1CSHI(x) (((x)&0x7)<<8)            // shift to the correct position
+
+
 #define AUX_SPI0_STAT_REG   (HW_BASE+0x215088)          // SPI 1 Status
+//-------------------------------------------------------------------------------------------------------------------
+#define AUXSPI0STAT_TX      (0xff<<24)                  // Number of units in TX FIFO
+#define AUXSPI0STAT_RX      (0xfff<<12)                 // Number of units in RX FIFO
+#define AUXSPI0STAT_TXFULL  (1<<9)                      // TX FIFO Full
+#define AUXSPI0STAT_TXEMPTY (1<<8)                      // TX FIFO Empty
+#define AUXSPI0STAT_RXEMPTY (1<<7)                      // RX FIFO Empty
+#define AUXSPI0STAT_BUSY    (1<<6)                      // Transferring Data
+#define AUXSPI0STAT_BCNT    (0x3f)                      // Bit Count to process
+
+#define SH_AUXSPI0STATTX(x) (((x)&0xff)<<24)            // shift to the correct position
+#define SH_AUXSPI0STATRX(x) (((x)&0xfff)<<12)           // shift to the correct position
+
+
 #define AUX_SPI0_IO_REG     (HW_BASE+0x215090)          // SPI 1 Data
+//-------------------------------------------------------------------------------------------------------------------
+#define AUX_SPI0_IO_DATA    (0xffff)                    // This is the data portion
+
+
 #define AUX_SPI0_PEEK_REG   (HW_BASE+0x215094)          // SPI 1 Peek
+//-------------------------------------------------------------------------------------------------------------------
+#define AUX_SPI0_PEEK_DATA  (0xffff)                    // This is the data portion
 
 
 //
 // -- The auxiliary SPI 2
 //    -------------------
 #define AUX_SPI1_CNTL0_REG  (HW_BASE+0x2150c0)          // SPI 2 Control register 0
+//-------------------------------------------------------------------------------------------------------------------
+#define AUXSPI1CTL0_SPD     (0xfff<<20)                 // Speed Control (System Clock Freq/(2 * (SPD+1)))
+#define AUXSPI1CTL0_CHP     (0x7<<17)                   // Chip Select
+#define AUXSPI1CTL0_PIM     (1<<16)                     // Post Input Mode
+#define AUXSPI1CTL0_VCS     (1<<15)                     // Variable Chip Sel (1=TX FIFO; 0=CHP)
+#define AUXSPI1CTL0_VWID    (1<<14)                     // Variable Width (1=TX FIFO; 0=SHL)
+#define AUXSPI1CTL0_DOUT    (3<<12)                     // Extra Hold clk cycles (00=None; 01=1clk; 10=4clk; 11=7clk)
+#define AUXSPI1CTL0_ENB     (1<<11)                     // Enabled
+#define AUXSPI1CTL0_IRIS    (1<<10)                     // in: data clocked on (1=rising; 0=falling) edge of cycle
+#define AUXSPI1CTL0_CLR     (1<<9)                      // Clear FIFO queues
+#define AUXSPI1CTL0_ORIS    (1<<8)                      // out: data clocked on (1=rising; 0=falling) edge of cycle
+#define AUXSPI1CTL0_INV     (1<<7)                      // invert clock (1=idle high)
+#define AUXSPI1CTL0_SBIT    (1<<6)                      // shift out starting with (1=MS; 0=LS) bit first
+#define AUXSPI1CTL0_SHL     (0x3f)                      // Shift length
+
+#define SH_AUXSPI1CTL0SPD(x) (((x)&0xfff)<<20)          // shift to the correct position
+#define SH_AUXSPI1CTL0CHP(x) (((x)&0x7)<<17)            // shift to the correct position
+
+
 #define AUX_SPI1_CNTL1_REG  (HW_BASE+0x2150c4)          // SPI 2 Control register 1
+//-------------------------------------------------------------------------------------------------------------------
+#define AUXSPI1CTL1_CSHI    (7<<8)                      // Additional clock cycles where CS is high
+#define AUXSPI1CTL1_TXIRQ   (1<<7)                      // Set for IRQ when TX FIFO empty
+#define AUXSPI1CTL1_DONE    (1<<6)                      // Set for IRQ when idle
+#define AUXSPI1CTL1_SBIT    (1<<1)                      // shift in starting with (1=MS; 0=LS) bit first (CTL0: out)
+#define AUXSPI1CTL1_KEEP    (1<<0)                      // set to keep input
+
+#define SH_AUXSPI1CTL1CSHI(x) (((x)&0x7)<<8)            // shift to the correct position
+
+
 #define AUX_SPI1_STAT_REG   (HW_BASE+0x2150c8)          // SPI 2 Status
+//-------------------------------------------------------------------------------------------------------------------
+#define AUXSPI1STAT_TX      (0xff<<24)                  // Number of units in TX FIFO
+#define AUXSPI1STAT_RX      (0xfff<<12)                 // Number of units in RX FIFO
+#define AUXSPI1STAT_TXFULL  (1<<9)                      // TX FIFO Full
+#define AUXSPI1STAT_TXEMPTY (1<<8)                      // TX FIFO Empty
+#define AUXSPI1STAT_RXEMPTY (1<<7)                      // RX FIFO Empty
+#define AUXSPI1STAT_BUSY    (1<<6)                      // Transferring Data
+#define AUXSPI1STAT_BCNT    (0x3f)                      // Bit Count to process
+
+#define SH_AUXSPI1STATTX(x) (((x)&0xff)<<24)            // shift to the correct position
+#define SH_AUXSPI1STATRX(x) (((x)&0xfff)<<12)           // shift to the correct position
+
+
 #define AUX_SPI1_IO_REG     (HW_BASE+0x2150d0)          // SPI 2 Data
+//-------------------------------------------------------------------------------------------------------------------
+#define AUX_SPI1_IO_DATA    (0xffff)                    // This is the data portion
+
+
 #define AUX_SPI1_PEEK_REG   (HW_BASE+0x2150d4)          // SPI 2 Peek
+//-------------------------------------------------------------------------------------------------------------------
+#define AUX_SPI1_PEEK_DATA  (0xffff)                    // This is the data portion
 
 
