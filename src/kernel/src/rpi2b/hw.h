@@ -253,3 +253,139 @@
 #define AUX_SPI1_PEEK_DATA  (0xffff)                    // This is the data portion
 
 
+//-------------------------------------------------------------------------------------------------------------------
+// Broadcom Serial Controllers: BSC0 & BSC1 (note BSC2 should not be accessed by software)
+//-------------------------------------------------------------------------------------------------------------------
+
+
+//
+// -- The BSC0 controller
+//    -------------------
+#define BSC0_BASE           (HW_BASE+0x205000)          // The base address of BSC0
+
+
+#define BSC0_C              (BSC0_BASE)                 // Control
+//-------------------------------------------------------------------------------------------------------------------
+#define BSC0C_I2CEN         (1<<15)                     // I2C Enable
+#define BSC0C_INTR          (1<<10)                     // Interrupt on RXR=1
+#define BSC0C_INTT          (1<<9)                      // Interrupt on TXW=1
+#define BSC0C_INTD          (1<<8)                      // Interrupt on DONE=1
+#define BSC0C_ST            (1<<7)                      // Start new transfer
+#define BSC0C_CLEAR         (3<<4)                      // Clear FIFO if either bit is set
+#define BSC0C_READ          (1<<0)                      // Read Packet transfer
+
+#define SH_BSC0C_CLEAR(x)   (((x)&3)<<4)                // shift bits to the right location
+
+
+#define BSC0_S              (BSC0_BASE+4)               // Status
+//-------------------------------------------------------------------------------------------------------------------
+#define BSC0S_CLKT          (1<<9)                      // 1=Slave has held SCL too long;  Write 1 to clear
+#define BSC0S_ERR           (1<<8)                      // 1=Slave has not ACK address;  Write 1 to clear
+#define BSC0S_RXF           (1<<7)                      // 1=FIFO full
+#define BSC0S_TXE           (1<<6)                      // 1=FIFO empty
+#define BSC0S_RXD           (1<<5)                      // 1=FIFO has data
+#define BSC0S_TXD           (1<<4)                      // 1=FIFO has room
+#define BSC0S_RXR           (1<<3)                      // 1=FIFO full; read underway
+#define BSC0S_TXW           (1<<2)                      // 1=FIFO fill; write underway
+#define BSC0S_DONE          (1<<1)                      // 1=Transfer complete
+#define BSC0S_TA            (1<<0)                      // 1=Transfer active
+
+
+#define BSC0_DLEN           (BSC0_BASE+8)               // Data Length
+//-------------------------------------------------------------------------------------------------------------------
+#define BSC0DLEN_DLEN       (0xffff)                    // Data Length
+
+
+#define BSC0_A              (BSC0_BASE+0xc)             // Slave Address
+//-------------------------------------------------------------------------------------------------------------------
+#define BSC0A_ADDR          (0xffff)                    // Slave Address
+
+
+#define BSC0_FIFO           (BSC0_BASE+0x10)            // Data FIFO
+//-------------------------------------------------------------------------------------------------------------------
+#define BSC0FIFO_DATA       (0xffff)                    // Data
+
+
+#define BSC0_DIV            (BSC0_BASE+0x14)            // Clock Divider
+//-------------------------------------------------------------------------------------------------------------------
+#define BSC0DIV_CDIV        (0xffff)                    // Clock Divider
+
+
+#define BSC0_DEL            (BSC0_BASE+0x18)            // Data Delay
+//-------------------------------------------------------------------------------------------------------------------
+#define BSC0DEL_FEDL        (0xffff<<16)                // Falling Edge Delay
+#define BSC0DEL_REDL        (0xffff)                    // Rising Edge Delay
+
+#define SH_BSC0DELFEDL(x)   (((x)&0xffff)<<16)          // shift to the correct position
+
+
+#define BSC0_CLKT           (BSC0_BASE+0x1c)            // Clock Stretch Timeout
+//-------------------------------------------------------------------------------------------------------------------
+#define BSC0CLKT_TOUT       (0xffff)                    // Clock Stretch Timeout value
+
+
+//
+// -- The BSC1 controller
+//    -------------------
+#define BSC1_BASE           (HW_BASE+0x804000)          // The base address of BSC1
+
+
+#define BSC1_C              (BSC1_BASE)                 // Control
+//-------------------------------------------------------------------------------------------------------------------
+#define BSC1C_I2CEN         (1<<15)                     // I2C Enable
+#define BSC1C_INTR          (1<<10)                     // Interrupt on RXR=1
+#define BSC1C_INTT          (1<<9)                      // Interrupt on TXW=1
+#define BSC1C_INTD          (1<<8)                      // Interrupt on DONE=1
+#define BSC1C_ST            (1<<7)                      // Start new transfer
+#define BSC1C_CLEAR         (3<<4)                      // Clear FIFO if either bit is set
+#define BSC1C_READ          (1<<0)                      // Read Packet transfer
+
+#define SH_BSC1C_CLEAR(x)   (((x)&3)<<4)                // shift bits to the right location
+
+
+#define BSC1_S              (BSC1_BASE+4)               // Status
+//-------------------------------------------------------------------------------------------------------------------
+#define BSC1S_CLKT          (1<<9)                      // 1=Slave has held SCL too long;  Write 1 to clear
+#define BSC1S_ERR           (1<<8)                      // 1=Slave has not ACK address;  Write 1 to clear
+#define BSC1S_RXF           (1<<7)                      // 1=FIFO full
+#define BSC1S_TXE           (1<<6)                      // 1=FIFO empty
+#define BSC1S_RXD           (1<<5)                      // 1=FIFO has data
+#define BSC1S_TXD           (1<<4)                      // 1=FIFO has room
+#define BSC1S_RXR           (1<<3)                      // 1=FIFO full; read underway
+#define BSC1S_TXW           (1<<2)                      // 1=FIFO fill; write underway
+#define BSC1S_DONE          (1<<1)                      // 1=Transfer complete
+#define BSC1S_TA            (1<<0)                      // 1=Transfer active
+
+
+#define BSC1_DLEN           (BSC1_BASE+8)               // Data Length
+//-------------------------------------------------------------------------------------------------------------------
+#define BSC1DLEN_DLEN       (0xffff)                    // Data Length
+
+
+#define BSC1_A              (BSC1_BASE+0xc)             // Slave Address
+//-------------------------------------------------------------------------------------------------------------------
+#define BSC1A_ADDR          (0xffff)                    // Slave Address
+
+
+#define BSC1_FIFO           (BSC1_BASE+0x10)            // Data FIFO
+//-------------------------------------------------------------------------------------------------------------------
+#define BSC1FIFO_DATA       (0xffff)                    // Data
+
+
+#define BSC1_DIV            (BSC1_BASE+0x14)            // Clock Divider
+//-------------------------------------------------------------------------------------------------------------------
+#define BSC1DIV_CDIV        (0xffff)                    // Clock Divider
+
+
+#define BSC1_DEL            (BSC1_BASE+0x18)            // Data Delay
+//-------------------------------------------------------------------------------------------------------------------
+#define BSC1DEL_FEDL        (0xffff<<16)                // Falling Edge Delay
+#define BSC1DEL_REDL        (0xffff)                    // Rising Edge Delay
+
+#define SH_BSC1DELFEDL(x)   (((x)&0xffff)<<16)          // shift to the correct position
+
+
+#define BSC1_CLKT           (BSC1_BASE+0x1c)            // Clock Stretch Timeout
+//-------------------------------------------------------------------------------------------------------------------
+#define BSC1CLKT_TOUT       (0xffff)                    // Clock Stretch Timeout value
+
