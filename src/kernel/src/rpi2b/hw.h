@@ -1965,3 +1965,309 @@
 #define DMAENB_2            (1<<2)                      // Enable DMA 2
 #define DMAENB_1            (1<<1)                      // Enable DMA 1
 #define DMAENB_0            (1<<0)                      // Enable DMA 0
+
+
+//-------------------------------------------------------------------------------------------------------------------
+// External Mass Media Controller
+//-------------------------------------------------------------------------------------------------------------------
+
+//
+// -- The EMMC controller
+//    -------------------
+#define EMMC_BASE           (HW_BASE+0x300000)          // This is the base address of the EMMC controller
+
+
+#define EMMC_ARG2           (EMMC_BASE)                 // ACMD23 Argument
+//-------------------------------------------------------------------------------------------------------------------
+#define EMMCARG2_ARGUMENT   (0xffffffff)                // Argument to be issued with ACMD23
+
+
+#define EMMC_BLKSIZCNT      (EMMC_BASE+4)               // Block Size and Count
+//-------------------------------------------------------------------------------------------------------------------
+#define EMMCBLK_BLKCNT      (0xffff<<16)                // Number of blocks to be transferred
+#define EMMCBLK_BLKSIZE     (0x3ff)                     // Block size in bytes
+
+#define SH_BLKBLKCNT(x)     (((x)&0xffff)<<16)          // Shift the value to the correct position
+
+
+#define EMMC_ARG1           (EMMC_BASE+8)               // Argument
+//-------------------------------------------------------------------------------------------------------------------
+#define EMMCARG1_ARGUMENT   (0xffffffff)                // Argument to be issued with command
+
+
+#define EMMC_CMDTM          (EMMC_BASE+0xc)             // Command and Transfer Mode
+//-------------------------------------------------------------------------------------------------------------------
+#define EMMCCMDTM_CMDINDEX  (0x3f<<24)                  // Index of the command to issue to the card
+#define EMMCCMDTM_CMDTYPE   (0x3<<22)                   // Type of command to be issues to the card
+#define EMMCCMDTM_CMDISFATA (1<<21)                     // Command involves data transfer
+#define EMMCCMDTM_CMDIXEN   (1<<20)                     // enable chk response same index
+#define EMMCCMDTM_CMDCRCEN  (1<<19)                     // check respons CRC
+#define EMMCCMDTM_CMDRESPTP (3<<16)                     // Type of expected response from card
+#define EMMCCMDTM_TMMBLK    (1<<5)                      // (0=single; 1=multi) block transfer
+#define EMMCCMDTM_TMDATDIR  (1<<4)                      // 0=host->card; 1=card->host
+#define EMMCCMDTM_TMACMDEN  (3<<2)                      // select the commadn to be sent after completion
+#define EMMCCMDTM_TMBCNTEN  (1<<1)                      // enable block counter for multi block transfers
+
+#define SH_EMMCCMDINDEX(x)  (((x)&0x3f)<<24)            // shift the value to the correct position
+#define SH_CMDTYPENORMAL    (0b00<<22)                  // Normal command type
+#define SH_CMDTYPESUSP      (0b01<<22)                  // suspend (current transfer)
+#define SH_CMDTYPERES       (0b10<<22)                  // resume (the last data transfer)
+#define SH_CMDTYPEABORT     (0b11<<22)                  // abort (the cuttent data transfer)
+#define SH_CMDRESPNORMAL    (0b00<<16)                  // No response
+#define SH_CMDRESP136       (0b01<<16)                  // 136-bit response
+#define SH_CMDRESP48        (0b10<<16)                  // 48-bit response
+#define SH_CMDRESP48BUSY    (0b11<<16)                  // 48-bit response using busy
+#define SH_TMAUTOCMDNONE    (0b00<<2)                   // no command
+#define SH_TMAUTOCMD12      (0b01<<2)                   // command CMD12
+#define SH_TMAUTOCMD23      (0b10<<2)                   // command CMD23
+#define SH_TMAUTORESERVED   (0b11<<2)                   // reserved
+
+
+#define EMMC_RESP0          (EMMC_BASE+0x10)            // Response bits 31:0
+//-------------------------------------------------------------------------------------------------------------------
+#define EMMCRESP0_RESP      (0xffffffff)                // response bits
+
+
+#define EMMC_RESP1          (EMMC_BASE+0x14)            // Response bits 63:32
+//-------------------------------------------------------------------------------------------------------------------
+#define EMMCRESP1_RESP      (0xffffffff)                // response bits
+
+
+#define EMMC_RESP2          (EMMC_BASE+0x18)            // Response bits 95:64
+//-------------------------------------------------------------------------------------------------------------------
+#define EMMCRESP2_RESP      (0xffffffff)                // response bits
+
+
+#define EMMC_RESP3          (EMMC_BASE+0x1c)            // Response bits 127:96
+//-------------------------------------------------------------------------------------------------------------------
+#define EMMCRESP3_RESP      (0xffffffff)                // response bits
+
+
+#define EMMC_DATA           (EMMC_BASE+0x20)            // Data
+//-------------------------------------------------------------------------------------------------------------------
+#define EMMCDATA_DATA       (0xffffffff)                // data to/from card
+
+
+#define EMMC_STATUS         (EMMC_BASE+0x24)            // Status
+//-------------------------------------------------------------------------------------------------------------------
+#define EMMCSTS_DAT7        (1<<28)                     // value of data line DAT7
+#define EMMCSTS_DAT6        (1<<27)                     // value of data line DAT6
+#define EMMCSTS_DAT5        (1<<26)                     // value of data line DAT5
+#define EMMCSTS_DAT4        (1<<25)                     // value of data line DAT4
+#define EMMCSTS_CMD         (1<<24)                     // value of command line CMD
+#define EMMCSTS_DAT3        (1<<23)                     // value of data line DAT3
+#define EMMCSTS_DAT2        (1<<22)                     // value of data line DAT2
+#define EMMCSTS_DAT1        (1<<21)                     // value of data line DAT1
+#define EMMCSTS_DAT0        (1<<20)                     // value of data line DAT0
+#define EMMCSTS_RDXFR       (1<<9)                      // new data can be read from EMMC
+#define EMMCSTS_WRXFR       (1<<8)                      // new data can be written from EMMC
+#define EMMCSTS_ACTIVE      (1<<2)                      // at least one data line is active
+#define EMMCSTS_DINHIBIT    (1<<1)                      // data lines still used by previous transfer
+#define EMMCSTS_CINHIBIT    (1<<0)                      // command lines still used by previous transfer
+
+
+#define EMMC_CONTROL0       (EMMC_BASE+0x28)            // Host configuration bits
+//-------------------------------------------------------------------------------------------------------------------
+#define EMMCCTL0_ALTBOOT    (1<<22)                     // enable alt boot mode access
+#define EMMCCTL0_BOOT       (1<<21)                     // (0=stop; 1=start) boot mode access
+#define EMMCCTL0_SPI        (1<<20)                     // SPI mode enable
+#define EMMCCTL0_GAPI       (1<<19)                     // Enable interrupt at block gap
+#define EMMCCTL0_RDWAIT     (1<<18)                     // Use DAT2 for read-wait protocol
+#define EMMCCTL0_GAPRESTART (1<<17)                     // restart a transaction stopped using GAP_STOP
+#define EMMCCTL0_GAPSTOP    (1<<16)                     // stop the cuurent transaction at the next block gap
+#define EMMCCTL0_HCL8BIT    (1<<5)                      // use 8 data lines
+#define EMMCCTL0_HS         (1<<2)                      // use high speed mode
+#define EMMCCTL0_DWIDTH     (1<<1)                      // use 4 data lines
+
+
+#define EMMC_CONTROL1       (EMMC_BASE+0x2c)            // Host configuration bits
+//-------------------------------------------------------------------------------------------------------------------
+#define EMMCCTL1_RESETDATA  (1<<26)                     // Reset data handling circuit
+#define EMMCCTL1_RESETCMD   (1<<25)                     // Reset command handling circuit
+#define EMMCCTL1_RESETHC    (1<<24)                     // Reset host circuit
+#define EMMCCTL1_DATATOUT   (0xf<<16)                   // Data timeout unit exponent
+#define EMMCCTL1_CLKFREQ8   (0xff<<8)                   // SD Clock base Divisor (LSBs)
+#define EMMCCTL1_CLKFREQ2   (0x3<<6)                    // SD Clock base Divisor (MSBs)
+#define EMMCCTL1_CLKGENSEL  (1<<5)                      // clock (0=divided; 1=programmed) mode
+#define EMMCCTL1_CLKEN      (1<<2)                      // SD clock enable
+#define EMMCCTL1_CLKSTABLE  (1<<1)                      // SD Clock stable
+#define EMMCCTL1_CLKINTLEN  (1<<0)                      // clock enabled for internal power saving
+
+#define SH_EMMCCTL1DTO(x)   (((x)&0xf)<<16)             // shift to the correct bits
+#define SH_EMMCCTL1DTO_DIS  (0xf<<16)                   // disable data timeout unit
+#define SH_EMMCCTL1FREQ8(x) (((x)&0xff)<<8)             // shift to the correct bits
+#define SH_EMMCCTL1FREQ2(x) (((x)&0x3)<<8)              // shift to the correct bits
+
+
+#define EMMC_INTERRUPT      (EMMC_BASE+0x30)            // Interrupt flags
+//-------------------------------------------------------------------------------------------------------------------
+#define EMMCINT_ACMDERR     (1<<24)                     // auto command error
+#define EMMCINT_DENDERR     (1<<22)                     // end bit on data line not 1
+#define EMMCINT_DCRCERR     (1<<21)                     // Data CRC error
+#define EMMCINT_DTOERR      (1<<20)                     // timeout on data line
+#define EMMCINT_CBADERR     (1<<19)                     // incorrect cmd index response
+#define EMMCINT_CENDERR     (1<<18)                     // end bit on command not 1
+#define EMMCINT_CCRCERR     (1<<17)                     // Command CRC error
+#define EMMCINT_CTOERR      (1<<16)                     // timeout on command line
+#define EMMCINT_ERR         (1<<15)                     // an error has occured
+#define EMMCINT_ENDBOOT     (1<<14)                     // boot operation terminated
+#define EMMCINT_BOOTACK     (1<<13)                     // boot ACK received
+#define EMMCINT_RETUNE      (1<<12)                     // clock retune request made
+#define EMMCINT_CARD        (1<<8)                      // card made interrupt request
+#define EMMCINT_RDRDY       (1<<5)                      // data register contains data to read
+#define EMMCINT_WRRDY       (1<<4)                      // data can be written to the data register
+#define EMMCINT_BLOCKGAP    (1<<2)                      // data transfer has stopped at block gap
+#define EMMCINT_DATANONE    (1<<1)                      // data transfer finished
+#define EMMCINT_CMDDONE     (1<<0)                      // Command has finished
+
+
+#define EMMC_IRPTMASK       (EMMC_BASE+0x34)            // Interrupt flag enable
+//-------------------------------------------------------------------------------------------------------------------
+#define EMMCMSK_ACMDERR     (1<<24)                     // auto command error
+#define EMMCMSK_DENDERR     (1<<22)                     // end bit on data line not 1
+#define EMMCMSK_DCRCERR     (1<<21)                     // Data CRC error
+#define EMMCMSK_DTOERR      (1<<20)                     // timeout on data line
+#define EMMCMSK_CBADERR     (1<<19)                     // incorrect cmd index response
+#define EMMCMSK_CENDERR     (1<<18)                     // end bit on command not 1
+#define EMMCMSK_CCRCERR     (1<<17)                     // Command CRC error
+#define EMMCMSK_CTOERR      (1<<16)                     // timeout on command line
+#define EMMCMSK_ENDBOOT     (1<<14)                     // boot operation terminated
+#define EMMCMSK_BOOTACK     (1<<13)                     // boot ACK received
+#define EMMCMSK_RETUNE      (1<<12)                     // clock retune request made
+#define EMMCMSK_CARD        (1<<8)                      // card made interrupt request
+#define EMMCMSK_RDRDY       (1<<5)                      // data register contains data to read
+#define EMMCMSK_WRRDY       (1<<4)                      // data can be written to the data register
+#define EMMCMSK_BLOCKGAP    (1<<2)                      // data transfer has stopped at block gap
+#define EMMCMSK_DATANONE    (1<<1)                      // data transfer finished
+#define EMMCMSK_CMDDONE     (1<<0)                      // Command has finished
+
+
+#define EMMC_IRPTEN         (EMMC_BASE+0x38)            // Interrupt Generation Enable
+//-------------------------------------------------------------------------------------------------------------------
+#define EMMCIEN_ACMDERR     (1<<24)                     // auto command error
+#define EMMCIEN_DENDERR     (1<<22)                     // end bit on data line not 1
+#define EMMCIEN_DCRCERR     (1<<21)                     // Data CRC error
+#define EMMCIEN_DTOERR      (1<<20)                     // timeout on data line
+#define EMMCIEN_CBADERR     (1<<19)                     // incorrect cmd index response
+#define EMMCIEN_CENDERR     (1<<18)                     // end bit on command not 1
+#define EMMCIEN_CCRCERR     (1<<17)                     // Command CRC error
+#define EMMCIEN_CTOERR      (1<<16)                     // timeout on command line
+#define EMMCIEN_ENDBOOT     (1<<14)                     // boot operation terminated
+#define EMMCIEN_BOOTACK     (1<<13)                     // boot ACK received
+#define EMMCIEN_RETUNE      (1<<12)                     // clock retune request made
+#define EMMCIEN_CARD        (1<<8)                      // card made interrupt request
+#define EMMCIEN_RDRDY       (1<<5)                      // data register contains data to read
+#define EMMCIEN_WRRDY       (1<<4)                      // data can be written to the data register
+#define EMMCIEN_BLOCKGAP    (1<<2)                      // data transfer has stopped at block gap
+#define EMMCIEN_DATANONE    (1<<1)                      // data transfer finished
+#define EMMCIEN_CMDDONE     (1<<0)                      // Command has finished
+
+
+#define EMMC_CONTROL2       (EMMC_BASE+0x3c)            // Host configuration bits
+//-------------------------------------------------------------------------------------------------------------------
+#define EMMCCTL2_TUNED      (1<<23)                     // Tuned clock is used
+#define EMMCCTL2_TUNEON     (1<<22)                     // start tuning the clock
+#define EMMCCTL2_SPDMOD     (7<<16)                     // Speed mode of the SD card
+#define EMMCCTL2_C12ERR     (1<<7)                      // CMD12 error
+#define EMMCCTL2_ACBADERR   (1<<4)                      // auto cmd execution error
+#define EMMCCTL2_ACENDERR   (1<<3)                      // end bits not 1 during auto cmd exec
+#define EMMCCTL2_ACCRCERR   (1<<2)                      // Commend CRC error 
+#define EMMCCTL2_ACTOERR    (1<<1)                      // timeout occurred
+#define EMMCCTL2_NOTEXERR   (1<<0)                      // not executed due to error
+
+#define SH_EMMCCTL2SDR12    (0b000<<16)                 // SDR16
+#define SH_EMMCCTL2SDR25    (0b001<<16)                 // SDR25
+#define SH_EMMCCTL2SDR50    (0b010<<16)                 // SDR50
+#define SH_EMMCCTL2SDR104   (0b011<<16)                 // SDR104
+#define SH_EMMCCTL2DDR50    (0b100<<16)                 // DDR50
+
+
+#define EMMC_FORCEIRPT      (EMMC_BASE+0x50)            // Force interrupt event
+//-------------------------------------------------------------------------------------------------------------------
+#define EMMCFRC_ACMDERR     (1<<24)                     // auto command error
+#define EMMCFRC_DENDERR     (1<<22)                     // end bit on data line not 1
+#define EMMCFRC_DCRCERR     (1<<21)                     // Data CRC error
+#define EMMCFRC_DTOERR      (1<<20)                     // timeout on data line
+#define EMMCFRC_CBADERR     (1<<19)                     // incorrect cmd index response
+#define EMMCFRC_CENDERR     (1<<18)                     // end bit on command not 1
+#define EMMCFRC_CCRCERR     (1<<17)                     // Command CRC error
+#define EMMCFRC_CTOERR      (1<<16)                     // timeout on command line
+#define EMMCFRC_ENDBOOT     (1<<14)                     // boot operation terminated
+#define EMMCFRC_BOOTACK     (1<<13)                     // boot ACK received
+#define EMMCFRC_RETUNE      (1<<12)                     // clock retune request made
+#define EMMCFRC_CARD        (1<<8)                      // card made interrupt request
+#define EMMCFRC_RDRDY       (1<<5)                      // data register contains data to read
+#define EMMCFRC_WRRDY       (1<<4)                      // data can be written to the data register
+#define EMMCFRC_BLOCKGAP    (1<<2)                      // data transfer has stopped at block gap
+#define EMMCFRC_DATANONE    (1<<1)                      // data transfer finished
+#define EMMCFRC_CMDDONE     (1<<0)                      // Command has finished
+
+
+#define EMMC_BOOTTIMEOUT    (EMMC_BASE+0x70)            // Timeout in boot mode
+//-------------------------------------------------------------------------------------------------------------------
+#define EMMCBOOTTO_TOUT     (0xffffffff)                // # clock cycles for timeout
+
+
+#define EMMC_DBGSEL         (EMMC_BASE+0x74)            // Debug bus configuration
+//-------------------------------------------------------------------------------------------------------------------
+#define EMMCDBGSEL_SEL      (1<<0)                      // submodules accessed by dbg bus (0=receiver/FIFO; 1=others)
+
+
+#define EMMC_EXRDFIFOCFG    (EMMC_BASE+0x80)            // Extension FIFO configuration
+//-------------------------------------------------------------------------------------------------------------------
+#define EMMCRDCFG_SEL       (7<<0)                      // read threshold in 32-bit words
+
+
+#define EMMC_EXRDFIFOEN     (EMMC_BASE+0x84)            // Extension FIFO enable
+//-------------------------------------------------------------------------------------------------------------------
+#define EMMCRDENB_ENABLE    (1<<0)                      // enable extension FIFO
+
+
+#define EMMC_TUNESTEP       (EMMC_BASE+0x88)            // Delay per card clock tuning step
+//-------------------------------------------------------------------------------------------------------------------
+#define EMMCTUNESTP_DLY     (7<<0)                      // Sampling clock delay per step
+
+#define SH_EMMCDLY200PS     (0b000)                     // 200ps
+#define SH_EMMCDLY400PS     (0b001)                     // 400ps
+#define SH_EMMCDLY400PS     (0b010)                     // 400ps
+#define SH_EMMCDLY600PS     (0b011)                     // 600ps
+#define SH_EMMCDLY700PS     (0b100)                     // 700ps
+#define SH_EMMCDLY900PS     (0b101)                     // 900ps
+#define SH_EMMCDLY900PS     (0b110)                     // 900ps
+#define SH_EMMCDLY1100PS    (0b111)                     // 1100ps
+
+
+#define EMMC_TUNESTEPSTD    (EMMC_BASE+0x8c)            // Card clock tuning steps for SDR
+//-------------------------------------------------------------------------------------------------------------------
+#define EMMCTUNSTD_STEPS    (0x3f)                      // Number of steps (0-40)
+
+
+#define EMMC_TUNESTEPDDR    (EMMC_BASE+0x90)            // Card clock tuning steps for DDR
+//-------------------------------------------------------------------------------------------------------------------
+#define EMMCTUNDDR_STEPS    (0x3f)                      // Number of steps (0-40)
+
+
+#define EMMC_SPIINTSPT      (EMMC_BASE+0xf0)            // SPI Interrupt Support
+//-------------------------------------------------------------------------------------------------------------------
+#define EMMCSPIINT7         (1<<7)                      // Interrupt independent of card sel line 7
+#define EMMCSPIINT6         (1<<6)                      // Interrupt independent of card sel line 6
+#define EMMCSPIINT5         (1<<5)                      // Interrupt independent of card sel line 5
+#define EMMCSPIINT4         (1<<4)                      // Interrupt independent of card sel line 4
+#define EMMCSPIINT3         (1<<3)                      // Interrupt independent of card sel line 3
+#define EMMCSPIINT2         (1<<2)                      // Interrupt independent of card sel line 2
+#define EMMCSPIINT1         (1<<1)                      // Interrupt independent of card sel line 1
+#define EMMCSPIINT0         (1<<0)                      // Interrupt independent of card sel line 0
+
+
+#define EMMC_SLOTISRVER     (EMMC_BASE+0xfc)            // Slot Interrupt Status and Version
+//-------------------------------------------------------------------------------------------------------------------
+#define EMMCVER_VEND        (0xff<<24)                  // Vendor version number
+#define EMMCVER_SDVERS      (0xff<<16)                  // Hast Controller specification version
+#define EMMCVER_SLOTSTS7    (1<<7)                      // wakeup signal for each slot 7
+#define EMMCVER_SLOTSTS6    (1<<6)                      // wakeup signal for each slot 6
+#define EMMCVER_SLOTSTS5    (1<<5)                      // wakeup signal for each slot 5
+#define EMMCVER_SLOTSTS4    (1<<4)                      // wakeup signal for each slot 4
+#define EMMCVER_SLOTSTS3    (1<<3)                      // wakeup signal for each slot 3
+#define EMMCVER_SLOTSTS2    (1<<2)                      // wakeup signal for each slot 2
+#define EMMCVER_SLOTSTS1    (1<<1)                      // wakeup signal for each slot 1
+#define EMMCVER_SLOTSTS0    (1<<0)                      // wakeup signal for each slot 0
