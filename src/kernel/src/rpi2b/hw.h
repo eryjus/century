@@ -3122,3 +3122,112 @@
 #define GPIOCLK2_34         (1<<2)                      // Assert Clock on GPIO pin 34
 #define GPIOCLK2_33         (1<<1)                      // Assert Clock on GPIO pin 33
 #define GPIOCLK2_32         (1<<0)                      // Assert Clock on GPIO pin 32
+
+
+//-------------------------------------------------------------------------------------------------------------------
+// General Purpose Clocks
+//-------------------------------------------------------------------------------------------------------------------
+
+
+//
+// -- Different clock sources
+//    -----------------------
+#define CMSRC_GND0          (0)                         // Ground
+#define CMSRC_OSC           (1)                         // Oscilator
+#define CMSRC_TESTDBG0      (2)                         // Test Debug 0
+#define CMSRC_TESTDBG1      (3)                         // Test Debug 1
+#define CMSRC_PLLA          (4)                         // PLLA per
+#define CMSRC_PLLC          (5)                         // PLLC per
+#define CMSRC_PLLD          (6)                         // PLLD per
+#define CMSRC_HDMI          (7)                         // HDMI Auxiliary
+#define CMSRC_GND8          (8)                         // Ground
+#define CMSRC_GND9          (9)                         // Ground
+#define CMSRC_GNDA          (10)                        // Ground
+#define CMSRC_GNDB          (11)                        // Ground
+#define CMSRC_GNDC          (12)                        // Ground
+#define CMSRC_GNDD          (13)                        // Ground
+#define CMSRC_GNDE          (14)                        // Ground
+#define CMSRC_GNDF          (15)                        // Ground
+
+
+#define SH_CMGPPWD          (0x5a<<24)                  // This is a safety value 
+
+
+//
+// -- The Clock Manager 0 Control
+//    ---------------------------
+#define CMGP0_CTL           (HW_BASE+0x101070)
+//-------------------------------------------------------------------------------------------------------------------
+#define CM0CTL_MASH         (3<<9)                      // MASH control
+#define CM0CTL_FLIP         (1<<8)                      // Invert output
+#define CM0CTL_BUSY         (1<<7)                      // Clock generator is running
+#define CM0CTL_KILL         (1<<5)                      // kill teh clock generator
+#define CM0CTL_ENAB         (1<<4)                      // enable the clock generator
+#define CM0CTL_SRC          (0xf)                       // The Clock Source
+
+#define SH_CMGP0MASHNONE    (0<<9)                      // integer division
+#define SH_CMGP0MASH1       (1<<9)                      // 1-stage MASH (same as non-MASH)
+#define SH_CMGP0MASH2       (2<<9)                      // 2-stage MASH
+#define SH_CMGP0MASH3       (3<<9)                      // 3-stage MASH
+
+
+#define CMGP0_DIV           (HW_BASE+0x101074)
+//-------------------------------------------------------------------------------------------------------------------
+#define CM0DIV_DIVI         (0xfff<<12)                 // Integer part of divisor
+#define CM0DIV_DIVF         (0xfff<<0)                  // Fractional part of divisor
+
+#define SH_CMGP0DIVI(x)     (((x)&0xfff)<<12)           // Shift the value to the correct bits
+
+
+//
+// -- The Clock Manager 1 Control
+//    ---------------------------
+#define CMGP1_CTL           (HW_BASE+0x101078)
+//-------------------------------------------------------------------------------------------------------------------
+#define CM1CTL_MASH         (3<<9)                      // MASH control
+#define CM1CTL_FLIP         (1<<8)                      // Invert output
+#define CM1CTL_BUSY         (1<<7)                      // Clock generator is running
+#define CM1CTL_KILL         (1<<5)                      // kill teh clock generator
+#define CM1CTL_ENAB         (1<<4)                      // enable the clock generator
+#define CM1CTL_SRC          (0xf)                       // The Clock Source
+
+#define SH_CMGP1MASHNONE    (0<<9)                      // integer division
+#define SH_CMGP1MASH1       (1<<9)                      // 1-stage MASH (same as non-MASH)
+#define SH_CMGP1MASH2       (2<<9)                      // 2-stage MASH
+#define SH_CMGP1MASH3       (3<<9)                      // 3-stage MASH
+
+
+#define CMGP1_DIV           (HW_BASE+0x10107c)
+//-------------------------------------------------------------------------------------------------------------------
+#define CM1DIV_DIVI         (0xfff<<12)                 // Integer part of divisor
+#define CM1DIV_DIVF         (0xfff<<0)                  // Fractional part of divisor
+
+#define SH_CMGP1DIVI(x)     (((x)&0xfff)<<12)           // Shift the value to the correct bits
+
+
+//
+// -- The Clock Manager 2 Control
+//    ---------------------------
+#define CMGP2_CTL           (HW_BASE+0x101080)
+//-------------------------------------------------------------------------------------------------------------------
+#define CM2CTL_MASH         (3<<9)                      // MASH control
+#define CM2CTL_FLIP         (1<<8)                      // Invert output
+#define CM2CTL_BUSY         (1<<7)                      // Clock generator is running
+#define CM2CTL_KILL         (1<<5)                      // kill teh clock generator
+#define CM2CTL_ENAB         (1<<4)                      // enable the clock generator
+#define CM2CTL_SRC          (0xf)                       // The Clock Source
+
+#define SH_CMGP2MASHNONE    (0<<9)                      // integer division
+#define SH_CMGP2MASH1       (1<<9)                      // 1-stage MASH (same as non-MASH)
+#define SH_CMGP2MASH2       (2<<9)                      // 2-stage MASH
+#define SH_CMGP2MASH3       (3<<9)                      // 3-stage MASH
+
+
+#define CMGP2_DIV           (HW_BASE+0x101084)
+//-------------------------------------------------------------------------------------------------------------------
+#define CM2DIV_DIVI         (0xfff<<12)                 // Integer part of divisor
+#define CM2DIV_DIVF         (0xfff<<0)                  // Fractional part of divisor
+
+#define SH_CMGP2DIVI(x)     (((x)&0xfff)<<12)           // Shift the value to the correct bits
+
+
