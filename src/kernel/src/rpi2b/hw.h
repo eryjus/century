@@ -3236,6 +3236,9 @@
 //-------------------------------------------------------------------------------------------------------------------
 
 
+//
+// -- Interrupt Registers
+//    -------------------
 #define INT_BASE            (HW_BASE+0x00b000)          // The base address for the interrupt registers
 
 
@@ -3510,3 +3513,132 @@
 #define INTDIS0IRQTIMER     (1<<0)                      // ARM Timer IRQ Disable
 
 
+//-------------------------------------------------------------------------------------------------------------------
+// PCM/I2S Audio
+//-------------------------------------------------------------------------------------------------------------------
+
+
+//
+// -- PCM registers
+//    -------------
+
+#define PCM_BASE            (HW_BASE+0x203000)          // The base register for the PCM/I2S Aduio controller
+
+
+#define PCM_CS              (PCM_BASE)                  // PCM Controller and Status
+//-------------------------------------------------------------------------------------------------------------------
+#define PCMCS_STBY          (1<<25)                     // RAM Standby
+#define PCMCS_SYNC          (1<<24)                     // PCM Clock Sync helper
+#define PCMCS_RXSEX         (1<<23)                     // RX Sign Extend
+#define PCMCS_RXF           (1<<22)                     // RX FIFO Full
+#define PCMCS_TXE           (1<<21)                     // TX FIFO Empty
+#define PCMCS_RXD           (1<<20)                     // RX FIFO has Data
+#define PCMCS_TXD           (1<<19)                     // TX FIFO can accpet Data
+#define PCMCS_RXR           (1<<18)                     // RX FIFO needs reading
+#define PCMCS_TXW           (1<<17)                     // TX FIFO needs writing
+#define PCMCS_RXERR         (1<<16)                     // RX FIFO Error
+#define PCMCS_TXERR         (1<<15)                     // TX FIFO Error
+#define PCMCS_RXSYNC        (1<<14)                     // RX FIFO Sync
+#define PCMCS_TXSYNC        (1<<13)                     // TX FIFO Sync
+#define PCMCS_DMAEN         (1<<9)                      // DMA DREQ Enable
+#define PCMCS_RXTHR         (3<<7)                      // Sets when RXR flag is set
+#define PCMCS_TXTHR         (3<<5)                      // Sets when TXR flag is set
+#define PCMCS_RXCLR         (1<<4)                      // Set to clear RX FIFO
+#define PCMCS_TXCLR         (1<<3)                      // Set to clear TX FIFO
+#define PCMCS_TXON          (1<<2)                      // Transmission Enabled
+#define PCMCS_RXON          (1<<1)                      // Reception Enabled
+#define PCMCS_EN            (1<<0)                      // Enable the PCM Audio Interface
+
+#define SH_PCMCSRXTHR(x)    (((x)&3)<<7)                // Shift to the correct bit locations
+#define SH_PCMCSTXTHR(x)    (((x)&3)<<5)                // Shift to the correct bit locations
+
+
+#define PCM_FIFO            (PCM_BASE+4)                // PCM FIFO Data
+//-------------------------------------------------------------------------------------------------------------------
+#define PCMFIFO_DATA        (0xffffffff)                // FIFO data
+
+
+#define PCM_MODE            (PCM_BASE+8)                // PCM Mode
+//-------------------------------------------------------------------------------------------------------------------
+#define PCMMODE_CLKDIS      (1<<28)                     // PCM Clock Disable
+#define PCMMODE_PDMN        (1<<27)                     // PDM Decimation Factor
+#define PCMMODE_PDME        (1<<26)                     // PDM Input Mode Enable
+#define PCMMODE_FRXP        (1<<25)                     // Receive Frame Packed Mode
+#define PCMMODE_FTXP        (1<<24)                     // Transmit Frame Packed Mode
+#define PCMMODE_CLKM        (1<<23)                     // PCM Clock mode
+#define PCMMODE_CLKI        (1<<22)                     // PCM Clock Invert
+#define PCMMODE_FSM         (1<<21)                     // Frame Sync Invert
+#define PCMMODE_FLEN        (0x3ff<<10)                 // Frame Length
+#define PCMMODE_FSLEN       (0x3ff)                     // Frame Sync Length
+
+#define SH_PCMMODEFLEN(x)   (((x)&0x3ff)<<10)           // Shift to the correct bits
+
+
+#define PCM_RXC             (PCM_BASE+0xc)              // PCM Receive configuration
+//-------------------------------------------------------------------------------------------------------------------
+#define PCMRXC_CH1WEX       (1<<31)                     // Channel 1 Width Extention Bit
+#define PCMRXC_CH1EN        (1<<30)                     // Channel 1 Enable
+#define PCMRXC_CH1POS       (0x3ff<<20)                 // Channel 1 Position
+#define PCMRXC_CH1WID       (0xf<<16)                   // Channel 1 Width
+#define PCMRXC_CH1WEX       (1<<15)                     // Channel 1 Width Extension Bit
+#define PCMRXC_CH2EN        (1<<14)                     // Channel 2 Enable
+#define PCMRXC_CH2POS       (0x3ff<<13)                 // Channel 2 Position
+#define PCMRXC_CH2WID       (0xf)                       // Channel 2 Width
+
+#define SH_PCMRXCCH1POS(x)  (((x)&0x3ff)<<20)           // Shift over to the right position
+#define SH_PCMRXCCH1WID(x)  (((x)&0xf)<<16)             // Shift over to the right position
+#define SH_PCMRXCCH2POS(x)  (((x)&0x3ff)<<13)           // Shift over to the right position
+
+
+#define PCM_TXC             (PCM_BASE+0x10)             // PCM Transmit configuration
+//-------------------------------------------------------------------------------------------------------------------
+#define PCMTXC_CH1WEX       (1<<31)                     // Channel 1 Width Extention Bit
+#define PCMTXC_CH1EN        (1<<30)                     // Channel 1 Enable
+#define PCMTXC_CH1POS       (0x3ff<<20)                 // Channel 1 Position
+#define PCMTXC_CH1WID       (0xf<<16)                   // Channel 1 Width
+#define PCMTXC_CH1WEX       (1<<15)                     // Channel 1 Width Extension Bit
+#define PCMTXC_CH2EN        (1<<14)                     // Channel 2 Enable
+#define PCMTXC_CH2POS       (0x3ff<<13)                 // Channel 2 Position
+#define PCMTXC_CH2WID       (0xf)                       // Channel 2 Width
+
+#define SH_PCMTXCCH1POS(x)  (((x)&0x3ff)<<20)           // Shift over to the right position
+#define SH_PCMTXCCH1WID(x)  (((x)&0xf)<<16)             // Shift over to the right position
+#define SH_PCMTXCCH2POS(x)  (((x)&0x3ff)<<13)           // Shift over to the right position
+
+
+#define PCM_DREQ            (PCM_BASE+0x14)             // PCM DMA Request Level
+//-------------------------------------------------------------------------------------------------------------------
+#define PCMDREQ_TXPANIC     (0x7f<<24)                  // TX Panic Level
+#define PCMDREQ_RXPANIC     (0x7f<<16)                  // RX Panic Level
+#define PCMDREQ_TX          (0x7f<<8)                   // TX Request Level
+#define PCMDREQ_RX          (0x7f)                      // RX Request Level
+
+#define SH_PCMDRECTXPAN(x)  (((x)&0x7f)<<24)            // Shift over to the right bits
+#define SH_PCMDRECRXPAN(x)  (((x)&0x7f)<<16)            // Shift over to the right bits
+#define SH_PCMDRECTX(x)     (((x)&0x7f)<<8)             // Shift over to the right bits
+
+
+#define PCM_INTEN           (PCM_BASE+0x18)             // PCM Interrupt Enable
+//-------------------------------------------------------------------------------------------------------------------
+#define PCMINTEN_RXERR      (1<<3)                      // RX Error Interrupt
+#define PCMINTEN_TXERR      (1<<2)                      // TX Error Interrupt
+#define PCMINTEN_RXR        (1<<1)                      // RX Read Interrupt Enable
+#define PCMINTEN_TXW        (1<<0)                      // TX Write Interrupt Enable
+
+
+#define PCM_INTSTC          (PCM_BASE+0x1c)             // PCM Interrupt Status & Clear
+//-------------------------------------------------------------------------------------------------------------------
+#define PCMINTSTC_RXERR     (1<<3)                      // RX Error Interrupt Clear
+#define PCMINTSTC_TXERR     (1<<2)                      // TX Error Interrupt Clear
+#define PCMINTSTC_RXR       (1<<1)                      // RX Read Interrupt Enable Clear
+#define PCMINTSTC_TXW       (1<<0)                      // TX Write Interrupt Enable Clear
+
+
+#define PCM_GRAY            (PCM_BASE+0x20)             // PCM Gray Mode Control
+//-------------------------------------------------------------------------------------------------------------------
+#define PCMGRAY_RXFIFOLVL   (0x3f<<16)                  // Current level of the RX FIFO
+#define PCMGRAY_FLUSHED     (0x3f<<10)                  // The number of bits that were flushed into RX FIFO
+#define PCMGRAY_RXLEVEL     (0x3f<<4)                   // The current fill level of the RX buffer
+#define PCMGRAY_FLUSH       (1<<2)                      // Flush RX buffer into RX FIFO
+#define PCMGRAY_CLR         (1<<1)                      // Clear the GRAY Mode Logic
+#define PCMGRAY_EN          (1<<0)                      // Enable GRAY mode
