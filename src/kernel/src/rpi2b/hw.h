@@ -3642,3 +3642,86 @@
 #define PCMGRAY_FLUSH       (1<<2)                      // Flush RX buffer into RX FIFO
 #define PCMGRAY_CLR         (1<<1)                      // Clear the GRAY Mode Logic
 #define PCMGRAY_EN          (1<<0)                      // Enable GRAY mode
+
+
+//-------------------------------------------------------------------------------------------------------------------
+// Pulse Width Modulator
+//-------------------------------------------------------------------------------------------------------------------
+
+
+//
+// -- The PWM Base address
+//    --------------------
+#define PWM_BASE            (HW_BASE+0x20c000)          // The base address of the PWM
+
+
+#define PWM_CTL             (PWM_BASE)                  // PWM Control
+//-------------------------------------------------------------------------------------------------------------------
+#define PWMCTL_MSEN2        (1<<15)                     // Channel 2 M/S Enable
+#define PWMCTL_USEF2        (1<<13)                     // Channel 2 Use FIFO
+#define PWMCTL_POLA2        (1<<12)                     // Channel 2 Polarity
+#define PWMCTL_SBIT2        (1<<11)                     // Channel 2 Silence Bit
+#define PWMCTL_RPTL2        (1<<10)                     // Channel 2 Repeat Last Data
+#define PWMCTL_MODE2        (1<<9)                      // Channel 2 Mode     
+#define PWMCTL_PWEN2        (1<<8)                      // Channel 2 Enable
+#define PWMCTL_MSEN1        (1<<7)                      // Channel 1 M/S Enable
+#define PWMCTL_CLRF1        (1<<6)                      // Clear FIFO
+#define PWMCTL_USEF1        (1<<5)                      // Channel 1 Use FIFO
+#define PWMCTL_POLA1        (1<<4)                      // Channel 1 Polarity
+#define PWMCTL_SBIT1        (1<<3)                      // Channel 1 Silence Bit
+#define PWMCTL_RPTL1        (1<<2)                      // Channel 1 Repeat Last Data
+#define PWMCTL_MODE1        (1<<1)                      // Channel 1 Mode     
+#define PWMCTL_PWEN1        (1<<0)                      // Channel 1 Enable
+
+
+#define PWM_STA             (PWM_BASE+4)                // PWM Status
+//-------------------------------------------------------------------------------------------------------------------
+#define PWMSTA_STA4         (1<<12)                     // Channel 4 state
+#define PWMSTA_STA3         (1<<11)                     // Channel 3 state
+#define PWMSTA_STA2         (1<<10)                     // Channel 2 state
+#define PWMSTA_STA1         (1<<9)                      // Channel 1 state
+#define PWMSTA_BERR         (1<<8)                      // Bus Error Flag
+#define PWMSTA_GAPO4        (1<<7)                      // Channel 4 Gap Occurred Flag
+#define PWMSTA_GAPO3        (1<<6)                      // Channel 3 Gap Occurred Flag
+#define PWMSTA_GAPO2        (1<<5)                      // Channel 2 Gap Occurred Flag
+#define PWMSTA_GAPO1        (1<<4)                      // Channel 1 Gap Occurred Flag
+#define PWMSTA_RERR1        (1<<3)                      // FIFO Read Error Flag
+#define PWMSTA_WERR1        (1<<2)                      // FIFO Write Error Flag
+#define PWMSTA_EMPT1        (1<<1)                      // FIFO Empty Flag
+#define PWMSTA_FULL1        (1<<0)                      // FIFO Full Flag
+
+
+#define PWM_DMAC            (PWM_BASE+8)                // PWM DMA Configuration
+//-------------------------------------------------------------------------------------------------------------------
+#define PWMDMAC_ENAB        (1<<31)                     // DMA Enable
+#define PWMDMAC_PANIC       (0xff<<8)                   // DMA Threshold for PANIC
+#define PWMDMAC_DREQ        (0xff)                      // DMA Threshold for DREQ
+
+#define SH_PWMDMACPANIC(x)  (((x)&0xff)<<8)             // Shift over to the correct bits
+
+
+#define PWM_RNG1            (PWM_BASE+0x10)             // PWM Channel 1 Range
+//-------------------------------------------------------------------------------------------------------------------
+#define PWMRNG1_RANGE       (0xffffffff)                // Channel 1 Range
+
+
+#define PWM_DAT1            (PWM_BASE+0x14)             // PWM Channel 1 Data
+//-------------------------------------------------------------------------------------------------------------------
+#define PWMDAT1_DATA        (0xffffffff)                // Channel 1 Data
+
+
+#define PWM_FIF1            (PWM_BASE+0x18)             // PWM FIFO Input
+//-------------------------------------------------------------------------------------------------------------------
+#define PWMFIF1_FIFO        (0xffffffff)                // FIFO Input
+
+
+#define PWM_RNG2            (PWM_BASE+0x20)             // PWM Channel 2 Range
+//-------------------------------------------------------------------------------------------------------------------
+#define PWMRNG2_RANGE       (0xffffffff)                // Channel 2 Range
+
+
+#define PWM_DAT2            (PWM_BASE+0x24)             // PWM Channel 2 Data
+//-------------------------------------------------------------------------------------------------------------------
+#define PWMDAT2_DATA        (0xffffffff)                // Channel 2 Data
+
+
