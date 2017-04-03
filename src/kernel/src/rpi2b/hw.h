@@ -3725,3 +3725,78 @@
 #define PWMDAT2_DATA        (0xffffffff)                // Channel 2 Data
 
 
+//-------------------------------------------------------------------------------------------------------------------
+// The Serial Peripheral Interface (SPI)
+//-------------------------------------------------------------------------------------------------------------------
+
+
+//
+// -- SPI0 Interface
+//    --------------
+#define SPIO_BASE           (HW_BASE+0x204000)          // The base address of the SPI0
+
+#define SPI0_CS             (SPI0_BASE)                 // SPI Master Control and Status
+//-------------------------------------------------------------------------------------------------------------------
+#define SPI0CS_LENLONG      (1<<25)                     // Enable Long data word in LoSSI mode
+#define SPI0CS_DMALEN       (1<<24)                     // ENable DMA mode in LoSSI mode
+#define SPI0CS_CSPOL2       (1<<23)                     // Chip Select 2 polarity
+#define SPI0CS_CSPOL1       (1<<22)                     // Chip Select 1 polarity
+#define SPI0CS_CSPOL0       (1<<21)                     // Chip Select 0 polarity
+#define SPI0CS_RXF          (1<<20)                     // RX FIFO Full
+#define SPI0CS_RXR          (1<<19)                     // RX FIFO needs reading
+#define SPI0CS_TXD          (1<<18)                     // TX FIFO can accept data
+#define SPI0CS_RXD          (1<<17)                     // RX FIFO contains data
+#define SPI0CS_DONE         (1<<16)                     // Data transfer done
+#define SPI0CS_LEN          (1<<13)                     // LoSSI Enable
+#define SPI0CS_REN          (1<<12)                     // Read Enable
+#define SPI0CS_ADCS         (1<<11)                     // Automatically Deassert Chip Select
+#define SPI0CS_INTR         (1<<10)                     // Interrupt RXR
+#define SPI0CS_INTD         (1<<9)                      // Interrupt Done
+#define SPI0CS_DMAEN        (1<<8)                      // DMA Enable
+#define SPI0CS_TA           (1<<7)                      // Transfer Active
+#define SPI0CS_CSPOL        (1<<6)                      // Chip Select Polarity
+#define SPI0CS_CLEAR        (3<<4)                      // Clear FIFO
+#define SPI0CS_CPOL         (1<<3)                      // Clock Polarity
+#define SPI0CS_CPHA         (1<<2)                      // Clock Phase
+#define SPI0CS_CS           (3<<0)                      // Chip Select
+
+#define SH_CSI0CSCLEARNO    (0b00<<4)                   // No action
+#define SH_CSI0CSCLEARTX    (0b01<<4)                   // Clear TX FIFO
+#define SH_CSI0CSCLEARRX    (0b10<<4)                   // Clear RX FIFO
+#define SH_CSI0CSCLEARBOTH  (0x11<<4)                   // Clear TX/RX FIFO
+#define SH_CSI0CS0          (0b00)                      // Chip Select 0
+#define SH_CSI0CS1          (0b01)                      // Chip Select 1
+#define SH_CSI0CS2          (0b10)                      // Chip Select 2
+
+
+#define SPI0_FIFO           (SPI0_BASE+4)               // SPI Master TX and RX FIFOs
+//-------------------------------------------------------------------------------------------------------------------
+#define SPI0FIFO_DATA       (0xffffffff)                // Depends on DMAEN.  See documentaiton
+
+
+#define SPI0_CLK            (SPI0_BASE+8)               // SPI Master Clock Divider
+//-------------------------------------------------------------------------------------------------------------------
+#define SPI0CLK_CDIV        (0xffff)                    // Clock Divider
+
+
+#define SPI0_DLEN           (SPI0_BASE+0xc)             // SPI Master Data Length
+//-------------------------------------------------------------------------------------------------------------------
+#define SPI0DLEN_LEN        (0xffff)                    // Data Length
+
+
+#define SPI0_LTOH           (SPI0_BASE+0x10)            // SPI LoSSI mode TOH
+//-------------------------------------------------------------------------------------------------------------------
+#define SPI0LTOH_TOH        (0x7)                       // Output Hold Delay
+
+
+#define SPI0_DC             (SPI0_BASE+0x14)            // SPU DMA DREQ Controls
+//-------------------------------------------------------------------------------------------------------------------
+#define SPI0DC_RPANIC       (0xff<<24)                  // DMA Read Panic threshold
+#define SPI0DC_RDREQ        (0xff<<16)                  // DMA Read Request threshold
+#define SPI0DC_TPANIC       (0xff<<8)                   // DMA Write Panic threshold
+#define SPI0DC_TDREQ        (0xff)                      // DMA Write Request threshold
+
+#define SH_SPI0DCRPANIC(x)  (((x)&0xff)<<24)            // Shift to the correct bits
+#define SH_SPI0DCRDREQ(x)   (((x)&0xff)<<16)            // Shift to the correct bits
+#define SH_SPI0DCTPANIC(x)  (((x)&0xff)<<8)             // Shift to the correct bits
+
