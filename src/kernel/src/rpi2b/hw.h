@@ -3800,3 +3800,150 @@
 #define SH_SPI0DCRDREQ(x)   (((x)&0xff)<<16)            // Shift to the correct bits
 #define SH_SPI0DCTPANIC(x)  (((x)&0xff)<<8)             // Shift to the correct bits
 
+
+//-------------------------------------------------------------------------------------------------------------------
+// The SPI/BSC slave
+//-------------------------------------------------------------------------------------------------------------------
+
+
+//
+// -- SPI/BSC slave interface (shortened to SLV)
+//    ------------------------------------------
+#define SLV_BASE            (HW_BASE+0x214000)          // The SPI/BSC Slave base register
+
+
+#define SLV_DR              (SLV_BASE)                  // Data register
+//-------------------------------------------------------------------------------------------------------------------
+#define SLVDR_RXFLEVEL      (0x1f<<27)                  // RX FIFO Level
+#define SLVDR_TXFLEVEL      (0x1f<<22)                  // TX FIFO Level
+#define SLVDR_RXBUSY        (1<<21)                     // Receive Busy
+#define SLVDR_TXFE          (1<<20)                     // TX FIFO Empty
+#define SLVDR_RXFF          (1<<19)                     // RX FIFO Full
+#define SLVDR_TXFF          (1<<18)                     // TX FIFO Full
+#define SLVDR_RXFE          (1<<17)                     // RX FIFO Empty
+#define SLVDR_TXBUSY        (1<<16)                     // Transmit Busy
+#define SLVDR_TXUE          (1<<9)                      // TX Underrun Error
+#define SLVDR_RXOE          (1<<8)                      // RX Overrun Error
+#define SLVDR_DATA          (0xff)                      // Data
+
+
+#define SLV_RSR             (SLV_BASE+4)                // operation status and error clear register
+//-------------------------------------------------------------------------------------------------------------------
+#define SLVRSR_TXUE         (1<<1)                      // TX Underrun Error
+#define SLVRSR_RXOE         (1<<0)                      // RX Overrun Error
+
+
+#define SLV_SLV             (SLV_BASE+8)                // I2C slave address value
+//-------------------------------------------------------------------------------------------------------------------
+#define SLVSLV_ADDR         (0x7f)                      // I2C Slave Address
+
+
+#define SLV_CR              (SLV_BASE+0xc)              // Control Register
+//-------------------------------------------------------------------------------------------------------------------
+#define SLVCR_INVTXF        (1<<13)                     // TX Status Flag
+#define SLVCR_HOSTCTRLEN    (1<<12)                     // Enable control for host
+#define SLVCR_TESTFIFO      (1<<11)                     // TEST FIFO
+#define SLVCR_INVRXF        (1<<10)                     // RX Status Flag
+#define SLVCR_RXE           (1<<9)                      // Receive Enable
+#define SLVCR_TXE           (1<<8)                      // Transmit Enable
+#define SLVCR_BRK           (1<<7)                      // Break current operation
+#define SLVCR_ENCTRL        (1<<6)                      // Enable Control 8bit register
+#define SLVCR_ENSTAT        (1<<5)                      // Enable Status 8bit register
+#define SLVCR_CPOL          (1<<4)                      // Clock Polarity
+#define SLVCR_CPHA          (1<<3)                      // Clock Phase
+#define SLVCR_I2C           (1<<2)                      // I2C Mode
+#define SLVCR_SPI           (1<<1)                      // SPI Mode
+#define SLVCR_EN            (1<<0)                      // Enable Device
+
+
+#define SLV_FR              (SLV_BASE+0x10)             // Flag Register
+//-------------------------------------------------------------------------------------------------------------------
+#define SLVFR_RXFLEVEL      (0x1f<<11)                  // RX FIFO Level
+#define SLVFR_TXFLEVEL      (0x1f<<6)                   // TX FIFO Level
+#define SLVFR_RXBUSY        (1<<5)                      // Receive Busy
+#define SLVFR_TXFE          (1<<4)                      // TX FIFO Empty
+#define SLVFR_RXFF          (1<<3)                      // RX FIFO Full
+#define SLVFR_TXFF          (1<<2)                      // TX FIFO Full
+#define SLVFR_RXFE          (1<<1)                      // RX FIFO Empty
+#define SLVFR_TXBUSY        (1<<0)                      // Transmit Busy
+
+#define SH_SLVFRRXFLEVEL(x) (((x)&0x1f)<<11)            // RX FIFO Level
+#define SH_SLVFRTXFLEVEL(x) (((x)&0x1f)<<6)             // TX FIFO Level
+
+
+#define SLV_IFLS            (SLV_BASE+0x14)             // interrupt FIFO Select register
+//-------------------------------------------------------------------------------------------------------------------
+#define SLVIFLS_RXIFLSEL    (0x7<<3)                    // RX Interrupt FIFO Level Select
+#define SLVIFLS_TXIFLSEL    (0x7)                       // TX Interrupt FIFO Level Select
+
+#define SLVIFLS_1_8         (0b000)                     // Interrupt when 1/8 full
+#define SLVIFLS_1_4         (0b001)                     // Interrupt when 1/4 full
+#define SLVIFLS_1_2         (0b010)                     // Interrupt when 1/2 full
+#define SLVIFLS_3_4         (0b011)                     // Interrupt when 3/4 full
+#define SLVIFLS_7_8         (0b100)                     // Interrupt when 7/8 full
+
+#define SH_SLVIFLSRXIFLSEL(x) (((x)&0x7)<<3)            // shift to the correct position
+#define SH_SLVIFLSTXIFLSEL(x) ((x)&0x7)                 // shift to the correct position
+
+
+#define SLV_IMSC            (SLV_BASE+0x18)             // Interrupt Mask Clear Register
+//-------------------------------------------------------------------------------------------------------------------
+#define SLVIMSC_OEIM        (1<<3)                      // Overrun error interrupt mask
+#define SLVIMSC_BEIM        (1<<2)                      // Break error interrupt mask
+#define SLVIMSC_TXIM        (1<<1)                      // Transmit interrupt mask
+#define SLVIMSC_RXIM        (1<<0)                      // Receive interrupt mask
+
+
+#define SLV_RIS             (SLV_BASE+0x1c)             // Raw Interrupt Status Register
+//-------------------------------------------------------------------------------------------------------------------
+#define SLVRIS_OERIS        (1<<3)                      // Overrun error interrupt status
+#define SLVRIS_BERIS        (1<<2)                      // Break error interrupt status
+#define SLVRIS_TXRIS        (1<<1)                      // Transmit interrupt status
+#define SLVRIS_RXRIS        (1<<0)                      // Receive interrupt status
+
+
+#define SLV_MIS             (SLV_BASE+0x20)             // Masked Interrupt Status Register
+//-------------------------------------------------------------------------------------------------------------------
+#define SLVMIS_OEMIS        (1<<3)                      // Overrun error interrupt masked interrupt status
+#define SLVMIS_BEMIS        (1<<2)                      // Break error interrupt masked interrupt status
+#define SLVMIS_TXMIS        (1<<1)                      // Transmit interrupt masked interrupt status
+#define SLVMIS_RXMIS        (1<<0)                      // Receive interrupt masked interrupt status
+
+
+#define SLV_ICR             (SLV_BASE+0x24)             // Interrupt Clear Register
+//-------------------------------------------------------------------------------------------------------------------
+#define SLVIMSC_OEIC        (1<<3)                      // Overrun error interrupt clear
+#define SLVIMSC_BEIC        (1<<2)                      // Break error interrupt clear
+#define SLVIMSC_TXIC        (1<<1)                      // Transmit interrupt clear
+#define SLVIMSC_RXIC        (1<<0)                      // Receive interrupt clear
+
+
+#define SLV_DMACR           (SLV_BASE+0x28)             // DMA Control Register
+//-------------------------------------------------------------------------------------------------------------------
+// This is unsupported
+
+
+#define SLV_TDR             (SLV_BASE+0x2c)             // FIFO Test Data
+//-------------------------------------------------------------------------------------------------------------------
+#define SLVTDR_DATA         (0xff)                      // Test Data
+
+
+#define SLV_GPUSTAT         (SLV_BASE+0x30)             // GPU Status Register
+//-------------------------------------------------------------------------------------------------------------------
+#define SLVGPUSTAT_DATA     (0xff)                      // GPU to Host status register
+
+
+#define SLV_HCTRL           (SLV_BASE+0x34)             // Host Control Register
+//-------------------------------------------------------------------------------------------------------------------
+#define SLVHCTRL_DATA       (0xff)                      // Host Control Register
+
+
+#define SLV_DEBUG1          (SLV_BASE+0x38)             // I2C Debug Register
+//-------------------------------------------------------------------------------------------------------------------
+#define SLVDEBUG1_DATA      (0x3ffffff)                 // Debug Register
+
+
+#define SLV_DEBUG2          (SLV_BASE+0x3c)             // SPI Debug Register
+//-------------------------------------------------------------------------------------------------------------------
+#define SLVDEBUG2_DATA      (0x3ffffff)                 // Debug Register
+
