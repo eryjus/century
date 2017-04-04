@@ -3997,3 +3997,176 @@
 #define STC3_CMP            (0xffffffff)                // Compare value
 
 
+//-------------------------------------------------------------------------------------------------------------------
+// The UART
+//-------------------------------------------------------------------------------------------------------------------
+
+
+//
+// -- UART Interface
+//    --------------
+#define UART_BASE           (HW_BASE+0x201000)          // The UART base register
+
+
+#define UART_DR             (UART_BASE)                 // Data register
+//-------------------------------------------------------------------------------------------------------------------
+#define UARTDR_OE           (1<<11)                     // Overrun Error
+#define UARTDR_BE           (1<<10)                     // Break Error
+#define UARTDR_PE           (1<<9)                      // Parity Error
+#define UARTDR_FE           (1<<8)                      // Framing Error
+#define UARTDR_DATA         (0xff)                      // Data
+
+
+#define UART_RSRECR         (UART_BASE+4)               // operation status and error clear register
+//-------------------------------------------------------------------------------------------------------------------
+#define UARTRSRECR_OE       (1<<3)                      // Overrun Error
+#define UARTRSRECR_BE       (1<<2)                      // Break Error
+#define UARTRSRECR_PE       (1<<1)                      // Parity Error
+#define UARTRSRECR_FE       (1<<0)                      // Framing Error
+
+
+#define UART_FR             (UART_BASE+0x10)            // Flag Register
+//-------------------------------------------------------------------------------------------------------------------
+#define UARTFR_TXFE         (1<<7)                      // TX FIFO Empty
+#define UARTFR_RXFF         (1<<6)                      // RX FIFO Full
+#define UARTFR_TXFF         (1<<5)                      // TX FIFO Full
+#define UARTFR_RXFE         (1<<4)                      // RX FIFO Empty
+#define UARTFR_BUSY         (1<<3)                      // Transmit Busy
+#define UARTFR_CTS          (1<<0)                      // Clear to send
+
+
+#define UART_IBRD           (UART_BASE+0x24)            // Integer Baud Rate Divisor
+//-------------------------------------------------------------------------------------------------------------------
+#define UARTIBRD_IBRD       (0xffff)                    // Integer Baud Rate Divisor
+
+
+#define UART_FBRD           (UART_BASE+0x28)            // Fractional Baud Rate Divisor
+//-------------------------------------------------------------------------------------------------------------------
+#define UARTFBRD_FBRD       (0x3f)                      // Fractional Baud Rate Divisor
+
+
+#define UART_LCRH           (UART_BASE+0x2c)            // Line Control Register
+//-------------------------------------------------------------------------------------------------------------------
+#define UARTLCRH_SPS        (1<<7)                      // Stick Parity Select
+#define UARTLCRH_WLEN       (3<<5)                      // Word Length
+#define UARTLCRH_FEN        (1<<4)                      // Enable FIFO
+#define UARTLCRH_STP2       (1<<3)                      // 2 Stop bit enable
+#define UARTLCRH_EPS        (1<<2)                      // Even Parity bit select
+#define UARTLCRH_PEN        (1<<1)                      // Parity Enable
+#define UARTLCRH_BRK        (1<<0)                      // Send break
+
+
+#define SH_UARTLCRHWLEN_8   (0b11)                      // 8 bit word length
+#define SH_UARTLCRHWLEN_7   (0b10)                      // 7 bit word length
+#define SH_UARTLCRHWLEN_6   (0b01)                      // 6 bit word length
+#define SH_UARTLCRHWLEN_5   (0b00)                      // 5 bit word length
+
+
+#define UART_CR             (UART_BASE+0x30)            // Control Register
+//-------------------------------------------------------------------------------------------------------------------
+#define UARTCR_CTSEN        (1<<15)                     // Enable CTS flow control
+#define UARTCR_RTSEN        (1<<14)                     // Enable RTS flow control
+#define UARTCR_RTS          (1<<11)                     // Request to send
+#define UARTCR_RXE          (1<<9)                      // Receive Enable
+#define UARTCR_TXE          (1<<8)                      // Transmit Enable
+#define UARTCR_LBE          (1<<7)                      // Loopback enable
+#define UARTCR_EN           (1<<0)                      // Enable Device
+
+
+#define UART_IFLS           (UART_BASE+0x34)            // interrupt FIFO Select register
+//-------------------------------------------------------------------------------------------------------------------
+#define UARTIFLS_RXIFLSEL   (0x7<<3)                    // RX Interrupt FIFO Level Select
+#define UARTIFLS_TXIFLSEL   (0x7)                       // TX Interrupt FIFO Level Select
+
+#define UARTIFLS_1_8        (0b000)                     // Interrupt when 1/8 full
+#define UARTIFLS_1_4        (0b001)                     // Interrupt when 1/4 full
+#define UARTIFLS_1_2        (0b010)                     // Interrupt when 1/2 full
+#define UARTIFLS_3_4        (0b011)                     // Interrupt when 3/4 full
+#define UARTIFLS_7_8        (0b100)                     // Interrupt when 7/8 full
+
+#define SH_UARTIFLSRXIFLSEL(x) (((x)&0x7)<<3)           // shift to the correct position
+#define SH_UARTIFLSTXIFLSEL(x) ((x)&0x7)                // shift to the correct position
+
+
+#define UART_IMSC           (UART_BASE+0x38)            // Interrupt Mask Clear Register
+//-------------------------------------------------------------------------------------------------------------------
+#define UARTIMSC_OEIM       (1<<10)                     // Overrun error interrupt mask
+#define UARTIMSC_BEIM       (1<<9)                      // Break error interrupt mask
+#define UARTIMSC_PEIM       (1<<8)                      // Parity error interrups mask
+#define UARTIMSC_FEIM       (1<<7)                      // Framing error interrupt mask
+#define UARTIMSC_RTIM       (1<<6)                      // Receive Timeout interrupt mask
+#define UARTIMSC_TXIM       (1<<5)                      // Transmit interrupt mask
+#define UARTIMSC_RXIM       (1<<4)                      // Receive interrupt mask
+#define UARTIMSC_CTSMIM     (1<<1)                      // UARTCTR Modem interrupt mask
+
+
+#define UART_RIS            (UART_BASE+0x3c)            // Raw Interrupt Status Register
+//-------------------------------------------------------------------------------------------------------------------
+#define UARTRIS_OERIS       (1<<10)                     // Overrun error interrupt status
+#define UARTRIS_BERIS       (1<<9)                      // Break error interrupt status
+#define UARTRIS_PERIS       (1<<8)                      // Parity error interrups status
+#define UARTRIS_FERIS       (1<<7)                      // Framing error interrupt status
+#define UARTRIS_RTRIS       (1<<6)                      // Receive Timeout interrupt status
+#define UARTRIS_TXRIS       (1<<5)                      // Transmit interrupt status
+#define UARTRIS_RXRIS       (1<<4)                      // Receive interrupt status
+#define UARTRIS_CTSRMIS     (1<<1)                      // UARTCTR Modem interrupt status
+
+
+#define UART_MIS            (UART_BASE+0x40)            // Masked Interrupt Status Register
+//-------------------------------------------------------------------------------------------------------------------
+#define UARTMIS_OEMIS       (1<<10)                     // Overrun error interrupt status
+#define UARTMIS_BEMIS       (1<<9)                      // Break error interrupt status
+#define UARTMIS_PEMIS       (1<<8)                      // Parity error interrups status
+#define UARTMIS_FEMIS       (1<<7)                      // Framing error interrupt status
+#define UARTMIS_RTMIS       (1<<6)                      // Receive Timeout interrupt status
+#define UARTMIS_TXMIS       (1<<5)                      // Transmit interrupt status
+#define UARTMIS_RXMIS       (1<<4)                      // Receive interrupt status
+#define UARTMIS_CTSMMIS     (1<<1)                      // UARTCTR Modem interrupt status
+
+
+#define UART_ICR            (UART_BASE+0x44)            // Interrupt Clear Register
+//-------------------------------------------------------------------------------------------------------------------
+#define UARTMIS_OEIC       (1<<10)                      // Overrun error interrupt status
+#define UARTMIS_BEIC       (1<<9)                       // Break error interrupt status
+#define UARTMIS_PEIC       (1<<8)                       // Parity error interrups status
+#define UARTMIS_FEIC       (1<<7)                       // Framing error interrupt status
+#define UARTMIS_RTIC       (1<<6)                       // Receive Timeout interrupt status
+#define UARTMIS_TXIC       (1<<5)                       // Transmit interrupt status
+#define UARTMIS_RXIC       (1<<4)                       // Receive interrupt status
+#define UARTMIS_CTSMIC     (1<<1)                       // UARTCTR Modem interrupt status
+
+
+#define UART_DMACR          (UART_BASE+0x48)            // DMA Control Register
+//-------------------------------------------------------------------------------------------------------------------
+// -- unsupported
+
+
+#define UART_ITCR           (UART_BASE+0x80)            // Test Control Register
+//-------------------------------------------------------------------------------------------------------------------
+#define UARTITCR_ITCR1      (1<<1)                      // Test FIFO Enable
+#define UARTITCR_ITCR0      (1<<0)                      // Integration test enable
+
+
+#define UART_ITIP           (UART_BASE+0x84)            // Integration Test Input Register
+//-------------------------------------------------------------------------------------------------------------------
+#define UARTITIP_ITIP3      (1<<3)                      // reads return the value ot the nUARTCTS primary input
+#define UARTITIP_ITIP0      (1<<0)                      // reads return the value ot the UARTRXD primary input
+
+
+#define UART_ITOP           (UART_BASE+0x88)            // Integration Test Output Register
+//-------------------------------------------------------------------------------------------------------------------
+#define UARTITOP_ITOP11     (1<<11)                     // output from UARTMSINTR
+#define UARTITOP_ITOP10     (1<<10)                     // output from UARTRXINTR
+#define UARTITOP_ITOP9      (1<<9)                      // output from UARTTXINTR
+#define UARTITOP_ITOP8      (1<<8)                      // output from UARTRTINTR
+#define UARTITOP_ITOP7      (1<<7)                      // output from UARTEIINTR
+#define UARTITOP_ITOP6      (1<<6)                      // output from UARTINTR
+#define UARTITOP_ITOP3      (1<<3)                      // output from nUARTCTS
+#define UARTITOP_ITOP0      (1<<0)                      // output from UARTTXD
+
+
+#define UART_TDR            (UART_BASE+0x8c)            // FIFO Test Data
+//-------------------------------------------------------------------------------------------------------------------
+#define UARTTDR_TDR         (0x7ff)                     // Written to FIFO when ITCR1=1
+
+
