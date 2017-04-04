@@ -3947,3 +3947,53 @@
 //-------------------------------------------------------------------------------------------------------------------
 #define SLVDEBUG2_DATA      (0x3ffffff)                 // Debug Register
 
+
+//-------------------------------------------------------------------------------------------------------------------
+// The System Timers
+//-------------------------------------------------------------------------------------------------------------------
+
+
+//
+// -- System Timer Interface
+//    ----------------------
+#define ST_BASE             (HW_BASE+0x3000)            // System Timer base address
+
+
+#define ST_CS               (ST_BASE)                   // Control/Status register
+//-------------------------------------------------------------------------------------------------------------------
+#define STCS_M3             (1<<3)                      // System Timer Match 3
+#define STCS_M2             (1<<2)                      // System Timer Match 2
+#define STCS_M1             (1<<1)                      // System Timer Match 1
+#define STCS_M0             (1<<0)                      // System Timer Match 0
+
+
+#define ST_CLO              (ST_BASE+4)                 // Counter Lower 32 bits
+//-------------------------------------------------------------------------------------------------------------------
+#define STCLO_CNT           (0xffffffff)                // lower bits of the running counter
+
+
+#define ST_CHI              (ST_BASE+8)                 // Counter Upper 32 bits
+//-------------------------------------------------------------------------------------------------------------------
+#define STCHI_CNT           (0xffffffff)                // higher bits of the running counter
+
+
+#define ST_C0               (ST_BASE+0xc)               // Compare 0
+//-------------------------------------------------------------------------------------------------------------------
+#define STC0_CMP            (0xffffffff)                // Compare value
+
+
+#define ST_C1               (ST_BASE+0x10)              // Compare 1
+//-------------------------------------------------------------------------------------------------------------------
+#define STC1_CMP            (0xffffffff)                // Compare value
+
+
+#define ST_C2               (ST_BASE+0x14)              // Compare 2
+//-------------------------------------------------------------------------------------------------------------------
+#define STC2_CMP            (0xffffffff)                // Compare value
+
+
+#define ST_C3               (ST_BASE+0x18)              // Compare 3
+//-------------------------------------------------------------------------------------------------------------------
+#define STC3_CMP            (0xffffffff)                // Compare value
+
+
