@@ -1,6 +1,6 @@
 //===================================================================================================================
 //
-//  kernel rpi2b/ports.h -- This file aggregates all the hardware port definitions and bit flags.
+//  kernel rpi2b/hw.h -- This file aggregates all the hardware port definitions and bit flags.
 //
 //        Copyright (c)  2017 -- Adam Clark
 //

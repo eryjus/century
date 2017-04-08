@@ -89,7 +89,7 @@ rpi2b-kernel: $(RPI2B-KERNEL-SYS)
 # -- Copy the kernel to the sysroot image
 #    ------------------------------------
 $(RPI2B-KERNEL-SYS): $(RPI2B-KERNEL-IMG) 
-	echo "SYSROOT:" $(notdir $@)	
+	echo " RPI2B-SYSROOT:" $(notdir $@)	
 	mkdir -p $(dir $@)
 	rm -f $@
 	cp $< $@
@@ -99,7 +99,7 @@ $(RPI2B-KERNEL-SYS): $(RPI2B-KERNEL-IMG)
 # -- Create the kernel image
 #    -----------------------
 $(RPI2B-KERNEL-IMG): $(RPI2B-KERNEL-ELF) 
-	echo "OBJCOPY:" $(notdir $@)
+	echo " RPI2B-OBJCOPY:" $(notdir $@)
 	mkdir -p $(dir $@)
 	$(RPI2B-KERNEL-OBJCOPY) $< -O binary $@
 	
@@ -108,7 +108,7 @@ $(RPI2B-KERNEL-IMG): $(RPI2B-KERNEL-ELF)
 # -- Create the kernel image
 #    -----------------------
 $(RPI2B-KERNEL-ELF): $(addprefix $(RPI2B-KERNEL-OBJ)/,$(RPI2B-KERNEL-O)) $(RPI2B-KERNEL-LIBS) $(RPI2B-KERNEL-LS)
-	echo "LD     :" $(notdir $@)
+	echo " RPI2B-LD     :" $(notdir $@)
 	mkdir -p $(dir $@)
 	$(RPI2B-KERNEL-LD) -o $@ $(addprefix $(RPI2B-KERNEL-OBJ)/,$(RPI2B-KERNEL-O)) $(RPI2B-KERNEL-LIBS)
 	
@@ -117,7 +117,7 @@ $(RPI2B-KERNEL-ELF): $(addprefix $(RPI2B-KERNEL-OBJ)/,$(RPI2B-KERNEL-O)) $(RPI2B
 # -- Generic rule to make a .o file from the rpi2b source folder
 #    -----------------------------------------------------------
 $(RPI2B-KERNEL-OBJ)/%.o: $(RPI2B-KERNEL-SRC)/rpi2b/%.s 
-	echo "AS     :" $(notdir $<)
+	echo " RPI2B-AS     :" $(notdir $<)
 	mkdir -p $(dir $@)
 	$(RPI2B-KERNEL-AS) -o $@ $<
 
@@ -126,7 +126,7 @@ $(RPI2B-KERNEL-OBJ)/%.o: $(RPI2B-KERNEL-SRC)/rpi2b/%.s
 # -- Generic rule to make a .d file from the rpi2b source folder
 #    -----------------------------------------------------------
 $(RPI2B-KERNEL-OBJ)/%.d: $(RPI2B-KERNEL-SRC)/rpi2b/%.s
-	echo "DEPEND :" $(notdir $<)
+	echo " RPI2B-DEPEND :" $(notdir $<)
 	mkdir -p $(dir $@)
 	rm -f $@
 	$(RPI2B-KERNEL-DEP)  $<  > $@.$$$$;													\
@@ -138,7 +138,7 @@ $(RPI2B-KERNEL-OBJ)/%.d: $(RPI2B-KERNEL-SRC)/rpi2b/%.s
 # -- Generic rule to make a .o file from the rpi2b source folder
 #    -----------------------------------------------------------
 $(RPI2B-KERNEL-OBJ)/%.o: $(RPI2B-KERNEL-SRC)/rpi2b/%.c
-	echo "CC     :" $(notdir $<)
+	echo " RPI2B-CC     :" $(notdir $<)
 	mkdir -p $(dir $@)
 	$(RPI2B-KERNEL-CC) -o $@ $<
 
@@ -147,7 +147,7 @@ $(RPI2B-KERNEL-OBJ)/%.o: $(RPI2B-KERNEL-SRC)/rpi2b/%.c
 # -- Generic rule to make a .d file from the rpi2b source folder
 #    -----------------------------------------------------------
 $(RPI2B-KERNEL-OBJ)/%.d: $(RPI2B-KERNEL-SRC)/rpi2b/%.c
-	echo "DEPEND :" $(notdir $<)
+	echo " RPI2B-DEPEND :" $(notdir $<)
 	mkdir -p $(dir $@)
 	rm -f $@
 	$(RPI2B-KERNEL-DEP)  $<  > $@.$$$$;													\
@@ -156,19 +156,19 @@ $(RPI2B-KERNEL-OBJ)/%.d: $(RPI2B-KERNEL-SRC)/rpi2b/%.c
 	
 
 #
-# -- Generic rule to make a .o file from the rpi2b source folder
-#    -----------------------------------------------------------
+# -- Generic rule to make a .o file from the kernel source folder
+#    ------------------------------------------------------------
 $(RPI2B-KERNEL-OBJ)/%.o: $(RPI2B-KERNEL-SRC)/%.s 
-	echo "AS     :" $(notdir $<)
+	echo " RPI2B-AS     :" $(notdir $<)
 	mkdir -p $(dir $@)
 	$(RPI2B-KERNEL-AS) -o $@ $<
 
 	
 #
-# -- Generic rule to make a .d file from the rpi2b source folder
-#    -----------------------------------------------------------
+# -- Generic rule to make a .d file from the kernel source folder
+#    ------------------------------------------------------------
 $(RPI2B-KERNEL-OBJ)/%.d: $(RPI2B-KERNEL-SRC)/%.s
-	echo "DEPEND :" $(notdir $<)
+	echo " RPI2B-DEPEND :" $(notdir $<)
 	mkdir -p $(dir $@)
 	rm -f $@
 	$(RPI2B-KERNEL-DEP)  $<  > $@.$$$$;													\
@@ -177,19 +177,19 @@ $(RPI2B-KERNEL-OBJ)/%.d: $(RPI2B-KERNEL-SRC)/%.s
 
 
 #
-# -- Generic rule to make a .o file from the rpi2b source folder
-#    -----------------------------------------------------------
+# -- Generic rule to make a .o file from the kernel source folder
+#    ------------------------------------------------------------
 $(RPI2B-KERNEL-OBJ)/%.o: $(RPI2B-KERNEL-SRC)/%.c
-	echo "CC     :" $(notdir $<)
+	echo " RPI2B-CC     :" $(notdir $<)
 	mkdir -p $(dir $@)
 	$(RPI2B-KERNEL-CC) -o $@ $<
 
 	
 #
-# -- Generic rule to make a .d file from the rpi2b source folder
-#    -----------------------------------------------------------
+# -- Generic rule to make a .d file from the kerpen source folder
+#    ------------------------------------------------------------
 $(RPI2B-KERNEL-OBJ)/%.d: $(RPI2B-KERNEL-SRC)/%.c
-	echo "DEPEND :" $(notdir $<)
+	echo " RPI2B-DEPEND :" $(notdir $<)
 	mkdir -p $(dir $@)
 	rm -f $@
 	$(RPI2B-KERNEL-DEP)  $<  > $@.$$$$;													\
@@ -207,4 +207,6 @@ rpi2b-kernel-clean:
 	rm -fR $(dir $(RPI2B-KERNEL-IMG))
 	rm -fR $(dir $(RPI2B-KERNEL-ELF))
 	rm -fR $(dir $(RPI2B-KERNEL-SYS))
+	echo RPI2B-KERNEL-D = $(RPI2B-KERNEL-D)	
+	echo RPI2B-KERNEL-O = $(RPI2B-KERNEL-O)
 	

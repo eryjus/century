@@ -9,7 +9,8 @@
 //        you can do whatever you want with this stuff. If we meet some day, and you
 //        think this stuff is worth it, you can buy me a beer in return.
 //
-//  TODO: When QEMU has addressed the missing System Timer, address the hack in BusyWait.
+//  TODO: When QEMU has addressed the missing System Timer, address the hack in BusyWait.  The progrss of the QEMU
+//        team resolving this issue can be tracked at https://bugs.launchpad.net/qemu/+bug/1680991
 //
 // -----------------------------------------------------------------------------------------------------------------
 //
