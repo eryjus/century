@@ -24,12 +24,12 @@
 #
 # -- File Definitions
 #    ----------------
-RPI2B-KERNEL-SRC := src/kernel/src/rpi2b
+RPI2B-KERNEL-SRC := src/kernel/src
 
-RPI2B-KERNEL-S   := $(wildcard $(RPI2B-KERNEL-SRC)/*.s)
+RPI2B-KERNEL-S   := $(wildcard $(RPI2B-KERNEL-SRC)/rpi2b/*.s) $(wildcard $(RPI2B-KERNEL-SRC)/*.s)
 RPI2B-KERNEL-S   := $(notdir $(RPI2B-KERNEL-S))
 
-RPI2B-KERNEL-C   := $(wildcard $(RPI2B-KERNEL-SRC)/*.c)
+RPI2B-KERNEL-C   := $(wildcard $(RPI2B-KERNEL-SRC)/rpi2b/*.c) $(wildcard $(RPI2B-KERNEL-SRC)/*.c)
 RPI2B-KERNEL-C   := $(notdir $(RPI2B-KERNEL-C))
 
 RPI2B-KERNEL-O   := $(subst .s,.o,$(RPI2B-KERNEL-S))
@@ -45,7 +45,10 @@ RPI2B-KERNEL-ELF := bin/rpi2b/kernel.elf
 
 RPI2B-KERNEL-SYS := sysroot/rpi2b/kernel.img
 
-RPI2B-KERNEL-LS  := $(RPI2B-KERNEL-SRC)/kernel.ld
+RPI2B-KERNEL-LS  := $(RPI2B-KERNEL-SRC)/rpi2b/kernel.ld
+
+RPI2B-KERNEL-IA  := -Wa,-I -Wa,src/kernel/src/rpi2b -Wa,-I -Wa,src/kernel/inc
+RPI2B-KERNEL-IC  := $(subst $(ASM-PARM),,$(RPI2B-KERNEL-IA))
 
 
 #
@@ -59,8 +62,10 @@ DEPEND           += $(addprefix obj/rpi2b/,$(RPI2B-KERNEL-D))
 #
 # -- Build Tool definitions
 #    ----------------------
-RPI2B-KERNEL-AS  := arm-eabi-gcc -mcpu=arm1176jzf-s -fpic -ffreestanding -Wa,-I -Wa,src/kernel/src/rpi2b -Wall -Werror -c
-RPI2B-KERNEL-DEP := arm-eabi-cpp -M
+RPI2B-KERNEL-AS  := arm-eabi-gcc -mcpu=arm1176jzf-s -fpic -ffreestanding -x assembler-with-cpp \
+		-Wa,-I -Wa,$(RPI2B-KERNEL-IA) -Wall -Werror -c
+RPI2B-KERNEL-CC  := arm-eabi-gcc -mcpu=arm1176jzf-s -fpic -ffreestanding $(RPI2B-KERNEL-IC) -Wall -Werror -c
+RPI2B-KERNEL-DEP := arm-eabi-cpp -M -ffreestanding $(RPI2B-KERNEL-IC)
 RPI2B-KERNEL-LD  := arm-eabi-gcc -T $(RPI2B-KERNEL-LS) -ffreestanding -O2 -nostdlib
 RPI2B-KERNEL-LIBS  := 
 RPI2B-KERNEL-OBJCOPY  := arm-eabi-objcopy
@@ -105,9 +110,51 @@ $(RPI2B-KERNEL-IMG): $(RPI2B-KERNEL-ELF)
 $(RPI2B-KERNEL-ELF): $(addprefix $(RPI2B-KERNEL-OBJ)/,$(RPI2B-KERNEL-O)) $(RPI2B-KERNEL-LIBS) $(RPI2B-KERNEL-LS)
 	echo "LD     :" $(notdir $@)
 	mkdir -p $(dir $@)
-	$(RPI2B-KERNEL-LD) -o $@  $< $(RPI2B-KERNEL-LIBS)
+	$(RPI2B-KERNEL-LD) -o $@ $(addprefix $(RPI2B-KERNEL-OBJ)/,$(RPI2B-KERNEL-O)) $(RPI2B-KERNEL-LIBS)
 	
 	
+#
+# -- Generic rule to make a .o file from the rpi2b source folder
+#    -----------------------------------------------------------
+$(RPI2B-KERNEL-OBJ)/%.o: $(RPI2B-KERNEL-SRC)/rpi2b/%.s 
+	echo "AS     :" $(notdir $<)
+	mkdir -p $(dir $@)
+	$(RPI2B-KERNEL-AS) -o $@ $<
+
+	
+#
+# -- Generic rule to make a .d file from the rpi2b source folder
+#    -----------------------------------------------------------
+$(RPI2B-KERNEL-OBJ)/%.d: $(RPI2B-KERNEL-SRC)/rpi2b/%.s
+	echo "DEPEND :" $(notdir $<)
+	mkdir -p $(dir $@)
+	rm -f $@
+	$(RPI2B-KERNEL-DEP)  $<  > $@.$$$$;													\
+	sed 's,\($*\)\.o[ :]*,$(RPI2B-KERNEL-OBJ)/\1.o $@ : ,g' < $@.$$$$ > $@;				\
+	rm -f $@.$$$$
+
+
+#
+# -- Generic rule to make a .o file from the rpi2b source folder
+#    -----------------------------------------------------------
+$(RPI2B-KERNEL-OBJ)/%.o: $(RPI2B-KERNEL-SRC)/rpi2b/%.c
+	echo "CC     :" $(notdir $<)
+	mkdir -p $(dir $@)
+	$(RPI2B-KERNEL-CC) -o $@ $<
+
+	
+#
+# -- Generic rule to make a .d file from the rpi2b source folder
+#    -----------------------------------------------------------
+$(RPI2B-KERNEL-OBJ)/%.d: $(RPI2B-KERNEL-SRC)/rpi2b/%.c
+	echo "DEPEND :" $(notdir $<)
+	mkdir -p $(dir $@)
+	rm -f $@
+	$(RPI2B-KERNEL-DEP)  $<  > $@.$$$$;													\
+	sed 's,\($*\)\.o[ :]*,$(RPI2B-KERNEL-OBJ)/\1.o $@ : ,g' < $@.$$$$ > $@;				\
+	rm -f $@.$$$$
+	
+
 #
 # -- Generic rule to make a .o file from the rpi2b source folder
 #    -----------------------------------------------------------
@@ -127,7 +174,29 @@ $(RPI2B-KERNEL-OBJ)/%.d: $(RPI2B-KERNEL-SRC)/%.s
 	$(RPI2B-KERNEL-DEP)  $<  > $@.$$$$;													\
 	sed 's,\($*\)\.o[ :]*,$(RPI2B-KERNEL-OBJ)/\1.o $@ : ,g' < $@.$$$$ > $@;				\
 	rm -f $@.$$$$
+
+
+#
+# -- Generic rule to make a .o file from the rpi2b source folder
+#    -----------------------------------------------------------
+$(RPI2B-KERNEL-OBJ)/%.o: $(RPI2B-KERNEL-SRC)/%.c
+	echo "CC     :" $(notdir $<)
+	mkdir -p $(dir $@)
+	$(RPI2B-KERNEL-CC) -o $@ $<
+
 	
+#
+# -- Generic rule to make a .d file from the rpi2b source folder
+#    -----------------------------------------------------------
+$(RPI2B-KERNEL-OBJ)/%.d: $(RPI2B-KERNEL-SRC)/%.c
+	echo "DEPEND :" $(notdir $<)
+	mkdir -p $(dir $@)
+	rm -f $@
+	$(RPI2B-KERNEL-DEP)  $<  > $@.$$$$;													\
+	sed 's,\($*\)\.o[ :]*,$(RPI2B-KERNEL-OBJ)/\1.o $@ : ,g' < $@.$$$$ > $@;				\
+	rm -f $@.$$$$
+	
+
 #
 # -- clean up
 #    --------

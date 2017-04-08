@@ -95,6 +95,8 @@ OS-INCL         :=
 CLEAN           :=
 DEPEND          :=
 
+ASM-PARM		:= -Wa,
+
 
 #
 # -- Assume we want to make a comprehensive list of all architectures

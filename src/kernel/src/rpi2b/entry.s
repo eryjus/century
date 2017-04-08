@@ -32,9 +32,9 @@
 @    This code is lifted from the ARM Cortex A-Series Version 4.0 programmer's Guide (Example 13-5).
 @    ---------------------------------------------------------------------------------------------------------------
 _start:
-    mrc     p15,0,r1,c0,c0,5            @ Read Multiprocessor Affinity Register
-    and     r1,r1,#0x3                  @ Extract CPU ID bits
-    cmp     r1,#0
+    mrc     p15,0,r3,c0,c0,5            @ Read Multiprocessor Affinity Register
+    and     r3,r3,#0x3                  @ Extract CPU ID bits
+    cmp     r3,#0
     beq     initialize                  @ if we’re on CPU0 goto the start
 
 @ -- all other cores will drop in to this loop - a low power mode infinite loop
@@ -51,9 +51,31 @@ wait_loop:
 initialize:
     mov     sp,#0x8000                  @ set up a stack
 
+
 @
-@ -- for now, just loop
-@    ------------------
+@ -- Clear the .bss segment
+@    ----------------------
+    ldr     r4,=_bssStart               @ get the starting address of the bss section
+    ldr     r9,=_bssEnd                 @ get the ending address of the bss section
+    mov     r5,#0
+    mov     r6,#0
+    mov     r7,#0
+    mov     r8,#0
+
+bssClr$:
+    cmp     r4,r9                       @ have we gotten to our address limit?
+    bhs     call$
+
+    stmia   r4!,{r5-r8}                 @ store 4 words at once
+    b       bssClr$ 
+
+@
+@ -- call the kernel main function
+@    -----------------------------
+call$:
+    ldr     r3,=kMain
+    blx     r3
+
 loop$:
     wfi
     b       loop$                       @ go back and loop through more

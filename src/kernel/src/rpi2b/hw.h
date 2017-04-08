@@ -9,6 +9,11 @@
 //        you can do whatever you want with this stuff. If we meet some day, and you
 //        think this stuff is worth it, you can buy me a beer in return.
 //
+//  TODO: The USB hardware documentation is available at 
+//  https://www.synopsys.com/dw/doc.php/iip/DWC_otg/latest/doc/DWC_otg_databook.pdf .  This site requires 
+//  sign-up in order to access the documentation.  While I will eventually want to get to this document and
+//  and support the USB controller, I have no apetite to take that on with a sign-up (costs?) at the moment.
+//
 // -----------------------------------------------------------------------------------------------------------------
 //
 //     Date     Tracker  Version  Pgmr  Description
@@ -17,6 +22,8 @@
 //
 //===================================================================================================================
 
+#ifndef __HW_H_INCLUDED__
+#define __HW_H_INCLUDED__
 
 #define HW_BASE             (0x3f000000)                // this is the base address for all hardware I/O addresses
 
@@ -2229,11 +2236,11 @@
 
 #define SH_EMMCDLY200PS     (0b000)                     // 200ps
 #define SH_EMMCDLY400PS     (0b001)                     // 400ps
-#define SH_EMMCDLY400PS     (0b010)                     // 400ps
+#define SH_EMMCDLY400PS2    (0b010)                     // 400ps
 #define SH_EMMCDLY600PS     (0b011)                     // 600ps
 #define SH_EMMCDLY700PS     (0b100)                     // 700ps
 #define SH_EMMCDLY900PS     (0b101)                     // 900ps
-#define SH_EMMCDLY900PS     (0b110)                     // 900ps
+#define SH_EMMCDLY900PS2    (0b110)                     // 900ps
 #define SH_EMMCDLY1100PS    (0b111)                     // 1100ps
 
 
@@ -3580,7 +3587,7 @@
 #define PCMRXC_CH1EN        (1<<30)                     // Channel 1 Enable
 #define PCMRXC_CH1POS       (0x3ff<<20)                 // Channel 1 Position
 #define PCMRXC_CH1WID       (0xf<<16)                   // Channel 1 Width
-#define PCMRXC_CH1WEX       (1<<15)                     // Channel 1 Width Extension Bit
+#define PCMRXC_CH2WEX       (1<<15)                     // Channel 2 Width Extension Bit
 #define PCMRXC_CH2EN        (1<<14)                     // Channel 2 Enable
 #define PCMRXC_CH2POS       (0x3ff<<13)                 // Channel 2 Position
 #define PCMRXC_CH2WID       (0xf)                       // Channel 2 Width
@@ -3596,7 +3603,7 @@
 #define PCMTXC_CH1EN        (1<<30)                     // Channel 1 Enable
 #define PCMTXC_CH1POS       (0x3ff<<20)                 // Channel 1 Position
 #define PCMTXC_CH1WID       (0xf<<16)                   // Channel 1 Width
-#define PCMTXC_CH1WEX       (1<<15)                     // Channel 1 Width Extension Bit
+#define PCMTXC_CH2WEX       (1<<15)                     // Channel 2 Width Extension Bit
 #define PCMTXC_CH2EN        (1<<14)                     // Channel 2 Enable
 #define PCMTXC_CH2POS       (0x3ff<<13)                 // Channel 2 Position
 #define PCMTXC_CH2WID       (0xf)                       // Channel 2 Width
@@ -4056,10 +4063,10 @@
 #define UARTLCRH_BRK        (1<<0)                      // Send break
 
 
-#define SH_UARTLCRHWLEN_8   (0b11)                      // 8 bit word length
-#define SH_UARTLCRHWLEN_7   (0b10)                      // 7 bit word length
-#define SH_UARTLCRHWLEN_6   (0b01)                      // 6 bit word length
-#define SH_UARTLCRHWLEN_5   (0b00)                      // 5 bit word length
+#define SH_UARTLCRHWLEN_8   ((0b11)<<5)                 // 8 bit word length
+#define SH_UARTLCRHWLEN_7   ((0b10)<<5)                 // 7 bit word length
+#define SH_UARTLCRHWLEN_6   ((0b01)<<5)                 // 6 bit word length
+#define SH_UARTLCRHWLEN_5   ((0b00)<<5)                 // 5 bit word length
 
 
 #define UART_CR             (UART_BASE+0x30)            // Control Register
@@ -4170,3 +4177,9 @@
 #define UARTTDR_TDR         (0x7ff)                     // Written to FIFO when ITCR1=1
 
 
+//-------------------------------------------------------------------------------------------------------------------
+// The ARM Timer -- not recommended to be used to accurately time anything, so will not be used.
+//-------------------------------------------------------------------------------------------------------------------
+
+
+#endif
