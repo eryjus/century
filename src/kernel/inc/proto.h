@@ -44,9 +44,11 @@ void BusyWait(uint32_t microSecs);
 
 
 //-------------------------------------------------------------------------------------------------------------------
-// kernel/src/uart.c
+// kernel/src/rpir2b/uart-dev.c
 //-------------------------------------------------------------------------------------------------------------------
-void UartInit(void);
+extern struct serial_device uart1;
+
+void UartDevInit(void);
 
 unsigned char UartGetC(void);
 void UartPutC(const unsigned char byte);

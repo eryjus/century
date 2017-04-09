@@ -50,7 +50,7 @@ struct serial_ops;
 struct serial_device {
     struct device dev;
     uint32_t hwInterface;
-    struct serial_ops ops;
+    const struct serial_ops *ops;
 };
 
 
@@ -72,9 +72,9 @@ struct serial_device {
 //-------------------------------------------------------------------------------------------------------------------
 struct serial_ops {
     void (*init)(struct serial_device *dev, uint32_t ifc);
-    void (*open)(struct serial_device *dev, uint32_t baud, uint32_t parity, uint32_t stop);
+    void (*open)(struct serial_device *dev, uint32_t baud, uint32_t bits, char parity, uint32_t stop);
     void (*close)(struct serial_device *dev);
-    void (*chgConfig)(struct serial_device *dev, uint32_t baud, uint32_t parity, uint32_t stop);
+    void (*chgConfig)(struct serial_device *dev, uint32_t baud, uint32_t bits, char parity, uint32_t stop);
     bool (*rxFull)(struct serial_device *dev);
     bool (*rxReady)(struct serial_device *dev);
     void (*rxStart)(struct serial_device *dev);
@@ -83,6 +83,8 @@ struct serial_ops {
     bool (*txRoom)(struct serial_device *dev);
     void (*txStart)(struct serial_device *dev);
     void (*txStop)(struct serial_device *dev);
+    uint8_t (*rx)(struct serial_device *dev);
+    void (*tx)(struct serial_device *dev, uint8_t byte);
 };
 
 

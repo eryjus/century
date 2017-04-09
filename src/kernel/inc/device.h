@@ -58,8 +58,8 @@ typedef enum {
 //                     be used
 //-------------------------------------------------------------------------------------------------------------------
 struct device {
-    struct device parent;
-    char *deviceName;
+    struct device *parent;
+    char *devName;
     device_class devClass;
     bool valid;
 };
