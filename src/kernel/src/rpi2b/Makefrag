@@ -72,6 +72,13 @@ RPI2B-KERNEL-OBJCOPY  := arm-eabi-objcopy
 
 
 #
+# -- Make and run the kernel
+#    -----------------------
+.PHONY: run-rpi2b
+run-rpi2b: rpi2b
+	qemu-system-arm -m 256 -M raspi2 -serial stdio -kernel bin/rpi2b/kernel.elf
+
+#
 # -- We are going to make the OS for a rpi2b; build it all
 #    -----------------------------------------------------
 .PHONY: rpi2b

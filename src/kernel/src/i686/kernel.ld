@@ -1,6 +1,6 @@
 /*******************************************************************************************************************/
 /*                                                                                                                 */ 
-/*  src/kernel/src/rpi2b/kernel.ld -- This is the linker script for locating the sections in the target binary     */              
+/*  src/kernel/src/i686/kernel.ld -- This is the linker script for locating the sections in the target binary      */
 /*                                                                                                                 */ 
 /*        Copyright (c)  2017 -- Adam Clark                                                                        */
 /*                                                                                                                 */ 
@@ -9,14 +9,18 @@
 /*        you can do whatever you want with this stuff. If we meet some day, and you                               */
 /*        think this stuff is worth it, you can buy me a beer in return.                                           */
 /*                                                                                                                 */ 
+/* TODO: make this kernel relocated into upper memory when the MMU has been properly setup                         */
+/*                                                                                                                 */ 
 /* --------------------------------------------------------------------------------------------------------------- */
 /*                                                                                                                 */ 
 /*     Date     Tracker  Version  Pgmr  Description                                                                */       
 /*  ----------  -------  -------  ----  -------------------------------------------------------------------------  */
-/*  2017-03-26  Initial   0.0.0   ADCL  Initial version                                                            */
+/*  2017-04-09  Initial   0.0.0   ADCL  Initial version                                                            */
 /*                                                                                                                 */ 
 /*******************************************************************************************************************/
 
+OUTPUT_FORMAT("elf32-i386", "elf32-i386", "elf32-i386")
+OUTPUT_ARCH(i386)
 ENTRY(_start)
 
 SECTIONS {
@@ -25,7 +29,7 @@ SECTIONS {
      *    ------------------------------------------------
      */
      
-    . = 0x8000; 
+    . = 0x100000; 
     _kernelStart = .;
     _textStart = .;
     
@@ -35,6 +39,7 @@ SECTIONS {
      *    -----------------------------------------------------------------------------------------------
      */
     .text : {
+        *(.mboot)
         *(.init)
         *(.text)
     }
