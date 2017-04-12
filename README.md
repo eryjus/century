@@ -28,3 +28,22 @@ multiple platforms for the most basic "Hello World" kernel.  This has forced me 
 long and hard about how I want to organize my build system.  Also, it is driving me to 
 build a device abstraction layer right off the bat in the code.  My hope is that the 
 deferred gratification will save me a ton of time later in development.
+
+
+***The Build System***
+
+I have a very complicated build system.  I know this; I accept this.  
+
+I absolutely hate having to maintain hard targets for each of my build and would rather
+spend extra time (OK, a LOT of extra time) setting up my build system to meet my needs.
+I figure this way: a significant part of my development workflow is to type the command
+`make <target>` frequently.  When I do this, I want a few things to take place:
+1. The target gets built taking into account all the new dependencies.
+2. Anything that needs to be rebuilt gets rebuilt; things that do not need to be rebuilt
+   does not get rebuilt.
+3. I want it to be quick, given the number of times I will do this.
+
+The thing that breaks my list above is changing the Makefile/Makefrag.mk files.  As a 
+result, I do not want to have to make changes in these files nowhere near as frequently 
+as I type the command `make`.  To meet my goals, my build system ends up being far more 
+complicated than most others will be.

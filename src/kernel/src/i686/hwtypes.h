@@ -1,6 +1,6 @@
 //===================================================================================================================
 //
-//  kernel i686/proto-i686.h -- These are prototypes that are specific to the i686 architecture
+//  kernel i686/hwtypes.h -- Some types needed in the OS that are really hardware specific
 //
 //        Copyright (c)  2017 -- Adam Clark
 //
@@ -13,23 +13,18 @@
 //
 //     Date     Tracker  Version  Pgmr  Description
 //  ----------  -------  -------  ----  ---------------------------------------------------------------------------
-//  2017-04-09  Initial   0.0.0   ADCL  Initial version
+//  2017-04-10  Initial   0.0.0   ADCL  Initial version
 //
 //===================================================================================================================
 
-#ifndef __PROTO_I686_H_INCLUDED__
-#define __PROTO_I686_H_INCLUDED__
+#ifndef __HWTYPES_H_INCLUDED__
+#define __HWTYPES_H_INCLUDED__
 
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
 
 
-//-------------------------------------------------------------------------------------------------------------------
-// kernel/inc/i686/ioport.s
-//-------------------------------------------------------------------------------------------------------------------
-uint8_t ReadIoPort(uint32_t);
-void WriteIoPort(uint32_t, uint8_t);
-
+typedef uint32_t addr_t;                    // This is the size of an address in this architecture
 
 #endif

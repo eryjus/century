@@ -1,6 +1,6 @@
 //===================================================================================================================
 //
-//  kernel mmio.c -- This is the basic interface to read/write to mmio registers.
+//  kernel i686/proto-x86.h -- These are prototypes that are specific to the x86-style architecture
 //
 //        Copyright (c)  2017 -- Adam Clark
 //
@@ -13,30 +13,23 @@
 //
 //     Date     Tracker  Version  Pgmr  Description
 //  ----------  -------  -------  ----  ---------------------------------------------------------------------------
-//  2017-04-04  Initial   0.0.0   ADCL  Initial version
+//  2017-04-09  Initial   0.0.0   ADCL  Initial version
 //
 //===================================================================================================================
 
-#include "hw.h"
-#include "proto.h"
+#ifndef __PROTO_I686_H_INCLUDED__
+#define __PROTO_I686_H_INCLUDED__
 
-//-------------------------------------------------------------------------------------------------------------------
-// WriteMmio() -- Write to a Memory Mapped I/O Register
-//
-// You better know what you are writing and to where.  There are no sanity checks here!
-//-------------------------------------------------------------------------------------------------------------------
-void WriteMmio(addr_t reg, uint32_t data)
-{
-    *(volatile uint32_t *)reg = data;
-}
+#include <stdint.h>
+#include <stddef.h>
+#include <stdbool.h>
 
 
 //-------------------------------------------------------------------------------------------------------------------
-// ReadMmio() -- Read from a Memory Mapped I/O Register
-//
-// You better know where you are reading from.  There are no sanity checks here!
+// kernel/inc/i686/ioport.s
 //-------------------------------------------------------------------------------------------------------------------
-uint32_t ReadMmio(addr_t reg)
-{
-    return *(volatile uint32_t *)reg;
-}
+uint8_t ReadIoPort(uint32_t);
+void WriteIoPort(uint32_t, uint8_t);
+
+
+#endif

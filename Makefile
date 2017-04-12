@@ -40,6 +40,35 @@
 ##    +- sysroot        // this is the root files system for each architecture
 ##      +- rpi2b        // this is code that is specific to the Raspberry Pi 2B
 ##      +- x86          // this is code specific to the intel x86 32-bit processor
+##
+## There is a serious need to some strict standards with all the different setups we will need to be able to 
+## support.  All of the explicit targets and string macros will have the following format:
+##
+##        ARCH-MODULE-NAME
+##
+## Where:
+## * ARCH is the architecture of the target to build
+## * MODULE is the module that will be build 
+## * NAME is the actual thing that is being referred to
+##
+## Additionally, the following common targets will be supported in all aspects
+## make 				-- make everything (alias for `make all`)
+## make all 			-- make everything, including the iso images
+## make clean 			-- clean up everything
+## make <arch>			-- make everything for the architecture, updating up to sysroot (not the iso)
+## make <module>		-- make the module for all architectures, updating up to sysroot (not the iso)
+## make <arch>-<module>	-- make the module/architecture combination, updating up to sysroot (not the iso)
+## make <arch>-iso 		-- make an iso image for the architecture
+## make run-<arch>		-- make an indo the the architecture and run it with QEMU
+##
+## For the 'all' and 'clean' targets, clobal variables have been created here that the individual Makefrag.mk 
+## files are required to update to support.  Note the position of these in this file -- the order the files are 
+## read matters.  Therefore, the $(ALL) variable is only read after all the other Makefrag.mk files are read.
+## clean is similar.
+##
+## The problem will be the _arch_-iso, which will be dependent on several other Makefrag.mk files.  To get around 
+## this, we will construct a string macro called $(CURRENT-TARGET) that will be built based on the actual target
+## requested.  $(CURRENT-TARGET) is required to be constructed in the individual Makefrag.mk files.
 ##                                                                                                                 
 ## ----------------------------------------------------------------------------------------------------------------- 
 ##                                                                                                                 
@@ -57,9 +86,9 @@
 #    from the target; if the target is all, then we will handle this specially
 #    --------------------------------------------------------------------------------------------------------
 ifeq ("$(MAKECMDGOALS)", "all")
-ARCH			:= 
+ARCH							:= 
 else
-ARCH            != ./tools/get-arch.sh $(MAKECMDGOALS)
+ARCH            				!= ./tools/get-arch.sh $(MAKECMDGOALS)
 endif
 
 
@@ -69,40 +98,46 @@ endif
 #    2) libc/libk
 #    3) generic
 #    ----------------------------------------------------------------
-MAKE-FRAG       := $(wildcard src/kernel/src/**/Makefrag) $(wildcard src/**/Makefrag)
-MAKE-FRAG		:= $(sort $(MAKE-FRAG))
+MAKE-FRAG       				:= $(wildcard src/**/Makefrag.mk)
+MAKE-FRAG						:= $(sort $(MAKE-FRAG))
 
 
 #
 # -- Here we need to determine all the supported architectures -- determined by the Arch folders in kernel
 #    -----------------------------------------------------------------------------------------------------
-ARCH-LIST       := $(dir $(wildcard src/kernel/src/**/Makefrag))
-ARCH-LIST       := $(subst src/kernel/src/,,$(ARCH-LIST))
-ARCH-LIST       := $(subst /,,$(ARCH-LIST))
+ARCH-LIST       				:= $(dir $(wildcard src/kernel/src/**/Makefrag.mk))
+ARCH-LIST       				:= $(subst src/kernel/src/,,$(ARCH-LIST))
+ARCH-LIST       				:= $(subst /,,$(ARCH-LIST))
 
 
 #
 # -- Here we get a complete list of all the makefiles upon which the software builds require
 #    ---------------------------------------------------------------------------------------
-MAKE-FILES		:= Makefile $(MAKE-FRAG)
+MAKE-FILES						:= Makefile $(MAKE-FRAG)
 
 
 #
 # -- We need to define several empty lists that will be populated by the Makefrags
 #    -----------------------------------------------------------------------------
-ALL             :=
-OS-INCL         :=
-CLEAN           :=
-DEPEND          :=
+ALL             				:=
+OS-INCL         				:=
+CLEAN           				:=
+DEPEND          				:=
+CURRENT-TARGET  				:=
+ISO								:=
 
-ASM-PARM		:= -Wa,
+
+#
+# -- Some things need to be defined at the highest level, here
+#    ---------------------------------------------------------
+ASM-PARM						:= -Wa,
 
 
 #
 # -- Assume we want to make a comprehensive list of all architectures
 #    ----------------------------------------------------------------
 .PHONY: all
-all: all-tag
+all: current-target
 
 
 #
@@ -129,11 +164,14 @@ ifneq ($(MAKECMDGOALS),clean)
 -include $(DEPEND)
 endif
 
+
 #
-# -- An interim target to make sure we get all the Makefrags loaded
-#    --------------------------------------------------------------
-.PHONY: all-tag
-all-tag: $(ALL) 
+# -- This is an important rule!!!!  This is the key to the flexible build targets in the build system.  Nearly 
+#    all possible targets will be dependent on this target, especially when there are dependencied across 
+#    more than one module.  Each module will then be responsible for populating the value of $(CURRENT_TARGET).
+#    ----------------------------------------------------------------------------------------------------------
+.PHONY: current-target
+current-target: $(CURRENT-TARGET) $(ISO)
 
 
 #
