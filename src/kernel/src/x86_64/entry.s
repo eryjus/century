@@ -55,7 +55,6 @@ multiboot_header:
 
 
 .align          8
-
 MultibootHeader2:      
     .long       MAGIC2 
     .long       0                               # architecture: 0=32-bit protected mode

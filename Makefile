@@ -79,7 +79,7 @@
 #####################################################################################################################
 
 
-.SILENT:              # we don't need to see all the verbose stuff
+#.SILENT:              # we don't need to see all the verbose stuff
 
 #
 # -- There are several kinds of targets we can make, and we want to make sure we can extract the architecture 
@@ -179,3 +179,7 @@ current-target: $(CURRENT-TARGET) $(ISO)
 #    ------------------
 .PHONY: clean
 clean: $(CLEAN)
+	rm -fR bin
+	rm -fR obj
+	rm -fR iso
+	rm -fR sysroot

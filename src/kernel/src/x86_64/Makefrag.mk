@@ -81,7 +81,7 @@ DEPEND           				+= $(addprefix $(X86_64-KERNEL-OBJ)/,$(X86_64-KERNEL-D))
 #    ----------------------
 X86_64-KERNEL-AS  				:= $(X86_64-KERNEL-PREFIX)-gcc -fpic -ffreestanding -x assembler-with-cpp \
 		$(X86_64-KERNEL-IA) -Wall -Werror -c
-X86_64-KERNEL-CC  				:= $(X86_64-KERNEL-PREFIX)-gcc -fpic -ffreestanding $(X86_64-KERNEL-IC) -Wall -Werror -c
+X86_64-KERNEL-CC  				:= $(X86_64-KERNEL-PREFIX)-gcc -m32 -fpic -ffreestanding $(X86_64-KERNEL-IC) -Wall -Werror -c
 X86_64-KERNEL-DEP 				:= $(X86_64-KERNEL-PREFIX)-cpp -M -ffreestanding $(X86_64-KERNEL-IC)
 X86_64-KERNEL-LD 				:= $(X86_64-KERNEL-PREFIX)-gcc -T $(X86_64-KERNEL-LS) -ffreestanding -O2 -nostdlib \
 		-L~/opt/cross/lib/gcc/x86_64/6.3.0 -lgcc -z max-page-size=0x800
@@ -228,8 +228,9 @@ $(X86_64-KERNEL-OBJ)/%.d: $(X86_64-KERNEL-SRC)/%.s
 $(X86_64-KERNEL-OBJ)/%.o: $(X86_64-KERNEL-SRC)/%.c
 	echo "X86_64-CC     :" $(notdir $<)
 	mkdir -p $(dir $@)
-	$(X86_64-KERNEL-CC) -o $@ $<
-
+	$(X86_64-KERNEL-CC) -o $@.32 $<
+	$(X86_64-KERNEL-OBJCOPY) -O elf64-x86-64 $@.32 $@
+#	rm $@.32
 	
 #
 # -- Generic rule to make a .d file from the x86_64 source folder
@@ -270,7 +271,9 @@ $(X86_64-KERNEL-OBJ)/%.d: $(KERNEL-SRC)/%.s
 $(X86_64-KERNEL-OBJ)/%.o: $(KERNEL-SRC)/%.c
 	echo "X86_64-CC     :" $(notdir $<)
 	mkdir -p $(dir $@)
-	$(X86_64-KERNEL-CC) -o $@ $<
+	$(X86_64-KERNEL-CC) -o $@.32 $<
+	$(X86_64-KERNEL-OBJCOPY) -O elf64-x86-64 $@.32 $@
+#	rm $@.32
 
 	
 #
