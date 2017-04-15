@@ -1,6 +1,6 @@
-;;@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @@
-@@  kernel rpi2b/entry.s -- This is the entry point for the Raspberry Pi 2B
+@@  loader rpi2b/entry.s -- This is the entry point for the Raspberry Pi 2B
 @@
 @@        Copyright (c)  2017 -- Adam Clark
 @@
@@ -17,7 +17,6 @@
 @@
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-#include        "hw.h"
 
 .section        .init
 .globl          _start
@@ -26,7 +25,7 @@
 @
 @ -- This is the main entry point for the OS.  Control is handed to all 4 cores to this point.  This means that
 @    all 4 cores will be executing hte same code at the same time, battling over the which core gets to do what.
-@    Ultimately, we need to turn off all the cores except core #0 and let that core take care of the initialization.
+@    Ultimately, we need to turn off all the cores except core @0 and let that core take care of the initialization.
 @    In our case so far, this is the only core that will run.
 @
 @    This code is lifted from the ARM Cortex A-Series Version 4.0 programmer's Guide (Example 13-5).
@@ -44,7 +43,7 @@ wait_loop:
 
 
 @
-@ -- This is the code for CPU #0 to execute
+@ -- This is the code for CPU @0 to execute
 @    --------------------------------------
 .section    .text
 
@@ -69,13 +68,7 @@ bssClr$:
     stmia   r4!,{r5-r8}                 @ store 4 words at once
     b       bssClr$ 
 
-@
-@ -- call the kernel main function
-@    -----------------------------
 call$:
-    ldr     r3,=kMain
-    blx     r3
-
 loop$:
     wfi
     b       loop$                       @ go back and loop through more

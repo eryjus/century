@@ -81,7 +81,7 @@ DEPEND           				+= $(addprefix $(X86_64-KERNEL-OBJ)/,$(X86_64-KERNEL-D))
 #    ----------------------
 X86_64-KERNEL-AS  				:= $(X86_64-KERNEL-PREFIX)-gcc -fpic -ffreestanding -x assembler-with-cpp \
 		$(X86_64-KERNEL-IA) -Wall -Werror -c
-X86_64-KERNEL-CC  				:= $(X86_64-KERNEL-PREFIX)-gcc -m32 -fpic -ffreestanding $(X86_64-KERNEL-IC) -Wall -Werror -c
+X86_64-KERNEL-CC  				:= $(X86_64-KERNEL-PREFIX)-gcc -fpic -ffreestanding $(X86_64-KERNEL-IC) -Wall -Werror -c
 X86_64-KERNEL-DEP 				:= $(X86_64-KERNEL-PREFIX)-cpp -M -ffreestanding $(X86_64-KERNEL-IC)
 X86_64-KERNEL-LD 				:= $(X86_64-KERNEL-PREFIX)-gcc -T $(X86_64-KERNEL-LS) -ffreestanding -O2 -nostdlib \
 		-L~/opt/cross/lib/gcc/x86_64/6.3.0 -lgcc -z max-page-size=0x800
@@ -129,7 +129,7 @@ run-x86_64: $(X86_64-ISO)
 # -- The $(X86_64-KERNEL-SYS) target, which will cover 3 of the 7 targets above
 #    --------------------------------------------------------------------------
 $(X86_64-KERNEL-SYS): $(X86_64-KERNEL-ELF)
-	echo "X86_64-SYSROOT:" $(notdir $@)	
+	echo "X86_64-SYSROOT:" $@
 	mkdir -p $(dir $@)
 	rm -f $@
 	cp $< $@
@@ -139,7 +139,7 @@ $(X86_64-KERNEL-SYS): $(X86_64-KERNEL-ELF)
 # -- The $(X86_64-KERNEL-IMG) is the bootable x86_64 image
 #    -----------------------------------------------------
 $(X86_64-KERNEL-IMG): $(X86_64-KERNEL-ELF)
-	echo "X86_64-OBJCOPY:" $(notdir $@)	
+	echo "X86_64-OBJCOPY:" $@
 	mkdir -p $(dir $@)
 	$(X86_64-KERNEL-OBJCOPY) --only-keep-debug $< $@ && chmod -x $@
 
@@ -148,16 +148,16 @@ $(X86_64-KERNEL-IMG): $(X86_64-KERNEL-ELF)
 # -- The CDROM image is needed by 2 of the 7 rules above
 #    ---------------------------------------------------	
 $(X86_64-ISO): $(X86_64-GRUB-CNF) $(X86_64-KERNEL-ELF) $(ISO)
-	echo "X86_64-ISO    " $@...
+	echo "X86_64-ISO    :" $@
 	mkdir -p $(dir $@)
-	grub2-mkrescue -o $(X86_64-ISO) $(X86_64-KERNEL-SYSROOT)
+	grub2-mkrescue -o $(X86_64-ISO) $(X86_64-KERNEL-SYSROOT) 2> /dev/null
 
 
 #
 # -- Make the grub config files from this file
 #    -----------------------------------------
 $(X86_64-GRUB-CNF): $(lastword $(MAKEFILE_LIST)) 
-	echo "X86_64-GRUB"
+	echo "X86_64-GRUB   :" $@
 	mkdir -p $(dir $@)
 	echo set timeout=3                    						>  $@
 	echo set default=0	                  						>> $@
@@ -175,7 +175,7 @@ $(X86_64-GRUB-CNF): $(lastword $(MAKEFILE_LIST))
 # -- Create the kernel image
 #    -----------------------
 $(X86_64-KERNEL-ELF): $(addprefix $(X86_64-KERNEL-OBJ)/,$(X86_64-KERNEL-O)) $(X86_64-KERNEL-LIBS) $(X86_64-KERNEL-LS)
-	echo "X86_64-LD     :" $(notdir $@)
+	echo "X86_64-LD     :" $@
 	mkdir -p $(dir $@)
 	$(X86_64-KERNEL-LD) -o $@ $(addprefix $(X86_64-KERNEL-OBJ)/,$(X86_64-KERNEL-O)) $(X86_64-KERNEL-LIBS)
 	
@@ -205,7 +205,7 @@ x86_64-iso: current-target
 # -- Generic rule to make a .o file from the x86_64 source folder
 #    ------------------------------------------------------------
 $(X86_64-KERNEL-OBJ)/%.o: $(X86_64-KERNEL-SRC)/%.s 
-	echo "X86_64-AS     :" $(notdir $<)
+	echo "X86_64-AS     :" $<
 	mkdir -p $(dir $@)
 	$(X86_64-KERNEL-AS) -o $@ $<
 
@@ -214,7 +214,7 @@ $(X86_64-KERNEL-OBJ)/%.o: $(X86_64-KERNEL-SRC)/%.s
 # -- Generic rule to make a .d file from the x86_64 source folder
 #    ------------------------------------------------------------
 $(X86_64-KERNEL-OBJ)/%.d: $(X86_64-KERNEL-SRC)/%.s
-	echo "X86_64-DEPEND :" $(notdir $<)
+	echo "X86_64-DEPEND :" $<
 	mkdir -p $(dir $@)
 	rm -f $@
 	$(X86_64-KERNEL-DEP)  $<  > $@.$$$$;													\
@@ -226,7 +226,7 @@ $(X86_64-KERNEL-OBJ)/%.d: $(X86_64-KERNEL-SRC)/%.s
 # -- Generic rule to make a .o file from the x86_64 source folder
 #    ------------------------------------------------------------
 $(X86_64-KERNEL-OBJ)/%.o: $(X86_64-KERNEL-SRC)/%.c
-	echo "X86_64-CC     :" $(notdir $<)
+	echo "X86_64-CC     :" $<
 	mkdir -p $(dir $@)
 	$(X86_64-KERNEL-CC) -o $@.32 $<
 	$(X86_64-KERNEL-OBJCOPY) -O elf64-x86-64 $@.32 $@
@@ -236,7 +236,7 @@ $(X86_64-KERNEL-OBJ)/%.o: $(X86_64-KERNEL-SRC)/%.c
 # -- Generic rule to make a .d file from the x86_64 source folder
 #    -----------------------------------------------------------
 $(X86_64-KERNEL-OBJ)/%.d: $(X86_64-KERNEL-SRC)/%.c
-	echo "X86_64-DEPEND :" $(notdir $<)
+	echo "X86_64-DEPEND :" $<
 	mkdir -p $(dir $@)
 	rm -f $@
 	$(X86_64-KERNEL-DEP)  $<  > $@.$$$$;													\
@@ -248,7 +248,7 @@ $(X86_64-KERNEL-OBJ)/%.d: $(X86_64-KERNEL-SRC)/%.c
 # -- Generic rule to make a .o file from the kernel source folder
 #    ------------------------------------------------------------
 $(X86_64-KERNEL-OBJ)/%.o: $(KERNEL-SRC)/%.s 
-	echo "X86_64-AS     :" $(notdir $<)
+	echo "X86_64-AS     :" $<
 	mkdir -p $(dir $@)
 	$(X86_64-KERNEL-AS) -o $@ $<
 
@@ -257,7 +257,7 @@ $(X86_64-KERNEL-OBJ)/%.o: $(KERNEL-SRC)/%.s
 # -- Generic rule to make a .d file from the kernel source folder
 #    ------------------------------------------------------------
 $(X86_64-KERNEL-OBJ)/%.d: $(KERNEL-SRC)/%.s
-	echo "X86_64-DEPEND :" $(notdir $<)
+	echo "X86_64-DEPEND :" $<
 	mkdir -p $(dir $@)
 	rm -f $@
 	$(X86_64-KERNEL-DEP)  $<  > $@.$$$$;													\
@@ -269,7 +269,7 @@ $(X86_64-KERNEL-OBJ)/%.d: $(KERNEL-SRC)/%.s
 # -- Generic rule to make a .o file from the kernel source folder
 #    ------------------------------------------------------------
 $(X86_64-KERNEL-OBJ)/%.o: $(KERNEL-SRC)/%.c
-	echo "X86_64-CC     :" $(notdir $<)
+	echo "X86_64-CC     :" $<
 	mkdir -p $(dir $@)
 	$(X86_64-KERNEL-CC) -o $@.32 $<
 	$(X86_64-KERNEL-OBJCOPY) -O elf64-x86-64 $@.32 $@
@@ -280,7 +280,7 @@ $(X86_64-KERNEL-OBJ)/%.o: $(KERNEL-SRC)/%.c
 # -- Generic rule to make a .d file from the kernel source folder
 #    ------------------------------------------------------------
 $(X86_64-KERNEL-OBJ)/%.d: $(KERNEL-SRC)/%.c
-	echo "X86_64-DEPEND :" $(notdir $<)
+	echo "X86_64-DEPEND :" $<
 	mkdir -p $(dir $@)
 	rm -f $@
 	$(X86_64-KERNEL-DEP)  $<  > $@.$$$$;													\

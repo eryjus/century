@@ -25,6 +25,6 @@
 #include <stdbool.h>
 
 
-typedef uint32_t addr_t;                    // This is the size of an address in this architecture
+typedef uint64_t addr_t;                    // This is the size of an address in this architecture
 
 #endif

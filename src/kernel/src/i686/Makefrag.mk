@@ -131,7 +131,7 @@ run-i686: $(I686-ISO)
 # -- The $(I686-KERNEL-SYS) target, which will cover 3 of the 7 targets above
 #    ------------------------------------------------------------------------
 $(I686-KERNEL-SYS): $(I686-KERNEL-ELF)
-	echo "I686-SYSROOT:" $(notdir $@)	
+	echo "  I686-SYSROOT:" $@
 	mkdir -p $(dir $@)
 	rm -f $@
 	cp $< $@
@@ -141,7 +141,7 @@ $(I686-KERNEL-SYS): $(I686-KERNEL-ELF)
 # -- The $(I686-KERNEL-IMG) is the bootable i686 image
 #    -------------------------------------------------
 $(I686-KERNEL-IMG): $(I686-KERNEL-ELF)
-	echo "I686-OBJCOPY:" $(notdir $@)	
+	echo "  I686-OBJCOPY:" $@
 	mkdir -p $(dir $@)
 	$(I686-KERNEL-OBJCOPY) --only-keep-debug $< $@ && chmod -x $@
 
@@ -150,25 +150,25 @@ $(I686-KERNEL-IMG): $(I686-KERNEL-ELF)
 # -- The CDROM image is needed by 2 of the 7 rules above
 #    ---------------------------------------------------	
 $(I686-ISO): $(I686-GRUB-CNF) $(I686-KERNEL-ELF) $(ISO)
-	echo "I686-ISO    " $@...
+	echo "  I686-ISO    :" $@
 	mkdir -p $(dir $@)
-	grub2-mkrescue -o $(I686-ISO) $(I686-KERNEL-SYSROOT)
+	grub2-mkrescue -o $(I686-ISO) $(I686-KERNEL-SYSROOT) 2> /dev/null
 
 
 #
 # -- Make the grub config files from this file
 #    -----------------------------------------
 $(I686-GRUB-CNF): $(lastword $(MAKEFILE_LIST)) 
-	echo "I686-GRUB"
+	echo "  I686-GRUB   :" $@
 	mkdir -p $(dir $@)
 	echo set timeout=3                    						>  $@
 	echo set default=0	                  						>> $@
 	echo menuentry \"Century \(Multiboot\)\" { 	      			>> $@
-	echo   multiboot /boot/$(notdir $(I686-KERNEL-ELF)) 		>> $@
+	echo   multiboot /boot/$(notdir $(I686-LOADER-ELF)) 		>> $@
 	echo   boot							  						>> $@
 	echo }								  						>> $@
 	echo menuentry \"Century \(Multiboot2\)\" { 	  			>> $@
-	echo   multiboot2 /boot/$(notdir $(I686-KERNEL-ELF))		>> $@
+	echo   multiboot2 /boot/$(notdir $(I686-LOADER-ELF))		>> $@
 	echo   boot							  						>> $@
 	echo } 														>> $@
 
@@ -177,7 +177,7 @@ $(I686-GRUB-CNF): $(lastword $(MAKEFILE_LIST))
 # -- Create the kernel image
 #    -----------------------
 $(I686-KERNEL-ELF): $(addprefix $(I686-KERNEL-OBJ)/,$(I686-KERNEL-O)) $(I686-KERNEL-LIBS) $(I686-KERNEL-LS)
-	echo "I686-LD     :" $(notdir $@)
+	echo "  I686-LD     :" $@
 	mkdir -p $(dir $@)
 	$(I686-KERNEL-LD) -o $@ $(addprefix $(I686-KERNEL-OBJ)/,$(I686-KERNEL-O)) $(I686-KERNEL-LIBS)
 	
@@ -207,7 +207,7 @@ i686-iso: current-target
 # -- Generic rule to make a .o file from the i686 source folder
 #    -----------------------------------------------------------
 $(I686-KERNEL-OBJ)/%.o: $(I686-KERNEL-SRC)/%.s 
-	echo "  I686-AS     :" $(notdir $<)
+	echo "  I686-AS     :" $<
 	mkdir -p $(dir $@)
 	$(I686-KERNEL-AS) -o $@ $<
 
@@ -216,7 +216,7 @@ $(I686-KERNEL-OBJ)/%.o: $(I686-KERNEL-SRC)/%.s
 # -- Generic rule to make a .d file from the i686 source folder
 #    -----------------------------------------------------------
 $(I686-KERNEL-OBJ)/%.d: $(I686-KERNEL-SRC)/%.s
-	echo "  I686-DEPEND :" $(notdir $<)
+	echo "  I686-DEPEND :" $<
 	mkdir -p $(dir $@)
 	rm -f $@
 	$(I686-KERNEL-DEP)  $<  > $@.$$$$;													\
@@ -228,7 +228,7 @@ $(I686-KERNEL-OBJ)/%.d: $(I686-KERNEL-SRC)/%.s
 # -- Generic rule to make a .o file from the i686 source folder
 #    -----------------------------------------------------------
 $(I686-KERNEL-OBJ)/%.o: $(I686-KERNEL-SRC)/%.c
-	echo "  I686-CC     :" $(notdir $<)
+	echo "  I686-CC     :" $<
 	mkdir -p $(dir $@)
 	$(I686-KERNEL-CC) -o $@ $<
 
@@ -237,7 +237,7 @@ $(I686-KERNEL-OBJ)/%.o: $(I686-KERNEL-SRC)/%.c
 # -- Generic rule to make a .d file from the i686 source folder
 #    -----------------------------------------------------------
 $(I686-KERNEL-OBJ)/%.d: $(I686-KERNEL-SRC)/%.c
-	echo "  I686-DEPEND :" $(notdir $<)
+	echo "  I686-DEPEND :" $<
 	mkdir -p $(dir $@)
 	rm -f $@
 	$(I686-KERNEL-DEP)  $<  > $@.$$$$;													\
@@ -249,7 +249,7 @@ $(I686-KERNEL-OBJ)/%.d: $(I686-KERNEL-SRC)/%.c
 # -- Generic rule to make a .o file from the kernel source folder
 #    ------------------------------------------------------------
 $(I686-KERNEL-OBJ)/%.o: $(KERNEL-SRC)/%.s 
-	echo "  I686-AS     :" $(notdir $<)
+	echo "  I686-AS     :" $<
 	mkdir -p $(dir $@)
 	$(I686-KERNEL-AS) -o $@ $<
 
@@ -258,7 +258,7 @@ $(I686-KERNEL-OBJ)/%.o: $(KERNEL-SRC)/%.s
 # -- Generic rule to make a .d file from the kernel source folder
 #    ------------------------------------------------------------
 $(I686-KERNEL-OBJ)/%.d: $(KERNEL-SRC)/%.s
-	echo "  I686-DEPEND :" $(notdir $<)
+	echo "  I686-DEPEND :" $<
 	mkdir -p $(dir $@)
 	rm -f $@
 	$(I686-KERNEL-DEP)  $<  > $@.$$$$;													\
@@ -270,7 +270,7 @@ $(I686-KERNEL-OBJ)/%.d: $(KERNEL-SRC)/%.s
 # -- Generic rule to make a .o file from the kernel source folder
 #    ------------------------------------------------------------
 $(I686-KERNEL-OBJ)/%.o: $(KERNEL-SRC)/%.c
-	echo "  I686-CC     :" $(notdir $<)
+	echo "  I686-CC     :" $<
 	mkdir -p $(dir $@)
 	$(I686-KERNEL-CC) -o $@ $<
 
@@ -279,7 +279,7 @@ $(I686-KERNEL-OBJ)/%.o: $(KERNEL-SRC)/%.c
 # -- Generic rule to make a .d file from the kernel source folder
 #    ------------------------------------------------------------
 $(I686-KERNEL-OBJ)/%.d: $(KERNEL-SRC)/%.c
-	echo "  I686-DEPEND :" $(notdir $<)
+	echo "  I686-DEPEND :" $<
 	mkdir -p $(dir $@)
 	rm -f $@
 	$(I686-KERNEL-DEP)  $<  > $@.$$$$;													\

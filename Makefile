@@ -79,7 +79,7 @@
 #####################################################################################################################
 
 
-#.SILENT:              # we don't need to see all the verbose stuff
+.SILENT:              # we don't need to see all the verbose stuff
 
 #
 # -- There are several kinds of targets we can make, and we want to make sure we can extract the architecture 
@@ -169,9 +169,10 @@ endif
 # -- This is an important rule!!!!  This is the key to the flexible build targets in the build system.  Nearly 
 #    all possible targets will be dependent on this target, especially when there are dependencied across 
 #    more than one module.  Each module will then be responsible for populating the value of $(CURRENT_TARGET).
+#    Order matters.
 #    ----------------------------------------------------------------------------------------------------------
 .PHONY: current-target
-current-target: $(CURRENT-TARGET) $(ISO)
+current-target: $(ISO) $(CURRENT-TARGET) 
 
 
 #
