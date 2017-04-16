@@ -85,7 +85,7 @@ RPI2B-LOADER-CC  				:= $(RPI2B-LOADER-PREFIX)-gcc -mcpu=arm1176jzf-s -fpic -ffr
 		-Wall -Werror -c
 RPI2B-LOADER-DEP 				:= $(RPI2B-LOADER-PREFIX)-cpp -M -ffreestanding $(RPI2B-LOADER-IC)
 RPI2B-LOADER-LD  				:= $(RPI2B-LOADER-PREFIX)-gcc -T $(RPI2B-LOADER-LS) -ffreestanding -O2 -nostdlib \
-		-L~/opt/cross/lib/gcc/arm-eabi/6.3.0 -lgcc
+		-L~/opt/cross/lib/gcc/arm-eabi/6.3.0 -lgcc -z max-page-size=0x1000
 RPI2B-LOADER-LIBS  				:= 
 RPI2B-LOADER-OBJCOPY  			:= $(RPI2B-LOADER-PREFIX)-objcopy
 
