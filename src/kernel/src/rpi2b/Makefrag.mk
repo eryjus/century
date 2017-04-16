@@ -94,7 +94,7 @@ RPI2B-KERNEL-AS  				:= $(RPI2B-KERNEL-PREFIX)-gcc -mcpu=arm1176jzf-s -fpic -ffr
 RPI2B-KERNEL-CC  				:= $(RPI2B-KERNEL-PREFIX)-gcc -mcpu=arm1176jzf-s -fpic -ffreestanding $(RPI2B-KERNEL-IC) -Wall -Werror -c
 RPI2B-KERNEL-DEP 				:= $(RPI2B-KERNEL-PREFIX)-cpp -M -ffreestanding $(RPI2B-KERNEL-IC)
 RPI2B-KERNEL-LD  				:= $(RPI2B-KERNEL-PREFIX)-gcc -T $(RPI2B-KERNEL-LS) -ffreestanding -O2 -nostdlib \
-		-L~/opt/cross/lib/gcc/arm-eabi/6.3.0 -lgcc
+		-L~/opt/cross/lib/gcc/arm-eabi/6.3.0 -lgcc -z max-page-size=0x1000
 RPI2B-KERNEL-LIBS  				:= 
 RPI2B-KERNEL-OBJCOPY  			:= $(RPI2B-KERNEL-PREFIX)-objcopy
 
@@ -158,15 +158,15 @@ $(RPI2B-KERNEL-IMG): $(RPI2B-KERNEL-ELF)
 #
 # -- The SD card image is needed by 2 of the 7 rules above
 #    -----------------------------------------------------	
-$(RPI2B-ISO): iso $(CURRENT-TARGET)
+$(RPI2B-ISO): iso $(CURRENT-TARGET) $(lastword $(MAKEFILE_LIST)) 
 	echo " RPI2B-IMG    :" $@
 	mkdir -p $(dir $@)
 	rm -fR $@
 	mkdir -p ./p1
 	dd if=/dev/zero of=$@ count=20 bs=1M
-	parted --script $@ mklabel msdos mkpart p ext2 1 20 set 1 boot on
+	parted --script $@ mklabel msdos mkpart p fat16 1 20 set 1 boot on
 	sudo kpartx -as iso/rpi2b.img || true
-	sudo mkfs.ext2 /dev/mapper/loop0p1
+	sudo mkfs.fat /dev/mapper/loop0p1
 	sudo mount /dev/mapper/loop0p1 ./p1
 	sudo cp -R $(RPI2B-KERNEL-SYSROOT)/* p1/
 	sudo umount ./p1
@@ -180,17 +180,8 @@ $(RPI2B-ISO): iso $(CURRENT-TARGET)
 $(RPI2B-GRUB-CNF): $(lastword $(MAKEFILE_LIST)) 
 	echo " RPI2B-GRUB   :" $@
 	mkdir -p $(dir $@)
-	echo " "                                                    >  $@
-#	echo set timeout=3                    						>  $@
-#	echo set default=0	                  						>> $@
-#	echo menuentry \"Century \(Multiboot\)\" { 	      			>> $@
-	echo   multiboot = boot/$(notdir $(RPI2B-KERNEL-ELF)) 		>> $@
+	echo   multiboot /boot/$(notdir $(RPI2B-KERNEL-ELF)) 		> $@
 	echo   boot							  						>> $@
-#	echo }								  						>> $@
-#	echo menuentry \"Century \(Multiboot2\)\" { 	  			>> $@
-#	echo   multiboot2 /boot/$(notdir $(RPI2B-KERNEL-ELF))		>> $@
-#	echo   boot							  						>> $@
-#	echo } 														>> $@
 
 
 #
