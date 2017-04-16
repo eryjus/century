@@ -180,7 +180,7 @@ $(RPI2B-ISO): iso $(CURRENT-TARGET) $(lastword $(MAKEFILE_LIST))
 $(RPI2B-GRUB-CNF): $(lastword $(MAKEFILE_LIST)) 
 	echo " RPI2B-GRUB   :" $@
 	mkdir -p $(dir $@)
-	echo   multiboot /boot/$(notdir $(RPI2B-KERNEL-ELF)) 		> $@
+	echo   multiboot /boot/$(notdir $(RPI2B-LOADER-ELF)) 		> $@
 	echo   boot							  						>> $@
 
 
