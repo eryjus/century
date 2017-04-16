@@ -110,12 +110,12 @@ ifeq ("$(MAKECMDGOALS)", "i686-kernel")
 CURRENT-TARGET					+= $(I686-KERNEL-IMG)
 endif
 ifeq ("$(MAKECMDGOALS)", "i686-iso")
-CURRENT-TARGET					+= $(I686-ISO)
-ISO								+= $(I686-KERNEL-SYS)
+CURRENT-TARGET					+= iso
+ISO								+= $(I686-KERNEL-SYS) $(I686-GRUB-CNF)
 endif
 ifeq ("$(MAKECMDGOALS)", "run-i686")
-CURRENT-TARGET					+= $(I686-ISO) run-i686-iso
-ISO								+= $(I686-KERNEL-SYS)
+CURRENT-TARGET					+= iso
+ISO								+= $(I686-KERNEL-SYS) $(I686-GRUB-CNF)
 endif
 
 
@@ -149,10 +149,10 @@ $(I686-KERNEL-IMG): $(I686-KERNEL-ELF)
 #
 # -- The CDROM image is needed by 2 of the 7 rules above
 #    ---------------------------------------------------	
-$(I686-ISO): $(I686-GRUB-CNF) $(I686-KERNEL-ELF) $(ISO)
+$(I686-ISO): iso $(CURRENT-TARGET)
 	echo "  I686-ISO    :" $@
 	mkdir -p $(dir $@)
-	grub2-mkrescue -o $(I686-ISO) $(I686-KERNEL-SYSROOT) 2> /dev/null
+	grub2-mkrescue -o $@ $(I686-KERNEL-SYSROOT) 2> /dev/null
 
 
 #
@@ -200,7 +200,7 @@ i686-kernel: current-target
 # -- Build the iso image
 #    -------------------
 .PHONY: i686-iso
-i686-iso: current-target
+i686-iso: $(I686-ISO)
 
 
 #

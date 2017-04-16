@@ -1,6 +1,6 @@
 #####################################################################################################################
 ##                                                                                                                 
-##  src/kernel/src/rpi2b/Makefrag -- The make plans for the Raspberry Pi 2B version of the OS            
+##  kernel rpi2b/Makefrag -- The make plans for the Raspberry Pi 2B version of the OS            
 ##
 ##        Copyright (c)  2017 -- Adam Clark
 ##
@@ -12,15 +12,25 @@
 ##  In order to keep the different Makefrag files from stepping on each other, all definitions will begin with 
 ##  'RPI2B-KERNEL-'.
 ##
-## Within this Makefrag.mk and we need to make sure that the following make goals populate the 
-## $(CURRENT-TARGET) macro:
-## make
-## make all
-## make rpi2b
-## make kernel
-## make rpi2b-kernel
-## make rpi2b-iso
-## make run-rpi2b
+##  This makefile uses 'sudo' to complete the disk image build.  If you do not want to have to put in your
+##  password for commands when it has expired, add the following to your sudoers file:
+##	<user> ALL=(root) NOPASSWD:/sbin/kpartx
+##  <user> ALL=(root) NOPASSWD:/usr/sbin/kpartx
+##  <user> ALL=(root) NOPASSWD:/usr/sbin/mkfs.ext2
+##  <user> ALL=(root) NOPASSWD:/usr/bin/mount
+##  <user> ALL=(root) NOPASSWD:/usr/bin/umount
+##
+##  NOTE: Be sure you adjust the paths and the name of your file to be appropriate to your needs.
+##
+##  Within this Makefrag.mk and we need to make sure that the following make goals populate the 
+##  $(CURRENT-TARGET) macro:
+##  make
+##  make all
+##  make rpi2b
+##  make kernel
+##  make rpi2b-kernel
+##  make rpi2b-iso
+##  make run-rpi2b
 ##
 ## ----------------------------------------------------------------------------------------------------------------- 
 ##                                                                                                                 
@@ -57,7 +67,7 @@ RPI2B-KERNEL-IMG 				:= $(RPI2B-KERNEL-BIN)/kernel.img
 RPI2B-KERNEL-ELF 				:= $(RPI2B-KERNEL-BIN)/kernel.elf
 RPI2B-KERNEL-SYS 				:= $(subst $(RPI2B-KERNEL-BIN),$(RPI2B-KERNEL-SYSROOT)/boot,$(RPI2B-KERNEL-ELF))
 RPI2B-GRUB-CNF					:= $(RPI2B-KERNEL-SYSROOT)/boot/grub/grub.cfg
-RPI2B-ISO						+= iso/rpi2b.iso
+RPI2B-ISO						+= iso/rpi2b.img
 
 
 #
@@ -108,12 +118,12 @@ ifeq ("$(MAKECMDGOALS)", "rpi2b-kernel")
 CURRENT-TARGET					+= $(RPI2B-KERNEL-IMG)
 endif
 ifeq ("$(MAKECMDGOALS)", "rpi2b-iso")
-CURRENT-TARGET					+= $(RPI2B-ISO)
-ISO								+= $(RPI2B-KERNEL-SYS)
+CURRENT-TARGET					+= iso
+ISO								+= $(RPI2B-KERNEL-SYS) $(RPI2B-GRUB-CNF)
 endif
 ifeq ("$(MAKECMDGOALS)", "run-rpi2b")
-CURRENT-TARGET					+= $(RPI2B-ISO) run-rpi2b-iso
-ISO								+= $(RPI2B-KERNEL-SYS)
+CURRENT-TARGET					+= iso
+ISO								+= $(RPI2B-KERNEL-SYS) $(RPI2B-GRUB-CNF)
 endif
 
 
@@ -122,7 +132,8 @@ endif
 #    -----------------------
 .PHONY: run-rpi2b
 run-rpi2b: $(RPI2B-ISO)
-	qemu-system-arm -m 256 -M raspi2 -serial stdio -kernel bin/rpi2b/kernel.elf
+	qemu-system-arm -m 256 -M raspi2 -serial stdio -kernel ~/bin/kernel-qemu.img \
+			--hda $<
 
 
 #
@@ -145,12 +156,22 @@ $(RPI2B-KERNEL-IMG): $(RPI2B-KERNEL-ELF)
 
 
 #
-# -- The CDROM image is needed by 2 of the 7 rules above
-#    ---------------------------------------------------	
-$(RPI2B-ISO): $(RPI2B-GRUB-CNF) $(RPI2B-KERNEL-ELF) $(ISO)
-	echo " RPI2B-ISO    :" $@
+# -- The SD card image is needed by 2 of the 7 rules above
+#    -----------------------------------------------------	
+$(RPI2B-ISO): iso $(CURRENT-TARGET)
+	echo " RPI2B-IMG    :" $@
 	mkdir -p $(dir $@)
-	grub2-mkrescue -o $(RPI2B-ISO) $(RPI2B-KERNEL-SYSROOT) 2> /dev/null
+	rm -fR $@
+	mkdir -p ./p1
+	dd if=/dev/zero of=$@ count=20 bs=1M
+	parted --script $@ mklabel msdos mkpart p ext2 1 20 set 1 boot on
+	sudo kpartx -as iso/rpi2b.img || true
+	sudo mkfs.ext2 /dev/mapper/loop0p1
+	sudo mount /dev/mapper/loop0p1 ./p1
+	sudo cp -R $(RPI2B-KERNEL-SYSROOT)/* p1/
+	sudo umount ./p1
+	sudo kpartx -d iso/rpi2b.img
+	rm -fR ./p1
 
 
 #
@@ -159,16 +180,17 @@ $(RPI2B-ISO): $(RPI2B-GRUB-CNF) $(RPI2B-KERNEL-ELF) $(ISO)
 $(RPI2B-GRUB-CNF): $(lastword $(MAKEFILE_LIST)) 
 	echo " RPI2B-GRUB   :" $@
 	mkdir -p $(dir $@)
-	echo set timeout=3                    						>  $@
-	echo set default=0	                  						>> $@
-	echo menuentry \"Century \(Multiboot\)\" { 	      			>> $@
-	echo   multiboot /boot/$(notdir $(RPI2B-KERNEL-ELF)) 		>> $@
+	echo " "                                                    >  $@
+#	echo set timeout=3                    						>  $@
+#	echo set default=0	                  						>> $@
+#	echo menuentry \"Century \(Multiboot\)\" { 	      			>> $@
+	echo   multiboot = boot/$(notdir $(RPI2B-KERNEL-ELF)) 		>> $@
 	echo   boot							  						>> $@
-	echo }								  						>> $@
-	echo menuentry \"Century \(Multiboot2\)\" { 	  			>> $@
-	echo   multiboot2 /boot/$(notdir $(RPI2B-KERNEL-ELF))		>> $@
-	echo   boot							  						>> $@
-	echo } 														>> $@
+#	echo }								  						>> $@
+#	echo menuentry \"Century \(Multiboot2\)\" { 	  			>> $@
+#	echo   multiboot2 /boot/$(notdir $(RPI2B-KERNEL-ELF))		>> $@
+#	echo   boot							  						>> $@
+#	echo } 														>> $@
 
 
 #
@@ -199,7 +221,7 @@ rpi2b-kernel: current-target
 # -- Build the iso image
 #    -------------------
 .PHONY: rpi2b-iso
-rpi2b-iso: current-target
+rpi2b-iso: $(RPI2B-ISO)
 	
 	
 #

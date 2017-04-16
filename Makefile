@@ -172,7 +172,11 @@ endif
 #    Order matters.
 #    ----------------------------------------------------------------------------------------------------------
 .PHONY: current-target
-current-target: $(ISO) $(CURRENT-TARGET) 
+current-target: iso $(CURRENT-TARGET) 
+
+
+.PHONY: iso
+iso: $(ISO)
 
 
 #

@@ -51,6 +51,7 @@
 #
 # -- Standard Video resolution
 #    -------------------------
+#define MODE_TYPE   0
 #define WIDTH   1280
 #define HEIGHT  1024
 #define DEPTH   16
@@ -71,6 +72,7 @@ multiboot_header:
     .long       0
     .long       0
 # -- video fields
+    .long       MODE_TYPE
     .long       WIDTH
     .long       HEIGHT
     .long       DEPTH
@@ -93,6 +95,16 @@ Type4Start:
     .long       Type4End-Type4Start             # size = 12
     .long       1<<1                            # EGA text support
 Type4End:
+
+.align          8
+Type5Start:
+    .word       5                               # graphic mode 
+    .word       1                               # not optional
+    .long       Type5End-Type5Start             # size = 20
+    .long       WIDTH                           # 1280
+    .long       HEIGHT                          # 1024
+    .long       DEPTH                           # 16                              
+Type5End:
 
 .align          8
 Type6Start:      

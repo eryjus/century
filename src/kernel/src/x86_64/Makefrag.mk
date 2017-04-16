@@ -108,12 +108,12 @@ ifeq ("$(MAKECMDGOALS)", "x86_64-kernel")
 CURRENT-TARGET					+= $(X86_64-KERNEL-IMG)
 endif
 ifeq ("$(MAKECMDGOALS)", "x86_64-iso")
-CURRENT-TARGET					+= $(X86_64-ISO)
-ISO								+= $(X86_64-KERNEL-SYS)
+CURRENT-TARGET					+= iso
+ISO								+= $(X86_64-KERNEL-SYS) $(X86_64-GRUB-CNF)
 endif
 ifeq ("$(MAKECMDGOALS)", "run-x86_64")
-CURRENT-TARGET					+= $(X86_64-ISO) run-x86_64-iso
-ISO								+= $(X86_64-KERNEL-SYS)
+CURRENT-TARGET					+= iso
+ISO								+= $(X86_64-KERNEL-SYS) $(X86_64-GRUB-CNF)
 endif
 
 
@@ -147,10 +147,10 @@ $(X86_64-KERNEL-IMG): $(X86_64-KERNEL-ELF)
 #
 # -- The CDROM image is needed by 2 of the 7 rules above
 #    ---------------------------------------------------	
-$(X86_64-ISO): $(X86_64-GRUB-CNF) $(X86_64-KERNEL-ELF) $(ISO)
+$(X86_64-ISO): iso $(CURRENT-TARGET)
 	echo "X86_64-ISO    :" $@
 	mkdir -p $(dir $@)
-	grub2-mkrescue -o $(X86_64-ISO) $(X86_64-KERNEL-SYSROOT) 2> /dev/null
+	grub2-mkrescue -o $@ $(X86_64-KERNEL-SYSROOT) 2> /dev/null
 
 
 #
@@ -162,11 +162,11 @@ $(X86_64-GRUB-CNF): $(lastword $(MAKEFILE_LIST))
 	echo set timeout=3                    						>  $@
 	echo set default=0	                  						>> $@
 	echo menuentry \"Century \(Multiboot\)\" { 	      			>> $@
-	echo   multiboot /boot/$(notdir $(X86_64-KERNEL-ELF)) 		>> $@
+	echo   multiboot /boot/$(notdir $(X86_64-LOADER-ELF)) 		>> $@
 	echo   boot							  						>> $@
 	echo }								  						>> $@
 	echo menuentry \"Century \(Multiboot2\)\" { 	  			>> $@
-	echo   multiboot2 /boot/$(notdir $(X86_64-KERNEL-ELF))		>> $@
+	echo   multiboot2 /boot/$(notdir $(X86_64-LOADER-ELF))		>> $@
 	echo   boot							  						>> $@
 	echo } 														>> $@
 
@@ -198,7 +198,7 @@ x86_64-kernel: current-target
 # -- Build the iso image
 #    -------------------
 .PHONY: x86_64-iso
-x86_64-iso: current-target
+x86_64-iso: $(X86_64-ISO)
 
 	
 #
