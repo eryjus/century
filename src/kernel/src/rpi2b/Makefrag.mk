@@ -164,9 +164,9 @@ $(RPI2B-ISO): iso $(CURRENT-TARGET) $(lastword $(MAKEFILE_LIST))
 	rm -fR $@
 	mkdir -p ./p1
 	dd if=/dev/zero of=$@ count=20 bs=1M
-	parted --script $@ mklabel msdos mkpart p fat16 1 20 set 1 boot on
+	parted --script $@ mklabel msdos mkpart p ext2 1 20 set 1 boot on
 	sudo kpartx -as iso/rpi2b.img || true
-	sudo mkfs.fat /dev/mapper/loop0p1
+	sudo mkfs.ext2 /dev/mapper/loop0p1
 	sudo mount /dev/mapper/loop0p1 ./p1
 	sudo cp -R $(RPI2B-KERNEL-SYSROOT)/* p1/
 	sudo umount ./p1
