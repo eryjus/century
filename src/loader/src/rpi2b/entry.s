@@ -161,6 +161,7 @@ bssClr$:
     b       bssClr$ 
 
 call$:
+    bl      FrameBufferInit
 loop$:
     wfi
     b       loop$                       @ go back and loop through more
