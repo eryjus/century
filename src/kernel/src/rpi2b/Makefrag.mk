@@ -94,7 +94,7 @@ RPI2B-KERNEL-AS  				:= $(RPI2B-KERNEL-PREFIX)-gcc -mcpu=arm1176jzf-s -fpic -ffr
 RPI2B-KERNEL-CC  				:= $(RPI2B-KERNEL-PREFIX)-gcc -mcpu=arm1176jzf-s -fpic -ffreestanding $(RPI2B-KERNEL-IC) -Wall -Werror -c
 RPI2B-KERNEL-DEP 				:= $(RPI2B-KERNEL-PREFIX)-cpp -M -ffreestanding $(RPI2B-KERNEL-IC)
 RPI2B-KERNEL-LD  				:= $(RPI2B-KERNEL-PREFIX)-gcc -T $(RPI2B-KERNEL-LS) -ffreestanding -O2 -nostdlib \
-		-L~/opt/cross/lib/gcc/arm-eabi/6.3.0 -lgcc -z max-page-size=0x1000
+		-z max-page-size=0x1000
 RPI2B-KERNEL-LIBS  				:= 
 RPI2B-KERNEL-OBJCOPY  			:= $(RPI2B-KERNEL-PREFIX)-objcopy
 
@@ -190,7 +190,7 @@ $(RPI2B-GRUB-CNF): $(lastword $(MAKEFILE_LIST))
 $(RPI2B-KERNEL-ELF): $(addprefix $(RPI2B-KERNEL-OBJ)/,$(RPI2B-KERNEL-O)) $(RPI2B-KERNEL-LIBS) $(RPI2B-KERNEL-LS)
 	echo " RPI2B-LD     :" $@
 	mkdir -p $(dir $@)
-	$(RPI2B-KERNEL-LD) -o $@ $(addprefix $(RPI2B-KERNEL-OBJ)/,$(RPI2B-KERNEL-O)) $(RPI2B-KERNEL-LIBS)
+	$(RPI2B-KERNEL-LD) -o $@ $(addprefix $(RPI2B-KERNEL-OBJ)/,$(RPI2B-KERNEL-O)) $(RPI2B-KERNEL-LIBS) $(GCC-LIB)
 	
 
 

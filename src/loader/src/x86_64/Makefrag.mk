@@ -62,7 +62,7 @@ X86_64-LOADER-SYS 				:= $(subst $(X86_64-LOADER-BIN),$(X86_64-LOADER-SYSROOT)/b
 # -- Some macros to help with finding the include files and building this component
 #    ------------------------------------------------------------------------------
 X86_64-LOADER-IA  				:= -Wa,-I -Wa,$(X86_64-LOADER-SRC) -Wa,-I -Wa,$(LOADER-INC)
-X86_64-LOADER-IC  				:= $(subst $(ASM-PARM),,$(X86_64-KERLOADERNEL-IA))
+X86_64-LOADER-IC  				:= $(subst $(ASM-PARM),,$(X86_64-LOADER-IA))
 X86_64-LOADER-PREFIX			:= i686-elf
 
 
@@ -82,8 +82,7 @@ X86_64-LOADER-AS  				:= $(X86_64-LOADER-PREFIX)-gcc -fpic -ffreestanding -x ass
 X86_64-LOADER-CC  				:= $(X86_64-LOADER-PREFIX)-gcc -fpic -ffreestanding $(X86_64-LOADER-IC) -Wall \
 		-Werror -c
 X86_64-LOADER-DEP 				:= $(X86_64-LOADER-PREFIX)-cpp -M -ffreestanding $(X86_64-LOADER-IC)
-X86_64-LOADER-LD  				:= $(X86_64-LOADER-PREFIX)-gcc -T $(X86_64-LOADER-LS) -ffreestanding -O2 -nostdlib \
-		-L~/opt/cross/lib/gcc/i686-elf/6.3.0 -lgcc
+X86_64-LOADER-LD  				:= $(X86_64-LOADER-PREFIX)-gcc -T $(X86_64-LOADER-LS) -ffreestanding -O2 -nostdlib 
 X86_64-LOADER-LIBS  				:= 
 X86_64-LOADER-OBJCOPY  			:= $(X86_64-LOADER-PREFIX)-objcopy
 
@@ -139,7 +138,7 @@ $(X86_64-LOADER-IMG): $(X86_64-LOADER-ELF)
 $(X86_64-LOADER-ELF): $(addprefix $(X86_64-LOADER-OBJ)/,$(X86_64-LOADER-O)) $(X86_64-LOADER-LIBS) $(X86_64-LOADER-LS)
 	echo "X86_64-LD     :" $@
 	mkdir -p $(dir $@)
-	$(X86_64-LOADER-LD) -o $@ $(addprefix $(X86_64-LOADER-OBJ)/,$(X86_64-LOADER-O)) $(X86_64-LOADER-LIBS)
+	$(X86_64-LOADER-LD) -o $@ $(addprefix $(X86_64-LOADER-OBJ)/,$(X86_64-LOADER-O)) $(X86_64-LOADER-LIBS) $(GCC-LIB)
 	
 
 #

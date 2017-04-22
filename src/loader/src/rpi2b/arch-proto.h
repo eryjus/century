@@ -1,6 +1,6 @@
 //===================================================================================================================
 //
-//  loader mmio.h -- This is the basic interface to read/write to mmio registers.
+//  loader rpi2b/proto.h -- Architecture specific prototypes
 //
 //        Copyright (c)  2017 -- Adam Clark
 //
@@ -13,36 +13,19 @@
 //
 //     Date     Tracker  Version  Pgmr  Description
 //  ----------  -------  -------  ----  ---------------------------------------------------------------------------
-//  2017-04-17  Initial   0.0.0   ADCL  Initial version
+//  2017-04-19  Initial   0.0.0   ADCL  Initial version
 //
 //===================================================================================================================
 
-#ifndef __MMIO_H_INCLUDED__
-#define __MMIO_H_INCLUDED__
 
-
-#include "types.h"
-
-
-//-------------------------------------------------------------------------------------------------------------------
-// MmioWrite() -- Write to a Memory Mapped I/O Register
-//
-// You better know what you are writing and to where.  There are no sanity checks here!
-//-------------------------------------------------------------------------------------------------------------------
-static inline void MmioWrite(addr_t reg, uint32_t data)
-{
-    *(volatile uint32_t *)reg = data;
-}
+#ifndef __ARCH_PROTO_H_INCLUDED__
+#define __ARCH_PROTO_H_INCLUDED__
 
 
 //-------------------------------------------------------------------------------------------------------------------
-// MmioRead() -- Read from a Memory Mapped I/O Register
-//
-// You better know where you are reading from.  There are no sanity checks here!
+// From mailbox.c:
 //-------------------------------------------------------------------------------------------------------------------
-static inline uint32_t MmioRead(addr_t reg)
-{
-    return *(volatile uint32_t *)reg;
-}
+bool MailboxSend(uint32_t message, uint32_t mailbox);
+uint32_t MailboxReceive(uint32_t mailbox);
 
 #endif

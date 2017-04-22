@@ -59,7 +59,7 @@ I686-LOADER-SYS 				:= $(subst $(I686-LOADER-BIN),$(I686-LOADER-SYSROOT)/boot,$(
 # -- Some macros to help with finding the include files and building this component
 #    ------------------------------------------------------------------------------
 I686-LOADER-IA  				:= -Wa,-I -Wa,$(I686-LOADER-SRC) -Wa,-I -Wa,$(LOADER-INC)
-I686-LOADER-IC  				:= $(subst $(ASM-PARM),,$(I686-KERLOADERNEL-IA))
+I686-LOADER-IC  				:= $(subst $(ASM-PARM),,$(I686-LOADER-IA))
 I686-LOADER-PREFIX				:= i686-elf
 
 
@@ -78,8 +78,7 @@ I686-LOADER-AS  				:= $(I686-LOADER-PREFIX)-gcc -fpic -ffreestanding -x assembl
 		$(I686-LOADER-IA) -Wall -Werror -c
 I686-LOADER-CC  				:= $(I686-LOADER-PREFIX)-gcc -fpic -ffreestanding $(I686-LOADER-IC) -Wall -Werror -c
 I686-LOADER-DEP 				:= $(I686-LOADER-PREFIX)-cpp -M -ffreestanding $(I686-LOADER-IC)
-I686-LOADER-LD  				:= $(I686-LOADER-PREFIX)-gcc -T $(I686-LOADER-LS) -ffreestanding -O2 -nostdlib \
-		-L~/opt/cross/lib/gcc/i686-elf/6.3.0 -lgcc
+I686-LOADER-LD  				:= $(I686-LOADER-PREFIX)-gcc -T $(I686-LOADER-LS) -ffreestanding -O2 -nostdlib 
 I686-LOADER-LIBS  				:= 
 I686-LOADER-OBJCOPY  			:= $(I686-LOADER-PREFIX)-objcopy
 
@@ -135,7 +134,7 @@ $(I686-LOADER-IMG): $(I686-LOADER-ELF)
 $(I686-LOADER-ELF): $(addprefix $(I686-LOADER-OBJ)/,$(I686-LOADER-O)) $(I686-LOADER-LIBS) $(I686-LOADER-LS)
 	echo "  I686-LD     :" $@
 	mkdir -p $(dir $@)
-	$(I686-LOADER-LD) -o $@ $(addprefix $(I686-LOADER-OBJ)/,$(I686-LOADER-O)) $(I686-LOADER-LIBS)
+	$(I686-LOADER-LD) -o $@ $(addprefix $(I686-LOADER-OBJ)/,$(I686-LOADER-O)) $(I686-LOADER-LIBS) $(GCC-LIB)
 	
 
 #

@@ -1,6 +1,6 @@
 //===================================================================================================================
 //
-//  loader mmio.h -- This is the basic interface to read/write to mmio registers.
+//  loader i686/i686.c -- High-level functions specific to the i686 arcitecture
 //
 //        Copyright (c)  2017 -- Adam Clark
 //
@@ -13,36 +13,15 @@
 //
 //     Date     Tracker  Version  Pgmr  Description
 //  ----------  -------  -------  ----  ---------------------------------------------------------------------------
-//  2017-04-17  Initial   0.0.0   ADCL  Initial version
+//  2017-04-19  Initial   0.0.0   ADCL  Initial version
 //
 //===================================================================================================================
 
-#ifndef __MMIO_H_INCLUDED__
-#define __MMIO_H_INCLUDED__
-
-
-#include "types.h"
-
 
 //-------------------------------------------------------------------------------------------------------------------
-// MmioWrite() -- Write to a Memory Mapped I/O Register
-//
-// You better know what you are writing and to where.  There are no sanity checks here!
+// GetArch() -- Get a short string to identify the architecture
 //-------------------------------------------------------------------------------------------------------------------
-static inline void MmioWrite(addr_t reg, uint32_t data)
+const char *GetArch(void)
 {
-    *(volatile uint32_t *)reg = data;
+    return "i686";
 }
-
-
-//-------------------------------------------------------------------------------------------------------------------
-// MmioRead() -- Read from a Memory Mapped I/O Register
-//
-// You better know where you are reading from.  There are no sanity checks here!
-//-------------------------------------------------------------------------------------------------------------------
-static inline uint32_t MmioRead(addr_t reg)
-{
-    return *(volatile uint32_t *)reg;
-}
-
-#endif

@@ -25,6 +25,8 @@
 # -- Expose some global addresses
 #    ----------------------------
 .globl          _start
+.globl          systemFont
+.globl          Halt
 
 
 #
@@ -126,5 +128,20 @@ MultibootHeader2End:
 .section        .init
 
 _start:
+    cmp         %eax,0x2badb002
+    jne         Halt
+    mov         mb1Data,%ebx
+    jmp         LoaderMain
+
+Halt:
+    cli
     hlt
-    jmp         _start
+    jmp         Halt
+
+
+#
+# -- This is where we include the binary data for the system font
+#    ------------------------------------------------------------
+.section        .data
+systemFont:
+.incbin         "system-font.bin"

@@ -131,6 +131,7 @@ ISO								:=
 # -- Some things need to be defined at the highest level, here
 #    ---------------------------------------------------------
 ASM-PARM						:= -Wa,
+GCC-LIB							:= -lgcc
 
 
 #

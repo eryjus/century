@@ -23,6 +23,9 @@
 @    resulting ELF file.  This is required since the multiboot header needs to be in the first 4/8K (I think).
 .section        .mboot
 
+.globl          systemFont
+.globl          Halt
+
 
 @
 @ -- The following are used to populate the multiboot v1 header
@@ -161,7 +164,16 @@ bssClr$:
     b       bssClr$ 
 
 call$:
-    bl      FrameBufferInit
-loop$:
+    bl      LoaderMain
+
+Halt:
     wfi
-    b       loop$                       @ go back and loop through more
+    b       Halt                        @ go back and loop through more
+
+
+#
+# -- This is where we include the binary data for the system font
+#    ------------------------------------------------------------
+.section        .rodata
+systemFont:
+.incbin         "system-font.bin"

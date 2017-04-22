@@ -84,7 +84,7 @@ X86_64-KERNEL-AS  				:= $(X86_64-KERNEL-PREFIX)-gcc -fpic -ffreestanding -x ass
 X86_64-KERNEL-CC  				:= $(X86_64-KERNEL-PREFIX)-gcc -fpic -ffreestanding $(X86_64-KERNEL-IC) -Wall -Werror -c
 X86_64-KERNEL-DEP 				:= $(X86_64-KERNEL-PREFIX)-cpp -M -ffreestanding $(X86_64-KERNEL-IC)
 X86_64-KERNEL-LD 				:= $(X86_64-KERNEL-PREFIX)-gcc -T $(X86_64-KERNEL-LS) -ffreestanding -O2 -nostdlib \
-		-L~/opt/cross/lib/gcc/x86_64/6.3.0 -lgcc -z max-page-size=0x800
+		-z max-page-size=0x800
 X86_64-KERNEL-LIBS  			:= 
 X86_64-KERNEL-OBJCOPY  			:= $(X86_64-KERNEL-PREFIX)-objcopy
 
@@ -177,7 +177,7 @@ $(X86_64-GRUB-CNF): $(lastword $(MAKEFILE_LIST))
 $(X86_64-KERNEL-ELF): $(addprefix $(X86_64-KERNEL-OBJ)/,$(X86_64-KERNEL-O)) $(X86_64-KERNEL-LIBS) $(X86_64-KERNEL-LS)
 	echo "X86_64-LD     :" $@
 	mkdir -p $(dir $@)
-	$(X86_64-KERNEL-LD) -o $@ $(addprefix $(X86_64-KERNEL-OBJ)/,$(X86_64-KERNEL-O)) $(X86_64-KERNEL-LIBS)
+	$(X86_64-KERNEL-LD) -o $@ $(addprefix $(X86_64-KERNEL-OBJ)/,$(X86_64-KERNEL-O)) $(X86_64-KERNEL-LIBS) $(GCC-LIB)
 	
 
 #

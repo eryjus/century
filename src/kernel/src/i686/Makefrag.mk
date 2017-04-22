@@ -85,8 +85,7 @@ I686-KERNEL-AS  				:= $(I686-KERNEL-PREFIX)-gcc -fpic -ffreestanding -x assembl
 		$(I686-KERNEL-IA) -Wall -Werror -c
 I686-KERNEL-CC  				:= $(I686-KERNEL-PREFIX)-gcc -fpic -ffreestanding $(I686-KERNEL-IC) -Wall -Werror -c
 I686-KERNEL-DEP 				:= $(I686-KERNEL-PREFIX)-cpp -M -ffreestanding $(I686-KERNEL-IC)
-I686-KERNEL-LD  				:= $(I686-KERNEL-PREFIX)-gcc -T $(I686-KERNEL-LS) -ffreestanding -O2 -nostdlib \
-		-L~/opt/cross/lib/gcc/i686-elf/6.3.0 -lgcc
+I686-KERNEL-LD  				:= $(I686-KERNEL-PREFIX)-gcc -T $(I686-KERNEL-LS) -ffreestanding -O2 -nostdlib 
 I686-KERNEL-LIBS  				:= 
 I686-KERNEL-OBJCOPY  			:= $(I686-KERNEL-PREFIX)-objcopy
 
@@ -179,7 +178,7 @@ $(I686-GRUB-CNF): $(lastword $(MAKEFILE_LIST))
 $(I686-KERNEL-ELF): $(addprefix $(I686-KERNEL-OBJ)/,$(I686-KERNEL-O)) $(I686-KERNEL-LIBS) $(I686-KERNEL-LS)
 	echo "  I686-LD     :" $@
 	mkdir -p $(dir $@)
-	$(I686-KERNEL-LD) -o $@ $(addprefix $(I686-KERNEL-OBJ)/,$(I686-KERNEL-O)) $(I686-KERNEL-LIBS)
+	$(I686-KERNEL-LD) -o $@ $(addprefix $(I686-KERNEL-OBJ)/,$(I686-KERNEL-O)) $(I686-KERNEL-LIBS) $(GCC-LIB)
 	
 
 #

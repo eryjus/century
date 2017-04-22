@@ -1,6 +1,6 @@
 //===================================================================================================================
 //
-//  loader mmio.h -- This is the basic interface to read/write to mmio registers.
+//  kernel systimer.c -- This is the basic interface to the system timer (for more accurate timing)
 //
 //        Copyright (c)  2017 -- Adam Clark
 //
@@ -9,40 +9,36 @@
 //        you can do whatever you want with this stuff. If we meet some day, and you
 //        think this stuff is worth it, you can buy me a beer in return.
 //
+//  TODO: When QEMU has addressed the missing System Timer, address the hack in BusyWait.  The progrss of the QEMU
+//        team resolving this issue can be tracked at https://bugs.launchpad.net/qemu/+bug/1680991
+//
 // -----------------------------------------------------------------------------------------------------------------
 //
 //     Date     Tracker  Version  Pgmr  Description
 //  ----------  -------  -------  ----  ---------------------------------------------------------------------------
-//  2017-04-17  Initial   0.0.0   ADCL  Initial version
+//  2017-04-04  Initial   0.0.0   ADCL  Initial version
 //
 //===================================================================================================================
 
-#ifndef __MMIO_H_INCLUDED__
-#define __MMIO_H_INCLUDED__
 
-
-#include "types.h"
+#include "proto.h"
+uint64_t ReadSysTimerCount(void);
 
 
 //-------------------------------------------------------------------------------------------------------------------
-// MmioWrite() -- Write to a Memory Mapped I/O Register
+// BusyWait() -- Wait a some number of MICRO-seconds
 //
-// You better know what you are writing and to where.  There are no sanity checks here!
-//-------------------------------------------------------------------------------------------------------------------
-static inline void MmioWrite(addr_t reg, uint32_t data)
-{
-    *(volatile uint32_t *)reg = data;
-}
-
-
-//-------------------------------------------------------------------------------------------------------------------
-// MmioRead() -- Read from a Memory Mapped I/O Register
+// This is 1 MILLIONTH of a second, not 1 THOUSANDTH of a second.  Be aware of the values you pass in here. 
 //
-// You better know where you are reading from.  There are no sanity checks here!
+// FIXME: This function includes a hack to get around QEMU which does not currently implement the System Timer 
+//        at 0x3f003000.  When the starting ticks come back as 0, we assume that we need to take a less accurate
+//        method.
 //-------------------------------------------------------------------------------------------------------------------
-static inline uint32_t MmioRead(addr_t reg)
+void BusyWait(uint32_t microSecs)
 {
-    return *(volatile uint32_t *)reg;
-}
+    volatile uint64_t start = ReadSysTimerCount();      // use volatile to prevent the compiler from optimizing away
+    uint64_t target = start + microSecs;
 
-#endif
+    if (start == 0) while (start) --start;
+    else while (ReadSysTimerCount() < target) {}
+}

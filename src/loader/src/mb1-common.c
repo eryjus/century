@@ -1,6 +1,6 @@
 //===================================================================================================================
 //
-//  loader mmio.h -- This is the basic interface to read/write to mmio registers.
+//  loader mb1-common.c -- Multiboot functions that are common to multiple architectures
 //
 //        Copyright (c)  2017 -- Adam Clark
 //
@@ -13,36 +13,37 @@
 //
 //     Date     Tracker  Version  Pgmr  Description
 //  ----------  -------  -------  ----  ---------------------------------------------------------------------------
-//  2017-04-17  Initial   0.0.0   ADCL  Initial version
+//  2017-04-18  Initial   0.0.0   ADCL  Initial version
 //
 //===================================================================================================================
 
-#ifndef __MMIO_H_INCLUDED__
-#define __MMIO_H_INCLUDED__
+#define DEBUG_MB1
+
+#include "mb1.h"
+#include "proto.h"
 
 
-#include "types.h"
-
-
-//-------------------------------------------------------------------------------------------------------------------
-// MmioWrite() -- Write to a Memory Mapped I/O Register
 //
-// You better know what you are writing and to where.  There are no sanity checks here!
+// -- This is the multiboot 1 information structure (will remain NULL if not booted with MB1-compliant loader)
+//    --------------------------------------------------------------------------------------------------------
+struct Multiboot1Info *mb1Data = 0;
+
+
 //-------------------------------------------------------------------------------------------------------------------
-static inline void MmioWrite(addr_t reg, uint32_t data)
+// ReadMB1Info() -- Read the multiboot information from the data provided and store it locally
+//-------------------------------------------------------------------------------------------------------------------
+void ReadMB1Info(void)
 {
-    *(volatile uint32_t *)reg = data;
-}
+    if (!mb1Data) return;
 
-
-//-------------------------------------------------------------------------------------------------------------------
-// MmioRead() -- Read from a Memory Mapped I/O Register
-//
-// You better know where you are reading from.  There are no sanity checks here!
-//-------------------------------------------------------------------------------------------------------------------
-static inline uint32_t MmioRead(addr_t reg)
-{
-    return *(volatile uint32_t *)reg;
-}
-
+#ifdef DEBUG_MB1
+    kprintf("Reading Multiboot1 Information (we have a structure at 0x%p\n", mb1Data);
 #endif
+
+    //
+    // -- Read the VBE information if available
+    //    -------------------------------------
+    if (!(mb1Data->flags & (1 << 11))) {
+        Halt();
+    }
+}

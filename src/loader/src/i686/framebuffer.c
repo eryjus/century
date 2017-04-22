@@ -1,6 +1,6 @@
 //===================================================================================================================
 //
-//  loader mmio.h -- This is the basic interface to read/write to mmio registers.
+//  loader rpi2b/framebuffer.c -- These are the functions to manipulate the frame buffer and its contents
 //
 //        Copyright (c)  2017 -- Adam Clark
 //
@@ -17,32 +17,35 @@
 //
 //===================================================================================================================
 
-#ifndef __MMIO_H_INCLUDED__
-#define __MMIO_H_INCLUDED__
 
 
-#include "types.h"
+#include "hw.h"
+#include "mb1.h"
+#include "frame-buffer.h"
+#include "proto.h"
+
+#include <stdint.h>
+#include <stdbool.h>
 
 
 //-------------------------------------------------------------------------------------------------------------------
-// MmioWrite() -- Write to a Memory Mapped I/O Register
-//
-// You better know what you are writing and to where.  There are no sanity checks here!
+// FrameBufferInit() -- Initialize the frame buffer, setting up the expected resolution -- based on MB1 data
 //-------------------------------------------------------------------------------------------------------------------
-static inline void MmioWrite(addr_t reg, uint32_t data)
+bool FrameBufferInit(void)
 {
-    *(volatile uint32_t *)reg = data;
+    if (mb1Data) {
+        frameBufferInfo.buffer = (uint16_t *)((addr_t)(mb1Data->fbAddr & 0xffffffff));
+        frameBufferInfo.width = mb1Data->fbWidth;
+        frameBufferInfo.height = mb1Data->fbHeight;
+        frameBufferInfo.bpp = mb1Data->fbBpp;
+        frameBufferInfo.pitch = mb1Data->fbPitch;
+
+        if (frameBufferInfo.pitch == 0) frameBufferInfo.pitch = frameBufferInfo.width * frameBufferInfo.bpp / 8;
+
+        return true;
+    }
+
+    return false;
 }
 
 
-//-------------------------------------------------------------------------------------------------------------------
-// MmioRead() -- Read from a Memory Mapped I/O Register
-//
-// You better know where you are reading from.  There are no sanity checks here!
-//-------------------------------------------------------------------------------------------------------------------
-static inline uint32_t MmioRead(addr_t reg)
-{
-    return *(volatile uint32_t *)reg;
-}
-
-#endif

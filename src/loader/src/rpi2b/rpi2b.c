@@ -1,6 +1,6 @@
 //===================================================================================================================
 //
-//  loader rpi2b/framebuffer.h -- These are the structs and functions to manipulate the frame buffer and its contents
+//  loader rpi2b/rpi2b.c -- High-level functions specific to the rpi2b arcitecture
 //
 //        Copyright (c)  2017 -- Adam Clark
 //
@@ -13,30 +13,15 @@
 //
 //     Date     Tracker  Version  Pgmr  Description
 //  ----------  -------  -------  ----  ---------------------------------------------------------------------------
-//  2017-04-17  Initial   0.0.0   ADCL  Initial version
+//  2017-04-19  Initial   0.0.0   ADCL  Initial version
 //
 //===================================================================================================================
 
 
-#ifndef __FRAMEBUFFER_H_INCLUDED__
-#define __FRAMEBUFFER_H_INCLUDED__
-
-
-//
-// -- This frame buffer structure is used to pass information back and forth to the GPU
-//    ---------------------------------------------------------------------------------
-struct FrameBufferInfo {
-    int physWidth;
-    int physHeight;
-    int virtWidth;
-    int virtHeight;
-    int gpuBytesPerRow;
-    int depth;
-    int xOffset;
-    int yOffset;
-    int gpuPointer;
-    int size;
-} __attribute__((aligned(4)));
-
-
-#endif
+//-------------------------------------------------------------------------------------------------------------------
+// GetArch() -- Get a short string to identify the architecture
+//-------------------------------------------------------------------------------------------------------------------
+const char *GetArch(void)
+{
+    return "rpi2b";
+}

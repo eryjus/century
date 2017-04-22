@@ -9,8 +9,6 @@
 /*        you can do whatever you want with this stuff. If we meet some day, and you                               */
 /*        think this stuff is worth it, you can buy me a beer in return.                                           */
 /*                                                                                                                 */ 
-/* TODO: make this loader relocated into upper memory when the MMU has been properly setup                         */
-/*                                                                                                                 */ 
 /* --------------------------------------------------------------------------------------------------------------- */
 /*                                                                                                                 */ 
 /*     Date     Tracker  Version  Pgmr  Description                                                                */       

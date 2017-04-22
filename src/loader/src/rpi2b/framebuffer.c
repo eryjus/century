@@ -17,17 +17,31 @@
 //
 //===================================================================================================================
 
+#define DEBUG_FRAMEBUFFER
 
 #include "hw.h"
-#include "framebuffer.h"
+#include "frame-buffer.h"
 #include "proto.h"
 
 #include <stdbool.h>
 
+
 //
-// -- This is the data structure holding critical framebuffer information
-//    -------------------------------------------------------------------
-static struct FrameBufferInfo fbInfo;
+// -- This frame buffer structure is used to pass information back and forth to the GPU
+//    ---------------------------------------------------------------------------------
+struct RPiFrameBufferInfo {
+    int physWidth;
+    int physHeight;
+    int virtWidth;
+    int virtHeight;
+    int gpuBytesPerRow;
+    int depth;
+    int xOffset;
+    int yOffset;
+    int gpuPointer;
+    int size;
+} __attribute__((aligned(16)));
+struct RPiFrameBufferInfo fbInfo;
 
 
 //-------------------------------------------------------------------------------------------------------------------
@@ -48,24 +62,18 @@ bool FrameBufferInit(void)
     if (MailboxReceive(1) != 0) return false;
 
     fbInfo.gpuPointer -= 0x40000000;
+
+    frameBufferInfo.buffer = (uint16_t *)((addr_t)(fbInfo.gpuPointer));
+    frameBufferInfo.width = fbInfo.physWidth;
+    frameBufferInfo.height = fbInfo.physWidth;
+    frameBufferInfo.bpp = fbInfo.depth;
+    frameBufferInfo.pitch = fbInfo.gpuBytesPerRow;
+
+//    if (frameBufferInfo.pitch == 0) frameBufferInfo.pitch = frameBufferInfo.width * frameBufferInfo.bpp / 8;
+
     FrameBufferClear();
 
     return true;
 }
 
 
-//-------------------------------------------------------------------------------------------------------------------
-// FrameBufferClear() -- Clear the screen defined by the frame buffer
-//-------------------------------------------------------------------------------------------------------------------
-void FrameBufferClear(void)
-{
-    //
-    // -- calculate the number of 16-bit words to write (rows * cols)
-    //    -----------------------------------------------------------------------
-    int cnt = fbInfo.physHeight * fbInfo.physWidth;
-    uint16_t *b = (uint16_t *)fbInfo.gpuPointer;
-
-    for (int i = 0; i < cnt; i ++) {
-        b[i] = 0x0000;
-    }
-}

@@ -85,7 +85,7 @@ RPI2B-LOADER-CC  				:= $(RPI2B-LOADER-PREFIX)-gcc -mcpu=arm1176jzf-s -fpic -ffr
 		-Wall -Werror -c
 RPI2B-LOADER-DEP 				:= $(RPI2B-LOADER-PREFIX)-cpp -M -ffreestanding $(RPI2B-LOADER-IC)
 RPI2B-LOADER-LD  				:= $(RPI2B-LOADER-PREFIX)-gcc -T $(RPI2B-LOADER-LS) -ffreestanding -O2 -nostdlib \
-		-L~/opt/cross/lib/gcc/arm-eabi/6.3.0 -lgcc -z max-page-size=0x1000
+		-z max-page-size=0x1000 
 RPI2B-LOADER-LIBS  				:= 
 RPI2B-LOADER-OBJCOPY  			:= $(RPI2B-LOADER-PREFIX)-objcopy
 
@@ -141,7 +141,7 @@ $(RPI2B-LOADER-IMG): $(RPI2B-LOADER-ELF)
 $(RPI2B-LOADER-ELF): $(addprefix $(RPI2B-LOADER-OBJ)/,$(RPI2B-LOADER-O)) $(RPI2B-LOADER-LIBS) $(RPI2B-LOADER-LS)
 	echo " RPI2B-LD     :" $@
 	mkdir -p $(dir $@)
-	$(RPI2B-LOADER-LD) -o $@ $(addprefix $(RPI2B-LOADER-OBJ)/,$(RPI2B-LOADER-O)) $(RPI2B-LOADER-LIBS)
+	$(RPI2B-LOADER-LD) -o $@ $(addprefix $(RPI2B-LOADER-OBJ)/,$(RPI2B-LOADER-O)) $(RPI2B-LOADER-LIBS) $(GCC-LIB)
 	
 
 

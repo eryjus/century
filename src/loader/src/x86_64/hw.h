@@ -1,6 +1,6 @@
 //===================================================================================================================
 //
-//  loader rpi2b/proto.h -- All function prototypes
+//  loader x86_64/hw.h -- Hardware locations
 //
 //        Copyright (c)  2017 -- Adam Clark
 //
@@ -17,22 +17,17 @@
 //
 //===================================================================================================================
 
+#ifndef __HW_H_INCLUDED__
+#define __HW_H_INCLUDED__
 
-#include "hw.h"
-
+#include <stdint.h>
+#include <stddef.h>
 #include <stdbool.h>
 
 
-//-------------------------------------------------------------------------------------------------------------------
-// From mailbox.c:
-//-------------------------------------------------------------------------------------------------------------------
-bool MailboxSend(uint32_t message, uint32_t mailbox);
-uint32_t MailboxReceive(uint32_t mailbox);
+//
+// -- architecture-specific type sizes
+//    --------------------------------
+typedef uint32_t addr_t;                    // This is the size of an address in this architecture
 
-
-//-------------------------------------------------------------------------------------------------------------------
-// From framebuffer.c:
-//-------------------------------------------------------------------------------------------------------------------
-bool FrameBufferInit(void);
-void FrameBufferClear(void);
-
+#endif

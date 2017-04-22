@@ -1,6 +1,6 @@
 //===================================================================================================================
 //
-//  loader mmio.h -- This is the basic interface to read/write to mmio registers.
+//  loader laoder-main.c -- The i686 loader main entry point
 //
 //        Copyright (c)  2017 -- Adam Clark
 //
@@ -13,36 +13,34 @@
 //
 //     Date     Tracker  Version  Pgmr  Description
 //  ----------  -------  -------  ----  ---------------------------------------------------------------------------
-//  2017-04-17  Initial   0.0.0   ADCL  Initial version
+//  2017-04-18  Initial   0.0.0   ADCL  Initial version
 //
 //===================================================================================================================
 
-#ifndef __MMIO_H_INCLUDED__
-#define __MMIO_H_INCLUDED__
 
-
-#include "types.h"
+#include "mb1.h"
+#include "proto.h"
 
 
 //-------------------------------------------------------------------------------------------------------------------
-// MmioWrite() -- Write to a Memory Mapped I/O Register
-//
-// You better know what you are writing and to where.  There are no sanity checks here!
+// DisplayGreeting() -- Display the welcome greeting
 //-------------------------------------------------------------------------------------------------------------------
-static inline void MmioWrite(addr_t reg, uint32_t data)
+void DisplayGreeting(void)
 {
-    *(volatile uint32_t *)reg = data;
+    kprintf("Welcome to Century - %s\n", GetArch());
 }
 
 
 //-------------------------------------------------------------------------------------------------------------------
-// MmioRead() -- Read from a Memory Mapped I/O Register
-//
-// You better know where you are reading from.  There are no sanity checks here!
+// LoaderMain() -- this is the main entry point for the loader
 //-------------------------------------------------------------------------------------------------------------------
-static inline uint32_t MmioRead(addr_t reg)
+void LoaderMain(void)
 {
-    return *(volatile uint32_t *)reg;
+    UartDevInit();
+    UartPutS("Hello!!\n");
+    ReadMB1Info();
+//    ReadMB2Info();
+    FrameBufferInit();
+    DisplayGreeting();
+    Halt();
 }
-
-#endif
