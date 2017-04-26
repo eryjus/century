@@ -7,7 +7,7 @@ native mode.  The following will be completed by the multiboot loader:
 
 * The screen will be placed into graphics mode.  This mode can be consistent across 
   all architectures and allow the actual OS driver take over the video responsibility.
-  The minimum supported video resolution will be 1280 X 1024 X 16.
+  The minimum supported video resolution will be 1024 X 768 X 16.
 
 * The MMU will be initialized for the architecture.  
 

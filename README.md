@@ -35,7 +35,7 @@ deferred gratification will save me a ton of time later in development.
 I have a very complicated build system.  I know this; I accept this.  
 
 I absolutely hate having to maintain hard targets for each of my build and would rather
-spend extra time (OK, a LOT of extra time) setting up my build system to meet my needs.
+spend extra time (OK, a _LOT_ of extra time) setting up my build system to meet my needs.
 I figure this way: a significant part of my development workflow is to type the command
 `make <target>` frequently.  When I do this, I want a few things to take place:
 1. The target gets built taking into account all the new dependencies.
@@ -47,3 +47,38 @@ The thing that breaks my list above is changing the Makefile/Makefrag.mk files. 
 result, I do not want to have to make changes in these files nowhere near as frequently 
 as I type the command `make`.  To meet my goals, my build system ends up being far more 
 complicated than most others will be.
+
+See the Makefile header comments for some popular `make` targets.
+
+
+***The Cross-Compiler***
+
+For the record, this OS is being compiled with the following software versions:
+* binutils-2.28
+* gcc-6.3.0
+I will likely stick with what works and not update is at all, unless I find a compelling 
+reason to rebuild all my tools.
+
+You will need to have cross compiled both binutils and gcc for the following targets, using 
+the instructions found here: http://wiki.osdev.org/GCC_Cross-Compiler
+* arm-eabi-
+* i686-elf-
+* x86_64-elf-
+
+After building and installing each binutils / gcc suite of tools, I recommend rebooting.
+
+Finally, rpi-boot (a Raspberry Pi Multiboot second stage loader) will need to be compiled
+using the arm-eabi- tool set.  Note that rpi-boot expects the tools to be named 
+arm-none-eabi-, and I built mine as arm-eabi-.  You should be able to reconcile the 
+discrepancies by either changing the rpi-boot makefile or building another cross-compiler.
+
+rpi-boot can be found here: https://github.com/jncronin/rpi-boot.
+
+Other than those pieces of software and their dependencies, I am really not using anything
+extraordinary in my build yet.  Depending on your distro, you might need `kpartx` and 
+`grub2-mkrescue` tools.  Also, you will want to review the kernel/rpi2b/Makefrag.mk header
+comments as it lays out some specific requirements for `sudo` to make the build easier.
+I use qemu as my emulator as it supports all 3 of my target architectures.
+
+Also, in case anyone is curious, I am using Visual Studio Code for my IDE and FC25 (running 
+on a vmWare ESXi server connected iSCSI to a drobo 800i SAN) as my development PC.
