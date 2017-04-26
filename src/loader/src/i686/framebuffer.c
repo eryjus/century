@@ -34,13 +34,15 @@
 bool FrameBufferInit(void)
 {
     if (mb1Data) {
-        frameBufferInfo.buffer = (uint16_t *)((addr_t)(mb1Data->fbAddr & 0xffffffff));
+        frameBufferInfo.buffer = (uint16_t *)(uint32_t)(mb1Data->fbAddr & 0xffffffff);
         frameBufferInfo.width = mb1Data->fbWidth;
         frameBufferInfo.height = mb1Data->fbHeight;
         frameBufferInfo.bpp = mb1Data->fbBpp;
         frameBufferInfo.pitch = mb1Data->fbPitch;
 
         if (frameBufferInfo.pitch == 0) frameBufferInfo.pitch = frameBufferInfo.width * frameBufferInfo.bpp / 8;
+
+        FrameBufferClear();
 
         return true;
     }

@@ -163,6 +163,7 @@ $(I686-GRUB-CNF): $(lastword $(MAKEFILE_LIST))
 	echo set timeout=3                    						>  $@
 	echo set default=0	                  						>> $@
 	echo menuentry \"Century \(Multiboot\)\" { 	      			>> $@
+	echo   mulule /boot/$(notdir $(I686-KERNEL-ELF))			>> $@
 	echo   multiboot /boot/$(notdir $(I686-LOADER-ELF)) 		>> $@
 	echo   boot							  						>> $@
 	echo }								  						>> $@

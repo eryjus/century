@@ -73,9 +73,6 @@ void ReadMB2Info(void);
 //-------------------------------------------------------------------------------------------------------------------
 const char *GetArch(void);
 
-
-
-
 void UartDevInit(void);
 void UartPutC(const unsigned char byte);
 unsigned char UartGetC(void);

@@ -17,7 +17,7 @@
 //
 //===================================================================================================================
 
-#define DEBUG_MB1
+//#define DEBUG_MB1
 
 #include "mb1.h"
 #include "proto.h"
@@ -37,13 +37,94 @@ void ReadMB1Info(void)
     if (!mb1Data) return;
 
 #ifdef DEBUG_MB1
-    kprintf("Reading Multiboot1 Information (we have a structure at 0x%p\n", mb1Data);
+    kprintf("Reading Multiboot1 Information (we have a structure at 0x%p)\n", mb1Data);
+    kprintf("  Flags: %p\n", mb1Data->flags);
+
+    if (mb1Data->flags & (1<<0)) {
+        kprintf("  The Memory data is valid:\n");
+        kprintf("    Lower Memory %lu\n", mb1Data->memLower);
+        kprintf("    Upper Memory %lu\n", mb1Data->memUpper);
+    }
+
+    if (mb1Data->flags & (1<<1)) {
+        kprintf("  The Boot Device data is valid:\n");
+        kprintf("    Disk %x\n", mb1Data->bootDevice & 0xff);
+        kprintf("    Part 1 %x\n", (mb1Data->memUpper >> 8) & 0xff);
+        kprintf("    Part 2 %x\n", (mb1Data->memUpper >> 16) & 0xff);
+        kprintf("    Part 3 %x\n", (mb1Data->memUpper >> 24) & 0xff);
+    }
+
+    if (mb1Data->flags & (1<<2)) {
+        kprintf("  The Command Line is valid:\n");
+        if (! mb1Data->cmdLine) kprintf("    ... but is NULL\n");
+        else if (strlen(mb1Data->cmdLine) == 0) kprintf("    ... but is empty\n");
+        else kprintf("    %s\n", mb1Data->cmdLine);
+    }
+
+    if (mb1Data->flags & (1<<3)) {
+        kprintf("  The Module Structures are valid:\n");
+        kprintf("    There are %lu modules loaded\n", mb1Data->moduleCount);
+
+        uint32_t i;
+        struct Mb1Mods *m;
+
+        for (m = mb1Data->modules, i = 0; i < mb1Data->moduleCount; i ++) {
+            kprintf("    Module #%u\n", i);
+            kprintf("      Loaded at %p, ending at %p\n", m[i].modStart, m[i].modEnd);
+            kprintf("      Module Identifier: %s\n", m[i].modIdent);
+        }
+    }
+
+    if (mb1Data->flags & (1<<4)) {
+        kprintf("  The Symbol Table is valid:\n");
+    }
+
+    if (mb1Data->flags & (1<<5)) {
+        kprintf("  The ELF Section Header is valid:\n");
+    }
+
+    if (mb1Data->flags & (1<<6)) {
+        kprintf("  The Memory Map Structures are valid:\n");
+    }
+
+    if (mb1Data->flags & (1<<7)) {
+        kprintf("  The Drivers Structures are valid:\n");
+    }
+
+    if (mb1Data->flags & (1<<8)) {
+        kprintf("  The Config Table is valid:\n");
+        kprintf("    The ROM Config Table Address is at %p\n", mb1Data->configTable);
+    }
+
+    if (mb1Data->flags & (1<<9)) {
+        kprintf("  The Boot Loader Name is valid:\n");
+        if (! mb1Data->bootLoaderName) kprintf("    ... but is NULL\n");
+        else if (strlen(mb1Data->bootLoaderName) == 0) kprintf("    ... but is empty\n");
+        else kprintf("    %s\n", mb1Data->bootLoaderName);
+    }
+
+    if (mb1Data->flags & (1<<10)) {
+        kprintf("  The APM Table Structure is valid:\n");
+    }
+
+    if (mb1Data->flags & (1<<11)) {
+        kprintf("  The VBE Data is valid:\n");
+        kprintf("    The VBE Control Info structure is at %p\n", mb1Data->vbeControlInfo);
+        kprintf("    The VBE Mode Info structure is at %p\n", mb1Data->vbeModeInfo);
+        kprintf("    The Current VBE Mode is %d\n", mb1Data->vbeMode);
+        kprintf("    The VBE Protected Mode Interface Table is at Seg:Off %x:%x\n", 
+                mb1Data->vbeInterfaceSeg, mb1Data->vbeInterfaceOff);
+        kprintf("    The VBE Protected Mode Interface Length is %d\n", mb1Data->vbeInterfaceLen);
+        kprintf("    As a stretch goal, the frame buffer addr is at %llx\n", mb1Data->fbAddr);
+    }
+
 #endif
 
     //
     // -- Read the VBE information if available
     //    -------------------------------------
     if (!(mb1Data->flags & (1 << 11))) {
+        UartPutS("No Frame Buffer Information");
         Halt();
     }
 }

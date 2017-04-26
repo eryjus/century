@@ -54,8 +54,8 @@
 # -- Standard Video resolution
 #    -------------------------
 #define MODE_TYPE   0
-#define WIDTH   1280
-#define HEIGHT  1024
+#define WIDTH   1024
+#define HEIGHT  768
 #define DEPTH   16
 
 
@@ -128,9 +128,17 @@ MultibootHeader2End:
 .section        .init
 
 _start:
-    cmp         %eax,0x2badb002
-    jne         Halt
-    mov         mb1Data,%ebx
+    cmp         $0x2badb002,%eax
+    jne         chkMB2
+    mov         %ebx,mb1Data
+    jmp         ldrMain
+
+chkMB2:
+    cmp         $0x36d76289,%eax
+    jne         ldrMain
+#    mov         %ebx,mb2Data
+
+ldrMain:
     jmp         LoaderMain
 
 Halt:

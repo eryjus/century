@@ -49,8 +49,8 @@ struct RPiFrameBufferInfo fbInfo;
 //-------------------------------------------------------------------------------------------------------------------
 bool FrameBufferInit(void)
 {
-    fbInfo.physWidth = fbInfo.virtWidth = 1280;
-    fbInfo.physHeight = fbInfo.virtHeight = 1024;
+    fbInfo.physWidth = fbInfo.virtWidth = 1024;
+    fbInfo.physHeight = fbInfo.virtHeight = 768;
     fbInfo.gpuBytesPerRow = 0;
     fbInfo.depth = 16;
     fbInfo.xOffset = fbInfo.yOffset = 0;

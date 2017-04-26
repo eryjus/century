@@ -98,6 +98,7 @@ struct Multiboot1Info {
     struct Mb1Drives *drives;
     void *configTable;                      // The ROM configuration table
     const char *bootLoaderName;
+    struct Mb1ApmTable *apmTable;
     uint32_t vbeControlInfo;
     uint32_t vbeModeInfo;
     uint16_t vbeMode;

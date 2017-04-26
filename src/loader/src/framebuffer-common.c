@@ -27,7 +27,7 @@
 // -- An internal variable for the current color to print
 //    ---------------------------------------------------
 static uint16_t color = 0xffff;
-static uint16_t bgColor = 0x0000;
+static uint16_t bgColor = 0x1234;
 static uint32_t row = 0;
 static uint32_t col = 0;
 

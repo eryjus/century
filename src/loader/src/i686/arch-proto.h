@@ -22,4 +22,17 @@
 #define __ARCH_PROTO_H_INCLUDED__
 
 
+//
+// -- This is a dummy function to return 0 for the system timer; calling function can handle
+//    --------------------------------------------------------------------------------------
+inline static uint64_t ReadSysTimerCount(void) { return 0; }
+
+
+//
+// -- Read/Write to hardware port
+//    ---------------------------
+uint8_t inb(uint16_t port);
+uint8_t outb(uint16_t port, uint8_t byte);
+
+
 #endif
