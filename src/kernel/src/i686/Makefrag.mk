@@ -123,7 +123,7 @@ endif
 #    ------------------------------------------------
 .PHONY: run-i686
 run-i686: $(I686-ISO)
-	qemu-system-i386 -m 256 -serial stdio -cdrom $<
+	qemu-system-i386 -m 3584 -serial stdio -cdrom $<
 
 
 #

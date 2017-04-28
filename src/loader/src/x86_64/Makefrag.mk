@@ -61,7 +61,7 @@ X86_64-LOADER-SYS 				:= $(subst $(X86_64-LOADER-BIN),$(X86_64-LOADER-SYSROOT)/b
 #
 # -- Some macros to help with finding the include files and building this component
 #    ------------------------------------------------------------------------------
-X86_64-LOADER-IA  				:= -Wa,-I -Wa,$(X86_64-LOADER-SRC) -Wa,-I -Wa,$(LOADER-INC)
+X86_64-LOADER-IA  				:= -Wa,-I -Wa,$(X86_64-LOADER-SRC) -Wa,-I -Wa,$(LOADER-INC) -Wa,-I -Wa,$(GLOBAL-INCLUDE)
 X86_64-LOADER-IC  				:= $(subst $(ASM-PARM),,$(X86_64-LOADER-IA))
 X86_64-LOADER-PREFIX			:= i686-elf
 

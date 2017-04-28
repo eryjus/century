@@ -63,7 +63,7 @@ RPI2B-ISO						+= iso/rpi2b.iso
 #
 # -- Some macros to help with finding the include files and building this component
 #    ------------------------------------------------------------------------------
-RPI2B-LOADER-IA  				:= -Wa,-I -Wa,$(RPI2B-LOADER-SRC) -Wa,-I -Wa,$(LOADER-INC)
+RPI2B-LOADER-IA  				:= -Wa,-I -Wa,$(RPI2B-LOADER-SRC) -Wa,-I -Wa,$(LOADER-INC) -Wa,-I -Wa,$(GLOBAL-INCLUDE)
 RPI2B-LOADER-IC  				:= $(subst $(ASM-PARM),,$(RPI2B-LOADER-IA))
 RPI2B-LOADER-PREFIX				:= arm-eabi
 

@@ -1,6 +1,6 @@
 //===================================================================================================================
 //
-//  loader laoder-main.c -- The i686 loader main entry point
+//  string.c -- String manipulation functions
 //
 //        Copyright (c)  2017 -- Adam Clark
 //
@@ -9,39 +9,30 @@
 //        you can do whatever you want with this stuff. If we meet some day, and you
 //        think this stuff is worth it, you can buy me a beer in return.
 //
+//  Note that strlen() is implemented in the kprintf.c source.  There is no need to move it (since it is 
+//  copyrighted).
+//
 // -----------------------------------------------------------------------------------------------------------------
 //
 //     Date     Tracker  Version  Pgmr  Description
 //  ----------  -------  -------  ----  ---------------------------------------------------------------------------
-//  2017-04-18  Initial   0.0.0   ADCL  Initial version
+//  2017-04-26  Initial   0.0.0   ADCL  Initial version
 //
 //===================================================================================================================
 
 
-#include "mb1.h"
 #include "proto.h"
 
 
 //-------------------------------------------------------------------------------------------------------------------
-// DisplayGreeting() -- Display the welcome greeting
+// kstrncpy() -- copies up to n characters from s to d, and then sets d[n] to NULL
 //-------------------------------------------------------------------------------------------------------------------
-void DisplayGreeting(void)
+char *kstrncpy(char *d, const char *s, size_t n)
 {
-    kprintf("Welcome to Century - %s\n", GetArch());
-}
+    char *rv = d;
 
-
-//-------------------------------------------------------------------------------------------------------------------
-// LoaderMain() -- this is the main entry point for the loader
-//-------------------------------------------------------------------------------------------------------------------
-void LoaderMain(void)
-{
-    UartDevInit();
-    UartPutS("Hello!!\n");
-    ReadMB1Info();
-//    ReadMB2Info();
-    FrameBufferInit();
-    DisplayGreeting();
-    CapabilitiesInit();
-    Halt();
+    while (*s && (rv - d) < n) *d ++ = *s ++;
+    while ((rv - d) < n) *d ++ = '\0';
+    rv[n] = *d = '\0';
+    return rv;
 }

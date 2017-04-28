@@ -58,7 +58,7 @@ I686-LOADER-SYS 				:= $(subst $(I686-LOADER-BIN),$(I686-LOADER-SYSROOT)/boot,$(
 #
 # -- Some macros to help with finding the include files and building this component
 #    ------------------------------------------------------------------------------
-I686-LOADER-IA  				:= -Wa,-I -Wa,$(I686-LOADER-SRC) -Wa,-I -Wa,$(LOADER-INC)
+I686-LOADER-IA  				:= -Wa,-I -Wa,$(I686-LOADER-SRC) -Wa,-I -Wa,$(LOADER-INC) -Wa,-I -Wa,$(GLOBAL-INCLUDE)
 I686-LOADER-IC  				:= $(subst $(ASM-PARM),,$(I686-LOADER-IA))
 I686-LOADER-PREFIX				:= i686-elf
 

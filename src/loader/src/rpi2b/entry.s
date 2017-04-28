@@ -98,6 +98,11 @@ bssClr$:
     b       bssClr$ 
 
 call$:
+    ldr     r3,=0x2badb002
+    cmp     r0,r3                       @ check for MB1 signature
+    ldreq   r3,=mb1Data                 @ save the MB1 address
+    streq   r1,[r3]
+
     bl      LoaderMain
 
 Halt:

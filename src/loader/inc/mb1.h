@@ -41,10 +41,10 @@ struct Mb1Mods {
 //    ------------------------------------------------------------------
 struct Mb1MmapEntry {
     uint32_t mmapSize;
-    uint32_t mmapAddr;
-    uint32_t mmapLength;
+    uint64_t mmapAddr;
+    uint64_t mmapLength;
     uint32_t mmapType;
-};
+} __attribute__((packed));
 
 
 //
@@ -93,7 +93,7 @@ struct Multiboot1Info {
     uint32_t symsAddr;
     uint32_t symsReserved;
     uint32_t mmapLength;
-    struct Mb1Mmap *mmap;
+    struct Mb1MmapEntry *mmap;
     uint32_t drivesLength;
     struct Mb1Drives *drives;
     void *configTable;                      // The ROM configuration table

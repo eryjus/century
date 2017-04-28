@@ -1,6 +1,6 @@
 //===================================================================================================================
 //
-//  loader laoder-main.c -- The i686 loader main entry point
+//  loader rpi2b/arch-capabilities.c -- Build the Architecture-specific capabilities structures for i686
 //
 //        Copyright (c)  2017 -- Adam Clark
 //
@@ -13,35 +13,21 @@
 //
 //     Date     Tracker  Version  Pgmr  Description
 //  ----------  -------  -------  ----  ---------------------------------------------------------------------------
-//  2017-04-18  Initial   0.0.0   ADCL  Initial version
+//  2017-04-27  Initial   0.0.0   ADCL  Initial version
 //
 //===================================================================================================================
 
 
-#include "mb1.h"
+#include "capabilities.h"
 #include "proto.h"
+#include "hw.h"
+
 
 
 //-------------------------------------------------------------------------------------------------------------------
-// DisplayGreeting() -- Display the welcome greeting
+// ArchCapabilities() -- rpi2b capabilities
 //-------------------------------------------------------------------------------------------------------------------
-void DisplayGreeting(void)
+void CapabilitiesArch(void)
 {
-    kprintf("Welcome to Century - %s\n", GetArch());
 }
 
-
-//-------------------------------------------------------------------------------------------------------------------
-// LoaderMain() -- this is the main entry point for the loader
-//-------------------------------------------------------------------------------------------------------------------
-void LoaderMain(void)
-{
-    UartDevInit();
-    UartPutS("Hello!!\n");
-    ReadMB1Info();
-//    ReadMB2Info();
-    FrameBufferInit();
-    DisplayGreeting();
-    CapabilitiesInit();
-    Halt();
-}

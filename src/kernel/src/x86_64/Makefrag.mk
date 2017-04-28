@@ -122,7 +122,7 @@ endif
 #    --------------------------------------------------
 .PHONY: run-x86_64
 run-x86_64: $(X86_64-ISO)
-	qemu-system-x86_64 -m 256 -serial stdio -cdrom $<
+	qemu-system-x86_64 -m 8192 -serial stdio -cdrom $<
 
 
 #

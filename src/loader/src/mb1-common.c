@@ -17,7 +17,7 @@
 //
 //===================================================================================================================
 
-//#define DEBUG_MB1
+#define DEBUG_MB1
 
 #include "mb1.h"
 #include "proto.h"
@@ -37,7 +37,7 @@ void ReadMB1Info(void)
     if (!mb1Data) return;
 
 #ifdef DEBUG_MB1
-    kprintf("Reading Multiboot1 Information (we have a structure at 0x%p)\n", mb1Data);
+    kprintf("Reading Multiboot1 Information (we have a structure at %p)\n", mb1Data);
     kprintf("  Flags: %p\n", mb1Data->flags);
 
     if (mb1Data->flags & (1<<0)) {
@@ -84,7 +84,17 @@ void ReadMB1Info(void)
     }
 
     if (mb1Data->flags & (1<<6)) {
-        kprintf("  The Memory Map Structures are valid:\n");
+        uint32_t size = mb1Data->mmapLength;
+        kprintf("  The Memory Map Structures are valid (length = %x):\n", mb1Data->mmapLength);
+        struct Mb1MmapEntry *entry = mb1Data->mmap;
+        while (size) {
+            kprintf("    At %x%08x: length %x%08x; type 0x%02x\n", (uint32_t)(entry->mmapAddr >> 32), 
+                    (uint32_t)(entry->mmapAddr & 0xffffffff), (uint32_t)(entry->mmapLength >> 32), 
+                    (uint32_t)(entry->mmapLength & 0xffffffff), entry->mmapType);
+
+            size -= (entry->mmapSize + 4);
+            entry = (struct Mb1MmapEntry *)(((uint32_t)entry) + entry->mmapSize + 4);
+        }
     }
 
     if (mb1Data->flags & (1<<7)) {
