@@ -33,7 +33,7 @@ struct Mb1Mods {
     uint32_t modEnd;
     const char *modIdent;
     uint32_t modReserved;
-};
+} __attribute__((packed));
 
 
 //
@@ -78,6 +78,38 @@ struct Mb1ApmTable {
 
 
 //
+// -- Multiboot Pallet Information
+//    ----------------------------
+struct MultibootPallet {
+    uint32_t fbPalletAddr;
+    uint16_t fbPalletNumColors;
+} __attribute__((packed));
+
+
+//
+// -- Multiboot pallet rgb setting
+//    ----------------------------
+struct MultibootColor {
+    uint8_t red;
+    uint8_t green;
+    uint8_t blue;
+} __attribute__((packed));
+
+
+//
+// -- MultibootRgb
+//    ------------
+struct MultibootRbg {
+    uint8_t fbRedFieldPosition;
+    uint8_t fbRedMaskSize;
+    uint8_t fbGreenFieldPosition;
+    uint8_t fbGreenMaskSize;
+    uint8_t fbBlueFieldPosition;
+    uint8_t fbBlueMaskSize;
+} __attribute__((packed));
+
+
+//
 // -- The Multiboot 1 Info block
 //    --------------------------
 struct Multiboot1Info {
@@ -110,6 +142,11 @@ struct Multiboot1Info {
     uint32_t fbWidth;
     uint32_t fbHeight;
     uint8_t fbBpp;
+    uint8_t fbType;
+    union {
+        struct MultibootPallet pallet;
+        struct MultibootRbg rbg;
+    };
 } __attribute__((packed));
 
 

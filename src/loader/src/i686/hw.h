@@ -26,13 +26,6 @@
 
 
 //
-// -- architecture-specific type sizes
-//    --------------------------------
-typedef uint32_t addr_t;                    // This is the size of an address in this architecture
-#define CAP_LOCATION    0x5000
-
-
-//
 // -- The BIOS Data Area identified system capabilities
 //    -------------------------------------------------
 #define BDA             0x400

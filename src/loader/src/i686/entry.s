@@ -136,7 +136,7 @@ _start:
 chkMB2:
     cmp         $0x36d76289,%eax
     jne         ldrMain
-#    mov         %ebx,mb2Data
+    mov         %ebx,mb2Data
 
 ldrMain:
     jmp         LoaderMain

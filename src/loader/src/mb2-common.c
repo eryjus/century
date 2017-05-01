@@ -1,6 +1,6 @@
 //===================================================================================================================
 //
-//  loader rpi2b/arch-capabilities.c -- Build the Architecture-specific capabilities structures for i686
+//  loader mb2-common.c -- Multiboot 2 functions that are common to multiple architectures
 //
 //        Copyright (c)  2017 -- Adam Clark
 //
@@ -13,21 +13,29 @@
 //
 //     Date     Tracker  Version  Pgmr  Description
 //  ----------  -------  -------  ----  ---------------------------------------------------------------------------
-//  2017-04-27  Initial   0.0.0   ADCL  Initial version
+//  2017-04-29  Initial   0.0.0   ADCL  Initial version
 //
 //===================================================================================================================
 
 
-#include "capabilities.h"
+#define DEBUG_MB2
+
+#include "types.h"
 #include "proto.h"
-#include "hw.h"
+#include "mb2.h"
+
+
+//
+// -- This is the multiboot 1 information structure (will remain NULL if not booted with MB1-compliant loader)
+//    --------------------------------------------------------------------------------------------------------
+struct Mb2Fixed *mb2Data = 0;
 
 
 
 //-------------------------------------------------------------------------------------------------------------------
-// ArchCapabilities() -- rpi2b capabilities
+// ReadMB2Info() -- Read the multiboot 2 information from the data provided and store it locally
 //-------------------------------------------------------------------------------------------------------------------
-void CapabilitiesArch(void)
+void ReadMB2Info(void)
 {
+    if (!mb2Data) return;
 }
-

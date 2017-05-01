@@ -17,13 +17,12 @@
 //
 //===================================================================================================================
 
+
 #define DEBUG_FRAMEBUFFER
 
-#include "hw.h"
-#include "frame-buffer.h"
+#include "types.h"
 #include "proto.h"
-
-#include <stdbool.h>
+#include "frame-buffer.h"
 
 
 //
@@ -63,7 +62,7 @@ bool FrameBufferInit(void)
 
     fbInfo.gpuPointer -= 0x40000000;
 
-    frameBufferInfo.buffer = (uint16_t *)((addr_t)(fbInfo.gpuPointer));
+    frameBufferInfo.buffer = (uint16_t *)((arch_addr_t)(fbInfo.gpuPointer));
     frameBufferInfo.width = fbInfo.physWidth;
     frameBufferInfo.height = fbInfo.physWidth;
     frameBufferInfo.bpp = fbInfo.depth;

@@ -18,9 +18,9 @@
 //===================================================================================================================
 
 
-#include "hw.h"
-#include "frame-buffer.h"
+#include "types.h"
 #include "proto.h"
+#include "frame-buffer.h"
 
 
 //

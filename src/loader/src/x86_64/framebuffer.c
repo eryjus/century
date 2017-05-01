@@ -19,13 +19,10 @@
 
 
 
-#include "hw.h"
+#include "types.h"
+#include "proto.h"
 #include "mb1.h"
 #include "frame-buffer.h"
-#include "proto.h"
-
-#include <stdint.h>
-#include <stdbool.h>
 
 
 //-------------------------------------------------------------------------------------------------------------------

@@ -21,9 +21,6 @@
 #define __PROTO_H_INCLUDED__
 
 
-#include "types.h"
-
-
 //
 // -- We will use a standard prototype without a standard FILE type
 //    -------------------------------------------------------------
@@ -32,16 +29,13 @@
 #endif
 #define FILE void
 
+#include "types.h"
+
 
 //-------------------------------------------------------------------------------------------------------------------
-// From capabilities.c
+// Include architecture-specific prototypes
 //-------------------------------------------------------------------------------------------------------------------
-void CapabilitiesArch(void);
-void CapabilitiesEbda(addr_t locn);
-void CapabilitiesInit(void);
-void CapabilitiesParallel(const char *n, bool mmio, addr_t locn);
-void CapabilitiesUart(const char *n, bool mmio, addr_t locn);
-void CapabilitiesVideo(const char *n, bool mmio, addr_t locn);
+#include "arch-proto.h"
 
 
 //-------------------------------------------------------------------------------------------------------------------
@@ -68,21 +62,31 @@ int ksprintf(char *, const char *, ...);
 size_t strlen(const char *);
 
 //-------------------------------------------------------------------------------------------------------------------
-// From mb1.c (including those included from mb1-common.c)
+// From mb1.c, mb2.c, and mb-local.c
 //-------------------------------------------------------------------------------------------------------------------
 void ReadMB1Info(void);
-
-
-//-------------------------------------------------------------------------------------------------------------------
-// From mb2.c (including those included from mb2-common.c)
-//-------------------------------------------------------------------------------------------------------------------
 void ReadMB2Info(void);
+
+bool MbLocalSetCmdLine(const char *c);
+bool MbLocalSetBootloader(const char *l);
+bool MbLocalSetBootDev(uint32_t d, uint32_t p1, uint32_t p2, uint32_t p3);
+bool MbLocalAddModule(arch_addr_t s, arch_addr_t e, const char *n);
+bool MbLocalBasicMem(uint32_t l, uint32_t u);
+bool MbLocalAddMmapEntry(uint64_t a, uint64_t l, int t);
+bool MbLocalSetVbe(uint16_t m, uint16_t s, uint16_t o, uint16_t l, uint8_t *c, uint8_t *i);
+bool MbLocalSetFb(uint64_t a, uint32_t p, uint32_t w, uint32_t h, uint8_t b, uint8_t t);
+bool MbLocalAddPalletColor(uint8_t r, uint8_t g, uint8_t b);
+bool MbLocalSetElfSyms(uint16_t n, uint16_t s, uint16_t x);
+bool MbLocalAddElfHdr(void);
+bool MbLocalSetApm(uint16_t v, uint16_t s, uint32_t o, uint16_t c16, uint16_t d, uint16_t f, uint16_t cl, 
+        uint16_t c16l, uint16_t dl);
 
 
 //-------------------------------------------------------------------------------------------------------------------
 // From string.c -- functions for string manipulation
 //-------------------------------------------------------------------------------------------------------------------
 char *kstrncpy(char *d, const char *s, size_t n);       // note, copies n characters and the set d[n] to NULL
+void memmove(uint8_t *d, const uint8_t *s, size_t cnt);
 
 
 //-------------------------------------------------------------------------------------------------------------------
@@ -95,12 +99,6 @@ void UartPutC(const unsigned char byte);
 unsigned char UartGetC(void);
 void UartWriteBuf(const unsigned char *buffer, size_t size);
 void UartPutS(const char *str);
-
-
-//-------------------------------------------------------------------------------------------------------------------
-// Include architecture-specific prototypes
-//-------------------------------------------------------------------------------------------------------------------
-#include "arch-proto.h"
 
 
 #endif

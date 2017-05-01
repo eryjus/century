@@ -23,6 +23,12 @@
 
 
 //
+// -- architecture-specific type sizes
+//    --------------------------------
+typedef uint64_t arch_addr_t;                    // This is the size of an address in this architecture
+
+
+//
 // -- This is a dummy function to return 0 for the system timer; calling function can handle
 //    --------------------------------------------------------------------------------------
 inline static uint64_t ReadSysTimerCount(void) { return 0; }

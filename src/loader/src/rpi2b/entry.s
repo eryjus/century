@@ -102,7 +102,12 @@ call$:
     cmp     r0,r3                       @ check for MB1 signature
     ldreq   r3,=mb1Data                 @ save the MB1 address
     streq   r1,[r3]
+    bleq    LoaderMain
 
+    ldr     r3,=0x36d76289 
+    cmp     r0,r3                       @ check for MB2 signature
+    ldreq   r3,=mb2Data                 @ save the MB@ address
+    streq   r1,[r3]
     bl      LoaderMain
 
 Halt:

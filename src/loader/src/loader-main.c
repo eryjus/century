@@ -18,7 +18,7 @@
 //===================================================================================================================
 
 
-#include "mb1.h"
+#include "types.h"
 #include "proto.h"
 
 
@@ -39,9 +39,8 @@ void LoaderMain(void)
     UartDevInit();
     UartPutS("Hello!!\n");
     ReadMB1Info();
-//    ReadMB2Info();
+    ReadMB2Info();
     FrameBufferInit();
     DisplayGreeting();
-    CapabilitiesInit();
     Halt();
 }

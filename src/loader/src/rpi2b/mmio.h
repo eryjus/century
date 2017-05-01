@@ -29,7 +29,7 @@
 //
 // You better know what you are writing and to where.  There are no sanity checks here!
 //-------------------------------------------------------------------------------------------------------------------
-static inline void MmioWrite(addr_t reg, uint32_t data)
+static inline void MmioWrite(arch_addr_t reg, uint32_t data)
 {
     *(volatile uint32_t *)reg = data;
 }
@@ -40,7 +40,7 @@ static inline void MmioWrite(addr_t reg, uint32_t data)
 //
 // You better know where you are reading from.  There are no sanity checks here!
 //-------------------------------------------------------------------------------------------------------------------
-static inline uint32_t MmioRead(addr_t reg)
+static inline uint32_t MmioRead(arch_addr_t reg)
 {
     return *(volatile uint32_t *)reg;
 }
