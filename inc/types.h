@@ -1,6 +1,6 @@
 //===================================================================================================================
 //
-//  loader frame-buffer.h -- The common structs to manipulate the frame buffer and its contents
+//  types.h -- All types common across all architectures
 //
 //        Copyright (c)  2017 -- Adam Clark
 //
@@ -13,40 +13,27 @@
 //
 //     Date     Tracker  Version  Pgmr  Description
 //  ----------  -------  -------  ----  ---------------------------------------------------------------------------
-//  2017-04-19  Initial   0.0.0   ADCL  Initial version
+//  2017-04-17  Initial   0.0.0   ADCL  Initial version
 //
 //===================================================================================================================
 
-
-#ifndef __FRAME_BUFFER_H_INCLUDED__
-#define __FRAME_BUFFER_H_INCLUDED__
-
-
-#include "types.h"
+#ifndef __TYPES_H_INCLUDED__
+#define __TYPES_H_INCLUDED__
 
 
-//
-// -- This is the common implementation of the frame buffer control structure
-//    -----------------------------------------------------------------------
-struct FrameBufferInfo {
-    uint16_t *buffer;
-    uint32_t width;
-    uint32_t height;
-    uint32_t bpp;
-    uint32_t pitch; 
-};
+#include <stdint.h>
+#include <stddef.h>
+#include <stdbool.h>
+
+#include "hw.h"
 
 
 //
-// -- This is the common declaration of the frame buffer control structure
-//    --------------------------------------------------------------------
-extern struct FrameBufferInfo frameBufferInfo;
-
-
-//
-// -- This is the internally linked system monospace font
-//    ---------------------------------------------------
-extern uint8_t systemFont[];
+// -- These are unicode encodings that Century supports
+//    -------------------------------------------------
+typedef char utf8_t;
+typedef uint_least16_t utf16_t;
+typedef uint_least32_t utf32_t;
 
 
 #endif

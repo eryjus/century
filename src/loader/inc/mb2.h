@@ -26,6 +26,23 @@
 
 
 //
+// -- MB2 tag types
+//    -------------
+enum {
+    MB2_TAG_LAST_TAG = 0,
+    MB2_TAG_CMD_LINE = 1,
+    MB2_TAG_LOADER = 2,
+    MB2_TAG_MODULE = 3,
+    MB2_TAG_BASIC_MEM = 4,
+    MB2_TAG_BOOT_DEV = 5,
+    MB2_TAG_MMAP = 6,
+    MB2_TAG_VBE = 7,
+    MB2_TAG_FRAMEBUFFER = 8,
+    MB2_TAG_ELF_SYMS = 9,
+    MB2_TAG_APM = 10,
+};
+
+//
 // -- The fixed multiboot info structure elements
 //    -------------------------------------------
 struct Mb2Fixed {
@@ -69,7 +86,7 @@ struct Mb2BootDevice{
 //    -----------------------------
 struct Mb2CmdLine {
     struct Mb2BasicTag tag;         // type == 1
-    uint8_t cmdLine[0];
+    utf8_t cmdLine[0];
 } __attribute__((packed));
 
 
@@ -78,9 +95,9 @@ struct Mb2CmdLine {
 //    ---------------
 struct Mb2Module {
     struct Mb2BasicTag tag;         // type == 3
-    uint32_t modStart;
-    uint32_t modEnd;
-    uint8_t name[0];
+    arch_addr_t modStart;
+    arch_addr_t modEnd;
+    utf8_t name[0];
 } __attribute__((packed));
 
 
@@ -90,7 +107,7 @@ struct Mb2Module {
 struct Mb2ElfSymbols {
     struct Mb2BasicTag tag;         // type == 9
     uint16_t num;
-    uint16_t intSize;
+    uint16_t entSize;
     uint16_t shndx;
     uint16_t reserved;
     uint8_t sectionHdrs[0];
@@ -118,7 +135,7 @@ struct Mb2MemMap {
 //    -------------------
 struct Mb2Loader {
     struct Mb2BasicTag tag;         // type == 2
-    uint8_t name[0];
+    utf8_t name[0];
 } __attribute__((packed));
 
 

@@ -25,7 +25,8 @@
 //
 // -- architecture-specific type sizes
 //    --------------------------------
-typedef uint32_t arch_addr_t;                    // This is the size of an address in this architecture
+typedef uint32_t arch_addr_t;                   // This is the size of an address in this architecture
+typedef uint32_t addr_t;                        // This is the size of an address in the current cpu bit model
 
 
 //

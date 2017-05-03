@@ -9,33 +9,52 @@
 //        you can do whatever you want with this stuff. If we meet some day, and you
 //        think this stuff is worth it, you can buy me a beer in return.
 //
+//  So, this is the first significant change in direction I feel compelled to document.  Up until now, I have 
+//  been working against a dedicated framebuffer structure that is populated as the result of what is returned
+//  from multiboot (1 or 2).  However, in starting the structure definitions to hand off to the kernel for loading
+//  drivers, I realized the redundancy.  So, I am eliminating the dedicated framebuffer structure from the 
+//  loader object and will interface directly with the structures I will pass into the kernel.  This is going to 
+//  have a couple of advantages:
+//  1) I can also keep col/row there, allowing the kernel to pick up writing to the screen where the loader left
+//     off.
+//  2) It eliminates redundancy.
+//  3) It is common across all architectures and across all boot loaders (multiboot compliant).  So, the 
+//     architecture-specific code is reduced.
+//
+//  Several files go away with this change -- relating to the framebuffer and the architecture-specific code.
+//
 // -----------------------------------------------------------------------------------------------------------------
 //
 //     Date     Tracker  Version  Pgmr  Description
 //  ----------  -------  -------  ----  ---------------------------------------------------------------------------
 //  2017-04-17  Initial   0.0.0   ADCL  Initial version
+//  2017-05-02    #12     0.0.0   ADCL  Eliminate the dedicated FrameBufferInfo structure and read from the
+//                                      MbLocal structure instead.
 //
 //===================================================================================================================
 
 
 #include "types.h"
 #include "proto.h"
-#include "frame-buffer.h"
+#include "mb-local.h"
 
 
 //
-// -- An internal variable for the current color to print
+// -- This is the internally linked system monospace font
 //    ---------------------------------------------------
-static uint16_t color = 0xffff;
-static uint16_t bgColor = 0x1234;
-static uint32_t row = 0;
-static uint32_t col = 0;
+extern uint8_t systemFont[];
 
 
-//
-// -- This is the internal common implementation of the framebuffer
-//    -------------------------------------------------------------
-struct FrameBufferInfo frameBufferInfo;
+//-------------------------------------------------------------------------------------------------------------------
+// FrameBufferInit() -- Initialize the additional frame buffer info
+//-------------------------------------------------------------------------------------------------------------------
+bool FrameBufferInit(void)
+{
+    mbLocal.color = 0xffff;
+    mbLocal.bgColor = 0x1234;
+    FrameBufferClear();
+    return true;
+}
 
 
 //-------------------------------------------------------------------------------------------------------------------
@@ -46,62 +65,65 @@ void FrameBufferClear(void)
     //
     // -- calculate the number of 16-bit words to write (rows * cols)
     //    -----------------------------------------------------------------------
-    int cnt = frameBufferInfo.height * frameBufferInfo.width;
-    uint16_t *b = frameBufferInfo.buffer;
+    int cnt = GetFbHeight() * GetFbWidth();
+    uint16_t *b = (uint16_t *)GetFbAddr();
 
     for (int i = 0; i < cnt; i ++) {
-        b[i] = bgColor;
+        b[i] = GetBgColor();
     }
 
-    row = 0;
-    col = 0;
+    SetRow(0);
+    SetCol(0);
 }
 
 
 //-------------------------------------------------------------------------------------------------------------------
 // FrameBufferDrawChar() -- Draw a character on the screen
 //-------------------------------------------------------------------------------------------------------------------
-void FrameBufferDrawChar(int ch)
+void FrameBufferDrawChar(utf8_t ch)
 {
-    if (!frameBufferInfo.buffer) return;
+    if (ch & 0x80) {
+        if ((ch & 0xc0) == 0xc0) ch = '?';
+        else return;
+    }
 
     if (ch == '\n') {
-        col = 0;
-        row ++;
+        SetCol(0);
+        SetRow(GetRow() + 1);
         return;
     }
 
     if (ch == '\t') {
-        col += (8 - (col % 8));
+        SetCol(GetCol() + (8 - (GetCol() % 8)));
         
-        if (col > frameBufferInfo.width / 8) {
-            col = 0;
-            row ++;
+        if (GetCol() > GetFbWidth() / 8) {
+            SetCol(0);
+            SetRow(GetRow() + 1);
         }
 
         return;
     }
 
     uint8_t *chImg = &systemFont[ch * 16];              // first the character image (16 rows per image)
-    uint16_t *where = &frameBufferInfo.buffer[(row * 16 * frameBufferInfo.width) + (col * 8)];
+    uint16_t *where = &((uint16_t *)GetFbAddr())[(GetRow() * GetFbPitch()) + (GetCol() * 8)];
 
-    for (int i = 0; i < 16; i ++, where += frameBufferInfo.width) {
+    for (int i = 0; i < 16; i ++, where += GetFbWidth()) {
         uint8_t c = chImg[i];
 
         for (int j = 0; j < 8; j ++, c = c >> 1) {
-            if (c & 0x01) where[j] = color;
-            else where[j] = bgColor;
+            if (c & 0x01) where[j] = GetColor();
+            else where[j] = GetBgColor();
         }
     }  
 
-    col ++;
+    SetCol(GetCol() + 1);
 }
 
 
 //-------------------------------------------------------------------------------------------------------------------
 // FrameBufferSetColor() -- set the color code (uint16_t) to be the result of parsing the string ("#FFFFFF")
 //-------------------------------------------------------------------------------------------------------------------
-uint16_t FrameBufferSetColor(const char *c)
+uint16_t FrameBufferSetColor(const utf8_t *c)
 {
     int r;
     int g;
@@ -154,8 +176,8 @@ uint16_t FrameBufferSetColor(const char *c)
     g = (g & 0xff) >> 2;
     b = (b & 0xff) >> 3;
 
-    color = (r << 11) | (g << 5) | b;
-    return color;
+    SetColor((r << 11) | (g << 5) | b);
+    return GetColor();
 }
 
 
@@ -165,9 +187,9 @@ uint16_t FrameBufferSetColor(const char *c)
 //  Note that with our loader the only stream we will output to is stdout.  Therefore, there is no need for the 
 //  stream parameter which is ignored.
 //-------------------------------------------------------------------------------------------------------------------
-int putc(int ch, FILE *f)
+int putc(utf8_t ch, FILE *f)
 {
-    extern void UartPutC(const unsigned char byte);
+    extern void UartPutC(const utf8_t byte);
 
     UartPutC(ch);
     FrameBufferDrawChar(ch);

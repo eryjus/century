@@ -31,7 +31,7 @@
 struct Mb1Mods {
     uint32_t modStart;
     uint32_t modEnd;
-    const char *modIdent;
+    utf8_t *modIdent;
     uint32_t modReserved;
 } __attribute__((packed));
 
@@ -117,7 +117,7 @@ struct Multiboot1Info {
     uint32_t memLower;       
     uint32_t memUpper;
     uint32_t bootDevice;
-    const char *cmdLine;
+    utf8_t *cmdLine;
     uint32_t moduleCount;
     struct Mb1Mods *modules;
     uint32_t symsTabSize;
@@ -129,7 +129,7 @@ struct Multiboot1Info {
     uint32_t drivesLength;
     struct Mb1Drives *drives;
     void *configTable;                      // The ROM configuration table
-    const char *bootLoaderName;
+    utf8_t *bootLoaderName;
     struct Mb1ApmTable *apmTable;
     uint32_t vbeControlInfo;
     uint32_t vbeModeInfo;

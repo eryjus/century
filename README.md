@@ -21,6 +21,43 @@ OS development is a large project and many do not know what order to take tasks 
 The public repository documents my own development path and changes in direction.
 
 
+***Why?***
+
+I admit, I have had several partial starts, some on my own and some with existing OSes.
+So, why this OS and why now?  That's a fair question.
+
+First, I am by no means an expert.  Each system I have started has had specific
+objectives in mind.  My first incarnation was a basic learning project.  It lacked
+focus and direction.  However, I was able to get multiple processes running properly.  
+I also managed to break it and fix it several times.  It was 32-bit.
+
+Then, I embarked on a 64-bit assembly system.  I took it on in assembly because I was
+not able to figure out how to co-mingle 32-bit and 64-bit code in C.  Well, if you can't
+fix it, feature it!  So, I took it on in 100% assembly.  Again, I was able to get multiple
+processes running.
+
+Then I looked at xv6, a teaching kernel which I refer back to even today.  I took that
+as a starting point since it had a working filesystem and user-mode applications.  I learn
+better when I have a working system to look review and dig into.  I was going to slowly 
+replace portions with things of my own invention.
+
+Well, after several years away, I have decided to pick up the OS again.  I had acquired a
+Raspberry Pi 2 that I wanted to start playing with and never did.  I got tired of it 
+sitting on my desk staring me down.  So, I started over with this incarnation of Century.
+
+The goals here are pretty simple:
+1. Document the progress of this OS for those that learn through another's mistakes.  Use
+   GitHub to keep track of my history.
+2. Establish a common kernel base source that can be run on multiple architectures, with 
+   architecture-specific code handled properly.
+3. Write this kernel as a micro-kernel.
+4. Write the GUI desktop manager myself, but port as many other components as possible.
+   Therefore, take time to make the porting process as easy as possible.
+
+But, again, I am no expert.  You might just want to follow this project just to watch the 
+train wreck unfolding!  ;)
+
+
 ***Some thoughts***
 
 I have taken the development tasks in a breadth-first approach, developing support for

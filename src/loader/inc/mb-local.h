@@ -53,11 +53,11 @@ enum MmapType {
 struct MbLocal {
     // -- The command line parameters (max length 512 bytes, including terminating NULL)
     bool hasCommandLine;
-    uint8_t cmdLine[MAX_MB_STRING + 1];
+    utf8_t cmdLine[MAX_MB_STRING + 1];
 
     // -- The boot loader name that got us here (max length 512 bytes, including terminating NULL)
     bool hasBootloader;
-    uint8_t bootloader[MAX_MB_STRING + 1];
+    utf8_t bootloader[MAX_MB_STRING + 1];
 
     // -- The modules loaded
     bool hasModulesLoaded;
@@ -65,7 +65,7 @@ struct MbLocal {
     struct {
         arch_addr_t modStart;
         arch_addr_t modEnd;
-        uint8_t modName[MAX_MB_STRING + 1];
+        utf8_t modName[MAX_MB_STRING + 1];
     } modules[MAX_MB_MODULES];
 
     // -- Basic memory sizes
@@ -133,7 +133,39 @@ struct MbLocal {
     uint16_t apmCSegLen;
     uint16_t apmCSeg16Len;
     uint16_t apmDSegLen;
+
+    //
+    // -- These additional fields are used to communicate additional information to the kernel 
+    //    when we pass control over
+    //    ------------------------------------------------------------------------------------
+    uint16_t color;
+    uint16_t bgColor;
+    uint32_t row;
+    uint32_t col;
 };
 
+
+//
+// -- declare the variable globally for the references that will follow
+//    -----------------------------------------------------------------
+extern struct MbLocal mbLocal;
+
+
+//
+// -- finally, several inline access functions for several fields
+//    -----------------------------------------------------------
+static inline int16_t GetColor(void) { return mbLocal.color; }
+static inline void SetColor(uint16_t c) { mbLocal.color = c; }
+static inline int16_t GetBgColor(void) { return mbLocal.bgColor; }
+static inline void SetBgColor(uint16_t c) { mbLocal.bgColor = c; }
+static inline int32_t GetRow(void) { return mbLocal.row; }
+static inline void SetRow(uint32_t r) { mbLocal.row = r; }
+static inline int32_t GetCol(void) { return mbLocal.col; }
+static inline void SetCol(uint32_t c) { mbLocal.col = c; }
+static inline addr_t GetFbAddr(void) { return (addr_t)mbLocal.fbAddr; }
+static inline uint32_t GetFbPitch(void) { return mbLocal.fbPitch; }
+static inline uint32_t GetFbWidth(void) { return mbLocal.fbWidth; }
+static inline uint32_t GetFbHeight(void) { return mbLocal.fbHeight; }
+static inline uint8_t GetFbBpp(void) { return mbLocal.fbBpp; }
 
 #endif

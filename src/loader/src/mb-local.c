@@ -29,12 +29,12 @@ struct MbLocal mbLocal;                 // this will be on the bss, so should be
 //-------------------------------------------------------------------------------------------------------------------
 // MbLocalSetCmdLine() -- Set the command line parameters from Multiboot (256 bytes max)
 //-------------------------------------------------------------------------------------------------------------------
-bool MbLocalSetCmdLine(const char *c)
+bool MbLocalSetCmdLine(const utf8_t *c)
 {
     if (mbLocal.hasCommandLine) return false;
     if (!c) return false;
     if (*c == '\0') return false;
-    kstrncpy((char *)mbLocal.cmdLine, c, MAX_MB_STRING);
+    kstrncpy((char *)mbLocal.cmdLine, (const char *)c, MAX_MB_STRING);
     mbLocal.hasCommandLine = true;
     if (strlen(c) > MAX_MB_STRING) return false;
     return true;
@@ -58,12 +58,12 @@ bool MbLocalSetBootDev(uint32_t d, uint32_t p1, uint32_t p2, uint32_t p3)
 //-------------------------------------------------------------------------------------------------------------------
 // MbLocalBootloader() -- Set the bootloader from Multiboot (256 bytes max)
 //-------------------------------------------------------------------------------------------------------------------
-bool MbLocalSetBootloader(const char *l)
+bool MbLocalSetBootloader(const utf8_t *l)
 {
     if (mbLocal.hasBootloader) return false;
     if (!l) return false;
     if (*l == '\0') return false;
-    kstrncpy((char *)mbLocal.bootloader, l, MAX_MB_STRING);
+    kstrncpy(mbLocal.bootloader, l, MAX_MB_STRING);
     mbLocal.hasBootloader = true;
     if (strlen(l) > MAX_MB_STRING) return false;
     return true;
@@ -73,13 +73,13 @@ bool MbLocalSetBootloader(const char *l)
 //-------------------------------------------------------------------------------------------------------------------
 // MbLocalAddModule() -- Add a boot loader module to the list of loaded files
 //-------------------------------------------------------------------------------------------------------------------
-bool MbLocalAddModule(arch_addr_t s, arch_addr_t e, const char *n)
+bool MbLocalAddModule(arch_addr_t s, arch_addr_t e, utf8_t *n)
 {
     if (mbLocal.numModulesLoaded >= MAX_MB_MODULES) return false;
 
     mbLocal.modules[mbLocal.numModulesLoaded].modStart = s;
     mbLocal.modules[mbLocal.numModulesLoaded].modEnd = e;
-    if (n) kstrncpy((char *)mbLocal.modules[mbLocal.numModulesLoaded].modName, n, MAX_MB_STRING);
+    if (n) kstrncpy((char *)mbLocal.modules[mbLocal.numModulesLoaded].modName, (char *)n, MAX_MB_STRING);
     mbLocal.hasModulesLoaded = true;
     mbLocal.numModulesLoaded ++;
 

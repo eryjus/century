@@ -279,7 +279,7 @@ void UartDevInit(void)
 //
 // Note that this function busy loops waiting for the FIFO to have room.
 //-------------------------------------------------------------------------------------------------------------------
-void UartPutC(const unsigned char byte)
+void UartPutC(const utf8_t byte)
 {
     UartTx(byte);
 }

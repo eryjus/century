@@ -25,3 +25,17 @@ supply a multiboot-compliant second stage for ARM (and specifically for the RPi)
 Now, this does not specifically mention RPi2 (which has a different hardware address
 space), but I'm willing to bet I can get it working.  The project is still active
 as of Jan-2017.  This project is at https://github.com/jncronin/rpi-boot
+
+
+**Unicode Support**
+
+Century will support Unicode.  It's silly not to.  However, the question is: to what
+level?  Here are some thoughts:
+
+* UTF-8 is the default encoding.
+* Certain portions (such as the loader) will only support code points 0 through 127
+  (ASCII).  This restriction is reasonable since the font used would be too big 
+  with support more than this.  For any code point >127, the code point will be
+  ignored (not printed).  A '?' will be printed in place.
+* When printing/displaying a code point, all representations will be converted into 
+  UTF-32 encoding.
