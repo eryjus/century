@@ -31,15 +31,15 @@
 #
 # -- The subordinate make files
 #    --------------------------
-LOADER-MAKE-FRAG       			:= $(wildcard src/loader/src/**/Makefrag.mk)
+LOADER-MAKE-FRAG       			:= $(wildcard modules/loader/src/**/Makefrag.mk)
 LOADER-MAKE-FRAG				:= $(sort $(LOADER-MAKE-FRAG))
 
 
 #
 # -- Some things common to all loader
 #    ---------------------------------
-LOADER-SRC						:= src/loader/src
-LOADER-INC						:= src/loader/inc
+LOADER-SRC						:= modules/loader/src
+LOADER-INC						:= modules/loader/inc
 LOADER-OBJ						:= obj/loader
 LOADER-BIN						:= bin
 LOADER-SYSROOT					:= sysroot

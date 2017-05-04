@@ -19,7 +19,7 @@
 ##    +- lib            // intermediate targets for library files
 ##    | +- rpi2b        // this is code that is specific to the Raspberry Pi 2B
 ##    | +- x86          // this is code specific to the intel x86 32-bit processor
-##    +- src            // source files common to all architectures
+##    +- modules        // source files common to all architectures
 ##    | +- kernel       // this is the kernel code
 ##    | | +- inc        // include files internal to the kernel
 ##    | | +- src        // source files internal to the kernel  
@@ -98,15 +98,15 @@ endif
 #    2) libc/libk
 #    3) generic
 #    ----------------------------------------------------------------
-MAKE-FRAG       				:= $(wildcard src/**/Makefrag.mk)
+MAKE-FRAG       				:= $(wildcard modules/**/Makefrag.mk)
 MAKE-FRAG						:= $(sort $(MAKE-FRAG))
 
 
 #
 # -- Here we need to determine all the supported architectures -- determined by the Arch folders in kernel
 #    -----------------------------------------------------------------------------------------------------
-ARCH-LIST       				:= $(dir $(wildcard src/kernel/src/**/Makefrag.mk))
-ARCH-LIST       				:= $(subst src/kernel/src/,,$(ARCH-LIST))
+ARCH-LIST       				:= $(dir $(wildcard modules/kernel/src/**/Makefrag.mk))
+ARCH-LIST       				:= $(subst modules/kernel/src/,,$(ARCH-LIST))
 ARCH-LIST       				:= $(subst /,,$(ARCH-LIST))
 
 

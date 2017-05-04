@@ -31,15 +31,15 @@
 #
 # -- The subordinate make files
 #    --------------------------
-KERNEL-MAKE-FRAG       			:= $(wildcard src/kernel/src/**/Makefrag.mk)
+KERNEL-MAKE-FRAG       			:= $(wildcard modules/kernel/src/**/Makefrag.mk)
 KERNEL-MAKE-FRAG				:= $(sort $(KERNEL-MAKE-FRAG))
 
 
 #
 # -- Some things common to all kernels
 #    ---------------------------------
-KERNEL-SRC						:= src/kernel/src
-KERNEL-INC						:= src/kernel/inc
+KERNEL-SRC						:= modules/kernel/src
+KERNEL-INC						:= modules/kernel/inc
 KERNEL-OBJ						:= obj/kernel
 KERNEL-BIN						:= bin
 KERNEL-SYSROOT					:= sysroot
