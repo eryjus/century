@@ -41,7 +41,6 @@ void ReadMB1Info(void)
 
 #ifdef DEBUG_MB1
     kprintf("Reading Multiboot1 Information (we have a structure at %p)\n", mb1Data);
-    kprintf("  Flags: %p\n", mb1Data->flags);
 #endif
 
     if (mb1Data->flags & (1<<0)) {
@@ -71,7 +70,7 @@ void ReadMB1Info(void)
     }
 
     if (mb1Data->flags & (1<<5)) {
-        kprintf("TODO: Set the ELF Symbols in the MBLocal Structure\n");
+        MbLocalSetElfSyms(mb1Data->elf.elfNum, mb1Data->elf.elfSize, mb1Data->elf.elfShndx);
     }
 
     if (mb1Data->flags & (1<<6)) {
@@ -85,7 +84,7 @@ void ReadMB1Info(void)
     }
 
     if (mb1Data->flags & (1<<7)) {
-        kprintf("TODO: Determine if the Drivers data is valid enough to add to MbLocal\n");
+        kprintf("TODO: Determine if the Drives data is valid enough to add to MbLocal\n");
     }
 
     if (mb1Data->flags & (1<<8)) {
@@ -97,7 +96,9 @@ void ReadMB1Info(void)
     }
 
     if (mb1Data->flags & (1<<10)) {
-        kprintf("TODO: Set the APM data in MbLocal\n");
+        struct Mb1ApmTable *apm = mb1Data->apmTable;
+        MbLocalSetApm(apm->apmVersion, apm->apmCSeg, apm->apmOffset, apm->apmCSeg16, apm->apmDSeg, apm->apmFlags, 
+                apm->apmCSegLen, apm->apmCSeg16Len, apm->apmDSegLen);
     }
 
     if (mb1Data->flags & (1<<11)) {

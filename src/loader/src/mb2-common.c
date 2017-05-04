@@ -38,6 +38,10 @@ void ReadMB2Info(void)
 {
     if (!mb2Data) return;
 
+#ifdef DEBUG_MB2
+    kprintf("Reading Multiboot2 Information (we have a structure at %p)\n", mb2Data);
+#endif
+
     uint32_t locn = (uint32_t)mb2Data + sizeof(struct Mb2Fixed);
     bool lastTag = false;
 

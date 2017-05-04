@@ -120,10 +120,20 @@ struct Multiboot1Info {
     utf8_t *cmdLine;
     uint32_t moduleCount;
     struct Mb1Mods *modules;
-    uint32_t symsTabSize;
-    uint32_t symsStrSize;
-    uint32_t symsAddr;
-    uint32_t symsReserved;
+    union {
+        struct {
+            uint32_t symsTabSize;
+            uint32_t symsStrSize;
+            uint32_t symsAddr;
+            uint32_t symsReserved;
+        } aout;
+        struct {
+            uint32_t elfNum;
+            uint32_t elfSize;
+            uint32_t elfAddr;
+            uint32_t elfShndx;
+        } elf;
+    };
     uint32_t mmapLength;
     struct Mb1MmapEntry *mmap;
     uint32_t drivesLength;
