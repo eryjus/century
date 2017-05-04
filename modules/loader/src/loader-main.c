@@ -40,6 +40,7 @@ void LoaderMain(void)
     UartPutS(u8"Hello!!\n");
     ReadMB1Info();
     ReadMB2Info();
+    ReadBda();
     FrameBufferInit();
     DisplayGreeting();
     Halt();

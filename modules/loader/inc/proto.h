@@ -80,6 +80,10 @@ bool MbLocalSetElfSyms(uint16_t n, uint16_t s, uint16_t x);
 bool MbLocalAddElfHdr(void);
 bool MbLocalSetApm(uint16_t v, uint16_t s, uint32_t o, uint16_t c16, uint16_t d, uint16_t f, uint16_t cl, 
         uint16_t c16l, uint16_t dl);
+bool MbLocalAddSerial(int t, uint32_t p);
+bool MbLocalAddParallel(int t, uint32_t p);
+bool MbLocalAddVideo(int t, uint32_t p);
+bool MbLocalSetEbda(uint32_t l);
 
 
 //-------------------------------------------------------------------------------------------------------------------

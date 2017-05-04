@@ -223,3 +223,61 @@ bool MbLocalSetApm(uint16_t v, uint16_t s, uint32_t o, uint16_t c16, uint16_t d,
     return true;    
 }
 
+
+//-------------------------------------------------------------------------------------------------------------------
+// mbLocalSetEbda() -- Set the Extended BIOS Data Area ()
+//-------------------------------------------------------------------------------------------------------------------
+bool MbLocalSetEbda(uint32_t l)
+{
+    if (mbLocal.ebda != 0) return false;
+
+    mbLocal.ebda = l;
+    return true;
+}
+
+
+//-------------------------------------------------------------------------------------------------------------------
+// MbLocalAddSerial() -- Add a Serial Device
+//-------------------------------------------------------------------------------------------------------------------
+bool MbLocalAddSerial(int t, uint32_t p)
+{
+    if (mbLocal.serialPorts >= MAX_MB_SERIAL) return false;
+
+    mbLocal.serial[mbLocal.serialPorts].type = t;
+    mbLocal.serial[mbLocal.serialPorts].locn = p;
+    mbLocal.serialPorts ++;
+
+    return true;
+}
+
+
+//-------------------------------------------------------------------------------------------------------------------
+// MbLocalAddParallel() -- Add a Parallel Device
+//-------------------------------------------------------------------------------------------------------------------
+bool MbLocalAddParallel(int t, uint32_t p)
+{
+    if (mbLocal.parallelPorts >= MAX_MB_PARALLEL) return false;
+
+    mbLocal.parallel[mbLocal.parallelPorts].type = t;
+    mbLocal.parallel[mbLocal.parallelPorts].locn = p;
+    mbLocal.parallelPorts ++;
+
+    return true;
+}
+
+
+//-------------------------------------------------------------------------------------------------------------------
+// MbLocalAddVideo() -- Add a VideoDevice
+//-------------------------------------------------------------------------------------------------------------------
+bool MbLocalAddVideo(int t, uint32_t v)
+{
+    if (mbLocal.videoInterfaces >= MAX_MB_VIDEO) return false;
+
+    mbLocal.video[mbLocal.videoInterfaces].type = t;
+    mbLocal.video[mbLocal.videoInterfaces].locn = v;
+    mbLocal.videoInterfaces ++;
+
+    return true;
+}
+
+

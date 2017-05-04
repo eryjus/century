@@ -42,4 +42,10 @@ uint8_t inb(uint16_t port);
 uint8_t outb(uint16_t port, uint8_t byte);
 
 
+//
+// -- Read BDA Data
+//    -------------
+void ReadBda(void);
+
+
 #endif

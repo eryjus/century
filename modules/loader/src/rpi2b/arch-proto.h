@@ -35,4 +35,11 @@ typedef uint32_t addr_t;                        // This is the size of an addres
 bool MailboxSend(uint32_t message, uint32_t mailbox);
 uint32_t MailboxReceive(uint32_t mailbox);
 
+
+//-------------------------------------------------------------------------------------------------------------------
+// RPi2 does not have a BDA.  This allows consistent code to eb written
+//-------------------------------------------------------------------------------------------------------------------
+#define ReadBda()
+
+
 #endif

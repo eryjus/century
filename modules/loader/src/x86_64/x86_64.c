@@ -25,3 +25,9 @@ const char *GetArch(void)
 {
     return "x86_64";
 }
+
+
+//
+// -- Include the x86 common architecture files here:
+//    -----------------------------------------------
+#include "x86/bda.c"

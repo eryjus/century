@@ -24,8 +24,8 @@
 #ifndef __MB_LOCAL_H_LOADED__
 #define __MB_LOCAL_H_LOADED__
 
-
 #include "types.h"
+
 
 //
 // -- These defines identify some of the limitations of the stage-3 loader
@@ -34,6 +34,9 @@
 #define MAX_MB_MODULES  (32)
 #define MAX_MB_MEM      (32)
 #define MAX_MB_PALLET   (256)
+#define MAX_MB_SERIAL   (8)
+#define MAX_MB_PARALLEL (4)
+#define MAX_MB_VIDEO    (1)
 
 
 //
@@ -44,6 +47,16 @@ enum MmapType {
     MMAP_FREE = 1,
     MMAP_ACPI = 3,
     MMAP_PRESERVE = 4,
+};
+
+
+//
+// -- Different architectures have different hardware interface types
+//    ---------------------------------------------------------------
+enum IfaceType {
+    HW_PORT = 0x01,
+    HW_MMIO = 0x02,
+    HW_MBOX = 0x03,
 };
 
 
@@ -134,6 +147,30 @@ struct MbLocal {
     uint16_t apmCSeg16Len;
     uint16_t apmDSegLen;
 
+    // -- Serial Ports
+    uint32_t serialPorts;
+    struct {
+        enum IfaceType type;
+        uint32_t locn;
+    } serial[MAX_MB_SERIAL];
+
+    // -- Parallel Ports
+    uint32_t parallelPorts;
+    struct {
+        enum IfaceType type;
+        uint32_t locn;
+    } parallel[MAX_MB_PARALLEL];
+
+    // -- Video Interfaces
+    uint32_t videoInterfaces;
+    struct {
+        enum IfaceType type;
+        uint32_t locn;
+    } video[MAX_MB_VIDEO];
+
+    uint32_t ebda;
+
+
     //
     // -- These additional fields are used to communicate additional information to the kernel 
     //    when we pass control over
@@ -167,5 +204,6 @@ static inline uint32_t GetFbPitch(void) { return mbLocal.fbPitch; }
 static inline uint32_t GetFbWidth(void) { return mbLocal.fbWidth; }
 static inline uint32_t GetFbHeight(void) { return mbLocal.fbHeight; }
 static inline uint8_t GetFbBpp(void) { return mbLocal.fbBpp; }
+
 
 #endif

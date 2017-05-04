@@ -25,3 +25,9 @@ const char *GetArch(void)
 {
     return u8"i686";
 }
+
+
+//
+// -- Include the x86 common architecture files here:
+//    -----------------------------------------------
+#include "x86/bda.c"
