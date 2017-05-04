@@ -416,7 +416,7 @@ const struct serial_ops serialOps = {
 //-------------------------------------------------------------------------------------------------------------------
 struct serial_device uart1 = {
     .dev.parent = NULL,
-    .dev.devName = "uart1",
+    .dev.devName = u8"uart1",
     .dev.devClass = DEV_SERIAL,
     .dev.valid = false,             // assume it does not exist
     .hwInterface = UART_BASE,

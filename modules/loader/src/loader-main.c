@@ -27,7 +27,7 @@
 //-------------------------------------------------------------------------------------------------------------------
 void DisplayGreeting(void)
 {
-    kprintf("Welcome to Century - %s\n", GetArch());
+    kprintf(u8"Welcome to Century - %s\n", GetArch());
 }
 
 
@@ -37,7 +37,7 @@ void DisplayGreeting(void)
 void LoaderMain(void)
 {
     UartDevInit();
-    UartPutS("Hello!!\n");
+    UartPutS(u8"Hello!!\n");
     ReadMB1Info();
     ReadMB2Info();
     FrameBufferInit();

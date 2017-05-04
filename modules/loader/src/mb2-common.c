@@ -39,14 +39,14 @@ void ReadMB2Info(void)
     if (!mb2Data) return;
 
 #ifdef DEBUG_MB2
-    kprintf("Reading Multiboot2 Information (we have a structure at %p)\n", mb2Data);
+    kprintf(u8"Reading Multiboot2 Information (we have a structure at %p)\n", mb2Data);
 #endif
 
     uint32_t locn = (uint32_t)mb2Data + sizeof(struct Mb2Fixed);
     bool lastTag = false;
 
 #ifdef DEBUG_MB2
-    kprintf("The starting location of the MB2 Info Block is %p\n", locn);
+    kprintf(u8"The starting location of the MB2 Info Block is %p\n", locn);
 #endif
 
     while (!lastTag) {
@@ -58,7 +58,7 @@ void ReadMB2Info(void)
 
         case MB2_TAG_CMD_LINE:
 #ifdef DEBUG_MB2
-            kprintf("MB2 Command Line\n", locn);
+            kprintf(u8"MB2 Command Line\n", locn);
 #endif
 
             MbLocalSetCmdLine(((struct Mb2CmdLine *)locn)->cmdLine);
@@ -66,7 +66,7 @@ void ReadMB2Info(void)
 
         case MB2_TAG_LOADER:
 #ifdef DEBUG_MB2
-            kprintf("MB2 Loader Name\n", locn);
+            kprintf(u8"MB2 Loader Name\n", locn);
 #endif
 
             MbLocalSetBootloader(((struct Mb2Loader *)locn)->name);
@@ -74,7 +74,7 @@ void ReadMB2Info(void)
 
         case MB2_TAG_MODULE: {
 #ifdef DEBUG_MB2
-            kprintf("MB2 Module\n", locn);
+            kprintf(u8"MB2 Module\n", locn);
 #endif
 
             struct Mb2Module *mod = (struct Mb2Module *)locn;
@@ -84,7 +84,7 @@ void ReadMB2Info(void)
 
         case MB2_TAG_BASIC_MEM: {
 #ifdef DEBUG_MB2
-            kprintf("MB2 Basic Memory\n", locn);
+            kprintf(u8"MB2 Basic Memory\n", locn);
 #endif
 
             struct Mb2BasicMem *mem = (struct Mb2BasicMem *)locn;
@@ -94,7 +94,7 @@ void ReadMB2Info(void)
 
         case MB2_TAG_BOOT_DEV: {
 #ifdef DEBUG_MB2
-            kprintf("MB2 Boot Device\n", locn);
+            kprintf(u8"MB2 Boot Device\n", locn);
 #endif
 
             struct Mb2BootDevice *dev = (struct Mb2BootDevice *)locn;
@@ -104,7 +104,7 @@ void ReadMB2Info(void)
 
         case MB2_TAG_MMAP: {
 #ifdef DEBUG_MB2
-            kprintf("MB2 Memory Map\n", locn);
+            kprintf(u8"MB2 Memory Map\n", locn);
 #endif
 
             struct Mb2MemMap *mmap = (struct Mb2MemMap *)locn;
@@ -118,7 +118,7 @@ void ReadMB2Info(void)
 
         case MB2_TAG_VBE: {
 #ifdef DEBUG_MB2
-            kprintf("MB2 VBE Info\n", locn);
+            kprintf(u8"MB2 VBE Info\n", locn);
 #endif
 
             struct Mb2VbeInfo *vbe = (struct Mb2VbeInfo *)locn;
@@ -130,7 +130,7 @@ void ReadMB2Info(void)
 
         case MB2_TAG_FRAMEBUFFER: {
 #ifdef DEBUG_MB2
-            kprintf("MB2 Framebuffer Info\n", locn);
+            kprintf(u8"MB2 Framebuffer Info\n", locn);
 #endif
 
             struct Mb2FbInfo *fb = (struct Mb2FbInfo *)locn;
@@ -148,7 +148,7 @@ void ReadMB2Info(void)
 
         case MB2_TAG_ELF_SYMS: {
 #ifdef DEBUG_MB2
-            kprintf("MB2 ELF Symbols\n", locn);
+            kprintf(u8"MB2 ELF Symbols\n", locn);
 #endif
 
             struct Mb2ElfSymbols *elf = (struct Mb2ElfSymbols *)locn;
@@ -159,7 +159,7 @@ void ReadMB2Info(void)
 
         case MB2_TAG_APM: {
 #ifdef DEBUG_MB2
-            kprintf("MB2 APM Table\n", locn);
+            kprintf(u8"MB2 APM Table\n", locn);
 #endif
 
             struct Mb2Apm *apm = (struct Mb2Apm *)locn;
@@ -170,13 +170,13 @@ void ReadMB2Info(void)
         }
 
         default:
-            kprintf("Unimplemented MB2 type %d\n", tag->type);
+            kprintf(u8"Unimplemented MB2 type %d\n", tag->type);
             break;
         }
 
         locn += (tag->size + (~(tag->size - 1) & 0x7));
 #ifdef DEBUG_MB2
-        kprintf("Incrementing the location by 0x%x to %p\n", tag->size, locn);
+        kprintf(u8"Incrementing the location by 0x%x to %p\n", tag->size, locn);
 #endif
     }
 }

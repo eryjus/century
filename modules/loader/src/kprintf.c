@@ -74,7 +74,7 @@ typedef unsigned long uintptr_t;
 typedef long ptrdiff_t;
 #define NULL ((void*)0)
 #define NBBY    8               /* number of bits in a byte */
-char const hex2ascii_data[] = "0123456789abcdefghijklmnopqrstuvwxyz";
+char const hex2ascii_data[] = u8"0123456789abcdefghijklmnopqrstuvwxyz";
 #define hex2ascii(hex)  (hex2ascii_data[hex])
 #define va_list __builtin_va_list
 #define va_start __builtin_va_start
@@ -164,7 +164,7 @@ kvprintf(char const *fmt, void (*func)(int, void*), void *arg, int radix, va_lis
 		d = NULL;
 
 	if (fmt == NULL)
-		fmt = "(fmt null)\n";
+		fmt = u8"(fmt null)\n";
 
 	if (radix < 2 || radix > 36)
 		radix = 10;
@@ -324,7 +324,7 @@ reswitch:	switch (ch = (u_char)*fmt++) {
 		case 's':
 			p = va_arg(ap, char *);
 			if (p == NULL)
-				p = "(null)";
+				p = u8"(null)";
 			if (!dot)
 				n = strlen (p);
 			else

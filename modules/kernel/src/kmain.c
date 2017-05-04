@@ -29,7 +29,7 @@ void kMain(uint32_t r0, uint32_t r1, uint32_t atags)
 {
     UartDevInit();
 
-    UartPutS("Hello, world!!");
+    UartPutS(u8"Hello, world!!");
 
     while (true) UartPutC(UartGetC());
 }

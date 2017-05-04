@@ -40,7 +40,7 @@ void ReadMB1Info(void)
     if (!mb1Data) return;
 
 #ifdef DEBUG_MB1
-    kprintf("Reading Multiboot1 Information (we have a structure at %p)\n", mb1Data);
+    kprintf(u8"Reading Multiboot1 Information (we have a structure at %p)\n", mb1Data);
 #endif
 
     if (mb1Data->flags & (1<<0)) {
@@ -66,7 +66,7 @@ void ReadMB1Info(void)
     }
 
     if (mb1Data->flags & (1<<4)) {
-        kprintf("TODO: Set the non-ELF Symbols in the MBLocal Structure\n");
+        kprintf(u8"TODO: Set the non-ELF Symbols in the MBLocal Structure\n");
     }
 
     if (mb1Data->flags & (1<<5)) {
@@ -84,11 +84,11 @@ void ReadMB1Info(void)
     }
 
     if (mb1Data->flags & (1<<7)) {
-        kprintf("TODO: Determine if the Drives data is valid enough to add to MbLocal\n");
+        kprintf(u8"TODO: Determine if the Drives data is valid enough to add to MbLocal\n");
     }
 
     if (mb1Data->flags & (1<<8)) {
-        kprintf("TODO: Determine if the Config Table data is valid enough to add to MbLocal\n");
+        kprintf(u8"TODO: Determine if the Config Table data is valid enough to add to MbLocal\n");
     }
 
     if (mb1Data->flags & (1<<9)) {

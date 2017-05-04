@@ -196,7 +196,7 @@ bool MbLocalSetElfSyms(uint16_t n, uint16_t s, uint16_t x)
 //-------------------------------------------------------------------------------------------------------------------
 bool MbLocalAddElfHdr(void)
 {
-    kprintf("TODO: Implement adding an ELF header pointer\n");
+    kprintf(u8"TODO: Implement adding an ELF header pointer\n");
     return true;
 }
 
