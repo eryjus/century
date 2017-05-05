@@ -31,3 +31,4 @@ const char *GetArch(void)
 // -- Include the x86 common architecture files here:
 //    -----------------------------------------------
 #include "x86/bda.c"
+#include "x86/fb.c"

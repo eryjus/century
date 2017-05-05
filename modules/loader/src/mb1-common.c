@@ -104,13 +104,18 @@ void ReadMB1Info(void)
     if (mb1Data->flags & (1<<11)) {
         MbLocalSetVbe(mb1Data->vbeMode, mb1Data->vbeInterfaceSeg, mb1Data->vbeInterfaceOff, mb1Data->vbeInterfaceLen, 
                 (uint8_t *)mb1Data->vbeControlInfo, (uint8_t *)mb1Data->vbeModeInfo);
-        MbLocalSetFb(mb1Data->fbAddr, mb1Data->fbPitch, mb1Data->fbWidth, mb1Data->fbHeight, mb1Data->fbBpp, 
-                mb1Data->fbType);
 
-        if (mb1Data->fbType == 0) {
-            for (uint32_t i = 0; i < mb1Data->pallet.fbPalletNumColors; i ++) {
-                struct MultibootColor *color = &(((struct MultibootColor *)mb1Data->pallet.fbPalletAddr)[i]);
-                MbLocalAddPalletColor(color->red, color->green, color->blue);
+        // -- We can only assume that GRUB is willing to provide these fields
+        char *l = mb1Data->bootLoaderName;
+        if (l[0] == 'G' && l[1] == 'R' && l[2] == 'U' && l[3] == 'B') {
+            MbLocalSetFb(mb1Data->fbAddr, mb1Data->fbPitch, mb1Data->fbWidth, mb1Data->fbHeight, mb1Data->fbBpp, 
+                    mb1Data->fbType);
+
+            if (mb1Data->fbType == 0) {
+                for (uint32_t i = 0; i < mb1Data->pallet.fbPalletNumColors; i ++) {
+                    struct MultibootColor *color = &(((struct MultibootColor *)mb1Data->pallet.fbPalletAddr)[i]);
+                    MbLocalAddPalletColor(color->red, color->green, color->blue);
+                }
             }
         }
     }

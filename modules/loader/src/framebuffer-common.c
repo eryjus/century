@@ -46,22 +46,12 @@ extern uint8_t systemFont[];
 
 
 //-------------------------------------------------------------------------------------------------------------------
-// FrameBufferInit() -- Initialize the additional frame buffer info
-//-------------------------------------------------------------------------------------------------------------------
-bool FrameBufferInit(void)
-{
-    mbLocal.color = 0xffff;
-    mbLocal.bgColor = 0x1234;
-    FrameBufferClear();
-    return true;
-}
-
-
-//-------------------------------------------------------------------------------------------------------------------
 // FrameBufferClear() -- Clear the screen defined by the frame buffer
 //-------------------------------------------------------------------------------------------------------------------
 void FrameBufferClear(void)
 {
+
+
     //
     // -- calculate the number of 16-bit words to write (rows * cols)
     //    -----------------------------------------------------------------------

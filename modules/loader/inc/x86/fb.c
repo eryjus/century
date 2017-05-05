@@ -1,6 +1,6 @@
 //===================================================================================================================
 //
-//  loader x86_64/x86_64.c -- High-level functions specific to the x86_64 arcitecture
+//  loader inc/x86/fb.c -- X86-specific framebuffer functions
 //
 //        Copyright (c)  2017 -- Adam Clark
 //
@@ -13,22 +13,22 @@
 //
 //     Date     Tracker  Version  Pgmr  Description
 //  ----------  -------  -------  ----  ---------------------------------------------------------------------------
-//  2017-04-19  Initial   0.0.0   ADCL  Initial version
+//  2017-05-03  Initial   0.0.0   ADCL  Initial version
 //
 //===================================================================================================================
 
 
+#include "types.h"
+#include "proto.h"
+
+
 //-------------------------------------------------------------------------------------------------------------------
-// GetArch() -- Get a short string to identify the architecture
+// FrameBufferInit() -- Initialize the additional frame buffer info
 //-------------------------------------------------------------------------------------------------------------------
-const char *GetArch(void)
+bool FrameBufferInit(void)
 {
-    return "x86_64";
+    mbLocal.color = 0xffff;
+    mbLocal.bgColor = 0x1234;
+    FrameBufferClear();
+    return true;
 }
-
-
-//
-// -- Include the x86 common architecture files here:
-//    -----------------------------------------------
-#include "x86/bda.c"
-#include "x86/fb.c"
