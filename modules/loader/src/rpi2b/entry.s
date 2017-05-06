@@ -77,7 +77,7 @@ wait_loop:
 .section    .text
 
 initialize:
-    mov     sp,#0x8000                  @ set up a stack
+    ldr     sp,=stackend                @ set up a stack
 
 
 @
@@ -121,3 +121,12 @@ Halt:
 .section        .rodata
 systemFont:
 .incbin         "system-font.bin"
+
+
+.section        .bootstack
+stack32:        
+    .rept       1024
+    .byte       0
+    .endr
+stackend:
+    
