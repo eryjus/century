@@ -121,6 +121,10 @@ Type6End:
     .long       8                               # size=8
 MultibootHeader2End:
 
+GdtDesc:
+    .word       24-1                            # size minus one...
+    .long       gdt                             # this is the addresss
+
 
 #
 # -- This section holds the main entry point.  Again, it will be located behind the multiboot header.
@@ -128,6 +132,21 @@ MultibootHeader2End:
 .section        .init
 
 _start:
+    mov         $GdtDesc,%ecx                   # Get the gdt address
+    lgdt        (%ecx)                          # and load the GDT
+
+    mov         $0x10,%ecx
+    mov         %cx,%ds
+    mov         %cx,%es
+    mov         %cx,%fs
+    mov         %cx,%gs
+    mov         %cx,%ss
+    
+    push        $0x08
+    push        $newGDT
+    retf                                        # an almost jump, returning to an address rather than jump    
+
+newGDT:
     cmp         $0x2badb002,%eax
     jne         chkMB2
     mov         %ebx,mb1Data
