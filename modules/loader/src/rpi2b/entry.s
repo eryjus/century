@@ -77,7 +77,7 @@ wait_loop:
 .section    .text
 
 initialize:
-    ldr     sp,=stackend                @ set up a stack
+    ldr     sp,=0x800                    @ set up a stack
 
 
 @

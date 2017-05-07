@@ -40,7 +40,6 @@ SECTIONS {
      */
     .text : {
         *(.mboot)
-        *(.bootstack)
         *(.init)
         *(.text)
     }

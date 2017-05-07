@@ -59,9 +59,6 @@
 #define DEPTH   16
 
 
-#define STACKSIZE 0x400              # 1K stack
-
-
 #
 # -- This is the multiboot 1 header
 #    ------------------------------
@@ -143,7 +140,7 @@ _start:
     mov         %cx,%es
     mov         %cx,%fs
     mov         %cx,%gs
-    mov         $stackend,%esp                  # set up a stack
+    mov         $0x200000,%esp                  # set up a stack
     mov         %cx,%ss
     
     push        $0x08
@@ -177,10 +174,3 @@ Halt:
 systemFont:
 .incbin         "system-font.bin"
 
-
-.section        .bootstack
-stack32:        
-    .rept       1024
-    .byte       0
-    .endr
-stackend:
