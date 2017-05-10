@@ -117,7 +117,7 @@ endif
 # -- The $(X86_64-LOADER-SYS) target, which will cover 3 of the 7 targets above
 #    --------------------------------------------------------------------------
 $(X86_64-LOADER-SYS): $(X86_64-LOADER-ELF)
-	echo "X86_64-SYSROOT:" $(notdir $@)	
+	echo "X86_64-SYSROOT:" $@
 	mkdir -p $(dir $@)
 	rm -f $@
 	cp $< $@
@@ -181,7 +181,7 @@ $(X86_64-LOADER-OBJ)/%.o: $(X86_64-LOADER-SRC)/%.c
 #
 # -- Generic rule to make a .d file from the x86_64 source folder
 #    ------------------------------------------------------------
-$(I6X86_6486-LOADER-OBJ)/%.d: $(X86_64-LOADER-SRC)/%.c
+$(X86_64-LOADER-OBJ)/%.d: $(X86_64-LOADER-SRC)/%.c
 	echo "X86_64-DEPEND :" $<
 	mkdir -p $(dir $@)
 	rm -f $@

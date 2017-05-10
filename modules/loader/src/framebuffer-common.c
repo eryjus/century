@@ -95,7 +95,7 @@ void FrameBufferDrawChar(utf8_t ch)
     }
 
     uint8_t *chImg = &systemFont[ch * 16];              // first the character image (16 rows per image)
-    uint16_t *where = &((uint16_t *)GetFbAddr())[(GetRow() * GetFbPitch()) + (GetCol() * 8)];
+    uint16_t *where = &((uint16_t *)GetFbAddr())[(GetRow() * GetFbWidth() * 16) + (GetCol() * 8)];
 
     for (int i = 0; i < 16; i ++, where += GetFbWidth()) {
         uint8_t c = chImg[i];

@@ -24,6 +24,8 @@
 #include "types.h"
 #include "proto.h"
 #include "mb1.h"
+#include "mb-local.h"
+
 
 
 //
@@ -78,9 +80,15 @@ void ReadMB1Info(void)
         struct Mb1MmapEntry *entry = mb1Data->mmap;
         while (size) {
             MbLocalAddMmapEntry(entry->mmapAddr, entry->mmapLength, entry->mmapType);
+            uint64_t newLimit = entry->mmapAddr + entry->mmapLength;
+            if (newLimit > GetMemAmount()) SetMemAmount(newLimit);
             size -= (entry->mmapSize + 4);
             entry = (struct Mb1MmapEntry *)(((uint32_t)entry) + entry->mmapSize + 4);
         }
+
+        kprintf(u8"Found 0x%08lx %08lx bytes of memory\n", (uint32_t)(GetMemAmount() >> 32), (uint32_t)(GetMemAmount() & 0xffffffff));
+        uint32_t memSize = (uint32_t)(GetMemAmount() >> 12);
+        kprintf(u8"  0x%lx pages; bitmap frames 0x%lx\n", memSize, (memSize >> (12 + 3)) + (memSize&0x7fff?1:0));
     }
 
     if (mb1Data->flags & (1<<7)) {

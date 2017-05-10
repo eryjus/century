@@ -43,5 +43,6 @@ void LoaderMain(void)
     ReadBda();
     FrameBufferInit();
     DisplayGreeting();
+    PhysMMInit();
     Halt();
 }

@@ -26,7 +26,7 @@ SECTIONS {
      */
      
     . = 0x100000; 
-    _kernelStart = .;
+    _loaderStart = .;
     _textStart = .;
     
     /*
@@ -87,5 +87,5 @@ SECTIONS {
     }
     . = ALIGN(4096);
     _bssEnd = .;
-    _kernelEnd = .;
+    _loaderEnd = .;
 }

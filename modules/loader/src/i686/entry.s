@@ -140,8 +140,8 @@ _start:
     mov         %cx,%es
     mov         %cx,%fs
     mov         %cx,%gs
+    mov         %cx,%ss                         # halts interrupts for one more instruction to set up stack
     mov         $0x200000,%esp                  # set up a stack
-    mov         %cx,%ss
     
     push        $0x08
     push        $newGDT

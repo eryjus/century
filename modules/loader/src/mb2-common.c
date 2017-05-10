@@ -23,6 +23,7 @@
 #include "types.h"
 #include "proto.h"
 #include "mb2.h"
+#include "mb-local.h"
 
 
 //
@@ -111,7 +112,13 @@ void ReadMB2Info(void)
             uint32_t s = tag->size / mmap->entrySize;
             for (uint32_t i = 0; i < s; i ++) {
                 MbLocalAddMmapEntry(mmap->entries[i].baseAddr, mmap->entries[i].length, mmap->entries[0].type);
+                uint64_t newLimit = mmap->entries[i].baseAddr + mmap->entries[i].length;
+                if (newLimit > GetMemAmount()) SetMemAmount(newLimit);
             }
+
+            kprintf(u8"Found 0x%08lx %08lx bytes of memory\n", (uint32_t)(GetMemAmount() >> 32), (uint32_t)(GetMemAmount() & 0xffffffff));
+            uint32_t memSize = (uint32_t)(GetMemAmount() >> 12);
+            kprintf(u8"  0x%lx pages; bitmap frames 0x%lx\n", memSize, (memSize >> (12 + 3)) + (memSize&0x7fff?1:0));
 
             break;
         }

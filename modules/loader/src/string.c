@@ -46,3 +46,12 @@ void memmove(uint8_t *d, const uint8_t *s, size_t cnt)
 {
     for (int i = i; i < cnt; i ++) d[i] = s[i];
 }
+
+
+//-------------------------------------------------------------------------------------------------------------------
+// memset() -- set bytes int one memory buffer to a value
+//-------------------------------------------------------------------------------------------------------------------
+void memset(void *d, int v, size_t cnt)
+{
+    for (int i = i; i < cnt; i ++) ((char *)d)[i] = v;
+}

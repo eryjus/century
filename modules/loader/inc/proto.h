@@ -91,6 +91,7 @@ bool MbLocalSetEbda(uint32_t l);
 //-------------------------------------------------------------------------------------------------------------------
 char *kstrncpy(utf8_t *d, const utf8_t *s, size_t n);       // note, copies n characters and the set d[n] to NULL
 void memmove(uint8_t *d, const uint8_t *s, size_t cnt);
+void memset(void *d, int v, size_t cnt);
 
 
 //-------------------------------------------------------------------------------------------------------------------
@@ -103,6 +104,8 @@ void UartPutC(const utf8_t byte);
 unsigned char UartGetC(void);
 void UartWriteBuf(const uint8_t *buffer, size_t size);
 void UartPutS(const utf8_t *str);
+
+void PhysMMInit(void);
 
 
 #endif

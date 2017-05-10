@@ -179,6 +179,11 @@ struct MbLocal {
     uint16_t bgColor;
     uint32_t row;
     uint32_t col;
+
+    // -- phys memory manager
+    uint64_t memAmount;
+    uint32_t *memBitMap;            // this is an external structure that will moved;managed separately
+    uint32_t memSizeFrames;         // this is the size of the bitmap in frames
 };
 
 
@@ -204,6 +209,9 @@ static inline uint32_t GetFbPitch(void) { return mbLocal.fbPitch; }
 static inline uint32_t GetFbWidth(void) { return mbLocal.fbWidth; }
 static inline uint32_t GetFbHeight(void) { return mbLocal.fbHeight; }
 static inline uint8_t GetFbBpp(void) { return mbLocal.fbBpp; }
+static inline uint64_t GetMemAmount(void) { return mbLocal.memAmount; }
+static inline void SetMemAmount(uint64_t a) { mbLocal.memAmount = a; }
+static inline uint32_t GetEbda(void) { return mbLocal.ebda; }
 
 
 #endif
