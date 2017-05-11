@@ -41,152 +41,86 @@
 ##      +- rpi2b        // this is code that is specific to the Raspberry Pi 2B
 ##      +- x86          // this is code specific to the intel x86 32-bit processor
 ##
-## There is a serious need to some strict standards with all the different setups we will need to be able to 
-## support.  All of the explicit targets and string macros will have the following format:
+##  So, I have had a rather large shift in direction with my build system.  I have started to use tup to 
+##  execute the core of my build, and then use make to do more scripting things.  The reason for the shift 
+##  is simple: tup is FAR easier to maintain than makefiles.  One of the key reasons for this is that the 
+##  Tupfile is located in the target directory.  Therefore, if there is something that is needed to satisfy
+##  a dependency, tup only needs to look in the directory where that dependency should be and if it is not 
+##  there, read the Tupfile on how to create that object.
 ##
-##        ARCH-MODULE-NAME
+##  However, there is also give and take with tup.  Since I do not want to clutter up my sysroot folders with
+##  a bunch of Tupfiles that would end up on the .iso or .img, I have implemnted the parts that would copy
+##  these files into the sysroot folders in this makefile.  The result is MUCH simpler.  I have a default
+##  'all' target that simply calls tup to refresh the build.  Any of the other specialized targets (.iso, 
+##  or running QEMU) depend on the all target and then run the steps needed to complete the script.
 ##
-## Where:
-## * ARCH is the architecture of the target to build
-## * MODULE is the module that will be build 
-## * NAME is the actual thing that is being referred to
+##  The only key function I am giving up is the ability to build an architecture or a module independently.
+##  For the moment, I think I can live with that by creating stub functions when needed.
 ##
-## Additionally, the following common targets will be supported in all aspects
-## make 				-- make everything (alias for `make all`)
-## make all 			-- make everything, including the iso images
-## make clean 			-- clean up everything
-## make <arch>			-- make everything for the architecture, updating up to sysroot (not the iso)
-## make <module>		-- make the module for all architectures, updating up to sysroot (not the iso)
-## make <arch>-<module>	-- make the module/architecture combination, updating up to sysroot (not the iso)
-## make <arch>-iso 		-- make an iso image for the architecture
-## make run-<arch>		-- make an indo the the architecture and run it with QEMU
-##
-## For the 'all' and 'clean' targets, clobal variables have been created here that the individual Makefrag.mk 
-## files are required to update to support.  Note the position of these in this file -- the order the files are 
-## read matters.  Therefore, the $(ALL) variable is only read after all the other Makefrag.mk files are read.
-## clean is similar.
-##
-## The problem will be the _arch_-iso, which will be dependent on several other Makefrag.mk files.  To get around 
-## this, we will construct a string macro called $(CURRENT-TARGET) that will be built based on the actual target
-## requested.  $(CURRENT-TARGET) is required to be constructed in the individual Makefrag.mk files.
-##                                                                                                                 
 ## ----------------------------------------------------------------------------------------------------------------- 
 ##                                                                                                                 
 ##     Date     Tracker  Version  Pgmr  Description                                                                         
 ##  ----------  -------  -------  ----  ---------------------------------------------------------------------------
 ##  2017-03-26  Initial   0.0.0   ADCL  Initial version 
+##  2017-05-10            0.0.0   ADCL  Gut this file in favor of tup and some short scripts
 ## 
 #####################################################################################################################
 
+.PHONY: all all-iso i686-iso run-i686 debug-i686 x86_64-iso run-x86_64 debug-x86_64 rpi2b-iso run-rpi2b debug-rpi2b
+all:
+	tup
 
-.SILENT:              # we don't need to see all the verbose stuff
+all-iso: all i686-iso x86_64-iso rpi2b-iso
 
-#
-# -- There are several kinds of targets we can make, and we want to make sure we can extract the architecture 
-#    from the target; if the target is all, then we will handle this specially
-#    --------------------------------------------------------------------------------------------------------
-ifeq ("$(MAKECMDGOALS)", "all")
-ARCH							:= 
-else
-ARCH            				!= ./tools/get-arch.sh $(MAKECMDGOALS)
-endif
-
-
-#
-# -- Here we need to determine all the Makefrag files; these will be:
-#    1) kernel (architecture specific)
-#    2) libc/libk
-#    3) generic
-#    ----------------------------------------------------------------
-MAKE-FRAG       				:= $(wildcard modules/**/Makefrag.mk)
-MAKE-FRAG						:= $(sort $(MAKE-FRAG))
+i686-iso: all
+	rm -fR iso/i686.iso
+	cp -fR bin/i686/* sysroot/i686/
+	find sysroot/i686 -type f -name Tupfile -delete
+	grub2-mkrescue -o iso/i686.iso sysroot/i686 2> /dev/null
 
 
-#
-# -- Here we need to determine all the supported architectures -- determined by the Arch folders in kernel
-#    -----------------------------------------------------------------------------------------------------
-ARCH-LIST       				:= $(dir $(wildcard modules/kernel/src/**/Makefrag.mk))
-ARCH-LIST       				:= $(subst modules/kernel/src/,,$(ARCH-LIST))
-ARCH-LIST       				:= $(subst /,,$(ARCH-LIST))
+run-i686: i686-iso
+	qemu-system-i386 -m 3584 -serial stdio -cdrom iso/i686.iso
 
 
-#
-# -- Here we get a complete list of all the makefiles upon which the software builds require
-#    ---------------------------------------------------------------------------------------
-MAKE-FILES						:= Makefile $(MAKE-FRAG)
+debug-i686: i686-iso
+	qemu-system-i386 -m 3584 -serial stdio -cdrom iso/i686.iso -s -S
 
 
-#
-# -- We need to define several empty lists that will be populated by the Makefrags
-#    -----------------------------------------------------------------------------
-ALL             				:=
-OS-INCL         				:=
-CLEAN           				:=
-DEPEND          				:=
-CURRENT-TARGET  				:=
-ISO								:=
+x86_64-iso: all
+	rm -fR iso/x86_64.iso
+	cp -fR bin/x86_64/* sysroot/x86_64/
+	find sysroot/x86_64 -type f -name Tupfile -delete
+	grub2-mkrescue -o iso/x86_64.iso sysroot/x86_64 2> /dev/null
 
 
-#
-# -- Some things need to be defined at the highest level, here
-#    ---------------------------------------------------------
-ASM-PARM						:= -Wa,
-GCC-LIB							:= -lgcc
-GLOBAL-INCLUDE					:= inc
+run-x86_64: x86_64-iso
+	qemu-system-x86_64 -m 8192 -serial stdio -cdrom iso/x86_64.iso
 
 
-#
-# -- Assume we want to make a comprehensive list of all architectures
-#    ----------------------------------------------------------------
-.PHONY: all
-all: current-target
+debug-x86_64: x86_64-iso
+	qemu-system-x86_64 -m 8192 -serial stdio -cdrom iso/x86_64.iso -s -S
 
 
-#
-# -- Dump some key variables
-#    -----------------------
-.PHONY: disp-vars
-disp-vars:
-	echo MAKECMDGOALS=$(MAKECMDGOALS)
-	echo
-	echo ALL=$(ALL)
-	echo ARCH=$(ARCH)
-	echo ARCH-LIST=$(ARCH-LIST)
-	echo MAKE-FILES=$(MAKE-FILES)
-	echo MAKE-FRAG=$(MAKE-FRAG)
-	echo OS-INCL=$(OS-INCL)
+rpi2b-iso: all
+	rm -fR iso/rpi2b.img
+	cp -fR bin/rpi2b/* sysroot/rpi2b/
+	find sysroot/rpi2b -type f -name Tupfile -delete
+	mkdir -p ./p1
+	dd if=/dev/zero of=iso/rpi2b.img count=20 bs=1M
+	parted --script iso/rpi2b.img mklabel msdos mkpart p ext2 1 20 set 1 boot on
+	sudo kpartx -as iso/rpi2b.img || true
+	sudo mkfs.ext2 /dev/mapper/loop0p1
+	sudo mount /dev/mapper/loop0p1 ./p1
+	sudo cp -R sysroot/rpi2b/* p1/
+	sudo umount ./p1
+	sudo kpartx -d iso/rpi2b.img
+	rm -fR ./p1
 
 
-#
-# -- At this point, include all the individual Makefrag files that are specific to each module and/or architecture
-#    -------------------------------------------------------------------------------------------------------------
-include $(MAKE-FRAG)
-
-ifneq ($(MAKECMDGOALS),clean)
--include $(DEPEND)
-endif
+run-rpi2b: rpi2b-iso
+	qemu-system-arm -m 256 -M raspi2 -serial stdio -kernel ~/bin/kernel-qemu.img --hda iso/rpi2b.img
 
 
-#
-# -- This is an important rule!!!!  This is the key to the flexible build targets in the build system.  Nearly 
-#    all possible targets will be dependent on this target, especially when there are dependencied across 
-#    more than one module.  Each module will then be responsible for populating the value of $(CURRENT_TARGET).
-#    Order matters.
-#    ----------------------------------------------------------------------------------------------------------
-.PHONY: current-target
-current-target: iso $(CURRENT-TARGET) 
-
-
-.PHONY: iso
-iso: $(ISO)
-
-
-#
-# -- Clean up the build
-#    ------------------
-.PHONY: clean
-clean: $(CLEAN)
-	rm -fR bin
-	rm -fR obj
-	rm -fR iso
-	rm -fR sysroot
+debug-rpi2b: rpi2b-iso
+	qemu-system-arm -m 256 -M raspi2 -serial stdio -kernel ~/bin/kernel-qemu.img --hda iso/rpi2b.img -s -S

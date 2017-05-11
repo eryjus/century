@@ -1,0 +1,30 @@
+#####################################################################################################################
+##                                                                                                                 
+##  bin x86_64/boot/Tupfile -- An alternative to the 'make' build system -- x86_64 boot files
+##
+##        Copyright (c)  2017 -- Adam Clark
+##
+##        "THE BEER-WARE LICENSE" (by Poul-Henning Kamp; Revision 42):
+##        <hobbyos@eryjus.com> wrote this software.  As long as you retain this notice
+##        you can do whatever you want with this stuff. If we meet some day, and you
+##        think this stuff is worth it, you can buy me a beer in return.
+##
+##  Pay attention below: we use the 32-bit compiler for the 64-bit loader.  This is on purpose since the CPU will
+##  still be in 32-bit mode and we are responsible for putting it in 64-bit mode.
+##
+## ----------------------------------------------------------------------------------------------------------------- 
+##                                                                                                                 
+##     Date     Tracker  Version  Pgmr  Description                                                                         
+##  ----------  -------  -------  ----  ---------------------------------------------------------------------------
+##  2017-05-10  Initial   0.0.0   ADCL  Initial version
+## 
+#####################################################################################################################
+
+
+#
+# -- The rules to make the bootable targets in this folder
+#    -----------------------------------------------------
+: ../../../obj/loader/x86_64/*.o                                                                                \
+        |> i686-elf-gcc -T ../../../modules/loader/src/x86_64/loader.ld -ffreestanding -O2 -nostdlib -o %o %f   \
+                        -lgcc;                                                                                  \
+        |> loader.elf

@@ -56,13 +56,13 @@ level?  Here are some thoughts:
   UTF-32 encoding.
 
 
-  **UEFI**
+**UEFI**
 
-  It makes sense to address UEFI versus this loader module.  I thought about it myself
-  (right about the time I was getting into the physical memory manager) and wondered 
-  why I did not go that way.  The end result had a little to do with whether I would 
-  lose my code to-date.  Actually, while there appears to be several open source
-  projects that might work, I was not sure the projects were mature enough to work
-  reliably.  So, I have decided to let those mature a bit and let others sort out
-  how to boot UEFI for both qemu-system-arm and the RPi2b hardware so that I can
-  reap their benefits.
+It makes sense to address UEFI versus this loader module.  I thought about it myself
+(right about the time I was getting into the physical memory manager) and wondered 
+why I did not go that way.  The end result had a little to do with whether I would 
+lose my code to-date.  Actually, while there appears to be several open source
+projects that might work, I was not sure the projects were mature enough to work
+reliably.  So, I have decided to let those mature a bit and let others sort out
+how to boot UEFI for both qemu-system-arm and the RPi2b hardware so that I can
+reap their benefits.

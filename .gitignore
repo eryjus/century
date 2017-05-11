@@ -3,9 +3,10 @@
 .project
 .cproject
 .vscode
-bin
-obj
-lib
+.tup
 sysroot
 iso
-p1
+*.old
+
+bin/**/*.elf
+bin/**/*.cfg

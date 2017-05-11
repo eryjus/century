@@ -1,0 +1,37 @@
+#####################################################################################################################
+##                                                                                                                 
+##  loader Tupfile -- An alternative to the 'make' build system -- x86_64 loader objects
+##
+##        Copyright (c)  2017 -- Adam Clark
+##
+##        "THE BEER-WARE LICENSE" (by Poul-Henning Kamp; Revision 42):
+##        <hobbyos@eryjus.com> wrote this software.  As long as you retain this notice
+##        you can do whatever you want with this stuff. If we meet some day, and you
+##        think this stuff is worth it, you can buy me a beer in return.
+##
+## ----------------------------------------------------------------------------------------------------------------- 
+##                                                                                                                 
+##     Date     Tracker  Version  Pgmr  Description                                                                         
+##  ----------  -------  -------  ----  ---------------------------------------------------------------------------
+##  2017-05-10  Initial   0.0.0   ADCL  Initial version
+## 
+#####################################################################################################################
+
+
+#
+# -- The following 2 macros are used to build the object files
+#    ---------------------------------------------------------
+!x86_64-loader-as = |> x86_64-elf-gcc -m32 -fpic -ffreestanding -x assembler-with-cpp \
+        -Wa,-I -Wa,../../../modules/loader/src/x86_64 -Wa,-I -Wa,../../../modules/loader/inc \
+        -Wa,-I -Wa,../../../inc -Wall -Werror -c -o %o %f |> %B.o
+
+!x86_64-loader-cc = |> x86_64-elf-gcc -m32 -fpic -ffreestanding -I ../../../modules/loader/src/x86_64 \
+        -I ../../../modules/loader/inc -I ../../../inc -Wall -Werror -c -o %o %f |> %B.o
+
+#
+# -- These are the implicit build rules for the x86_64 loader object files
+#    -------------------------------------------------------------------
+: foreach ../../../modules/loader/src/*.s |> !x86_64-loader-as |>
+: foreach ../../../modules/loader/src/x86_64/*.s |> !x86_64-loader-as |>
+: foreach ../../../modules/loader/src/*.c |> !x86_64-loader-cc |>
+: foreach ../../../modules/loader/src/x86_64/*.c |> !x86_64-loader-cc |>

@@ -1,0 +1,37 @@
+#####################################################################################################################
+##                                                                                                                 
+##  loader Tupfile -- An alternative to the 'make' build system -- rpi2b loader objects
+##
+##        Copyright (c)  2017 -- Adam Clark
+##
+##        "THE BEER-WARE LICENSE" (by Poul-Henning Kamp; Revision 42):
+##        <hobbyos@eryjus.com> wrote this software.  As long as you retain this notice
+##        you can do whatever you want with this stuff. If we meet some day, and you
+##        think this stuff is worth it, you can buy me a beer in return.
+##
+## ----------------------------------------------------------------------------------------------------------------- 
+##                                                                                                                 
+##     Date     Tracker  Version  Pgmr  Description                                                                         
+##  ----------  -------  -------  ----  ---------------------------------------------------------------------------
+##  2017-05-10  Initial   0.0.0   ADCL  Initial version
+## 
+#####################################################################################################################
+
+
+#
+# -- The following 2 macros are used to build the object files
+#    ---------------------------------------------------------
+!rpi2b-loader-as = |> arm-eabi-gcc -fpic -ffreestanding -x assembler-with-cpp \
+        -Wa,-I -Wa,../../../modules/loader/src/rpi2b -Wa,-I -Wa,../../../modules/loader/inc \
+        -Wa,-I -Wa,../../../inc -Wall -Werror -c -o %o %f |> %B.o
+
+!rpi2b-loader-cc = |> arm-eabi-gcc -fpic -ffreestanding -I ../../../modules/loader/src/rpi2b \
+        -I ../../../modules/loader/inc -I ../../../inc -Wall -Werror -c -o %o %f |> %B.o
+
+#
+# -- These are the implicit build rules for the rpi2b loader object files
+#    -------------------------------------------------------------------
+: foreach ../../../modules/loader/src/*.s |> !rpi2b-loader-as |>
+: foreach ../../../modules/loader/src/rpi2b/*.s |> !rpi2b-loader-as |>
+: foreach ../../../modules/loader/src/*.c |> !rpi2b-loader-cc |>
+: foreach ../../../modules/loader/src/rpi2b/*.c |> !rpi2b-loader-cc |>

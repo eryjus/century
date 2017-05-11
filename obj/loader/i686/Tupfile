@@ -1,0 +1,37 @@
+#####################################################################################################################
+##                                                                                                                 
+##  loader Tupfile -- An alternative to the 'make' build system -- i686 loader objects
+##
+##        Copyright (c)  2017 -- Adam Clark
+##
+##        "THE BEER-WARE LICENSE" (by Poul-Henning Kamp; Revision 42):
+##        <hobbyos@eryjus.com> wrote this software.  As long as you retain this notice
+##        you can do whatever you want with this stuff. If we meet some day, and you
+##        think this stuff is worth it, you can buy me a beer in return.
+##
+## ----------------------------------------------------------------------------------------------------------------- 
+##                                                                                                                 
+##     Date     Tracker  Version  Pgmr  Description                                                                         
+##  ----------  -------  -------  ----  ---------------------------------------------------------------------------
+##  2017-05-10  Initial   0.0.0   ADCL  Initial version
+## 
+#####################################################################################################################
+
+
+#
+# -- The following 2 macros are used to build the object files
+#    ---------------------------------------------------------
+!i686-loader-as = |> i686-elf-gcc -fpic -ffreestanding -x assembler-with-cpp \
+        -Wa,-I -Wa,../../../modules/loader/src/i686 -Wa,-I -Wa,../../../modules/loader/inc \
+        -Wa,-I -Wa,../../../inc -Wall -Werror -c -o %o %f |> %B.o
+
+!i686-loader-cc = |> i686-elf-gcc -fpic -ffreestanding -I ../../../modules/loader/src/i686 \
+        -I ../../../modules/loader/inc -I ../../../inc -Wall -Werror -c -o %o %f |> %B.o
+
+#
+# -- These are the implicit build rules for the i686 loader object files
+#    -------------------------------------------------------------------
+: foreach ../../../modules/loader/src/*.s |> !i686-loader-as |>
+: foreach ../../../modules/loader/src/i686/*.s |> !i686-loader-as |>
+: foreach ../../../modules/loader/src/*.c |> !i686-loader-cc |>
+: foreach ../../../modules/loader/src/i686/*.c |> !i686-loader-cc |>
