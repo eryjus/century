@@ -22,5 +22,6 @@
 # -- Create the grub.cfg file
 #    ------------------------
 : |>  	echo   "multiboot /boot/loader.elf"							 > %o;		\
+        echo   "module /boot/kernel.elf"                            >> %o;      \
 		echo   "boot"						  						>> %o;		\
     |> grub.cfg

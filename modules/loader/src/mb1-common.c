@@ -43,6 +43,7 @@ void ReadMB1Info(void)
 
 #ifdef DEBUG_MB1
     kprintf(u8"Reading Multiboot1 Information (we have a structure at %p)\n", mb1Data);
+    kprintf(u8"  The flags are %p\n", mb1Data->flags);
 #endif
 
     if (mb1Data->flags & (1<<0)) {

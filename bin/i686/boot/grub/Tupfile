@@ -24,13 +24,13 @@
 : |> 	echo "set timeout=3"                   						>  %o;       \
     	echo "set default=0"                  						>> %o;       \
 	    echo "menuentry \"Century (Multiboot)\" {" 	      			>> %o;       \
-	    echo "  module /boot/kernel.elf"                  			>> %o;       \
 	    echo "  multiboot /boot/loader.elf"                    		>> %o;       \
+	    echo "  module /boot/kernel.elf kernel"            			>> %o;       \
 	    echo "  boot"   					  						>> %o;       \
 	    echo "}"							  						>> %o;       \
 	    echo "menuentry \"Century (Multiboot2)\" {"   	  			>> %o;       \
-	    echo "  module /boot/kernel.elf"                  			>> %o;       \
 	    echo "  multiboot2 /boot/loader.elf"                   		>> %o;       \
+	    echo "  module2 /boot/kernel.elf kernel"           			>> %o;       \
 	    echo "  boot"						  						>> %o;       \
 	    echo "}"					    							>> %o;       \
     |> grub.cfg
