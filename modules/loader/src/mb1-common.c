@@ -63,6 +63,7 @@ void ReadMB1Info(void)
         struct Mb1Mods *m;
 
         for (m = mb1Data->modules, i = 0; i < mb1Data->moduleCount; i ++) {
+            kprintf("Adding module %s\n", m[i].modIdent);
             MbLocalAddModule(m[i].modStart, m[i].modEnd, m[i].modIdent);
         }
     }

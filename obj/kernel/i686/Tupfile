@@ -1,6 +1,6 @@
 #####################################################################################################################
 ##                                                                                                                 
-##  kernel Makefrag.mk -- This file controls making the kernel for any of its architectures
+##  kernel Tupfile -- An alternative to the 'make' build system -- i686 kernel objects
 ##
 ##        Copyright (c)  2017 -- Adam Clark
 ##
@@ -9,49 +9,29 @@
 ##        you can do whatever you want with this stuff. If we meet some day, and you
 ##        think this stuff is worth it, you can buy me a beer in return.
 ##
-## Within this Makefrag.mk and its subordinate ones, we need to make sure that the following make goals populate 
-## the $(CURRENT-TARGET) macro:
-## make
-## make all
-## make <arch>
-## make kernel
-## make <arch>-kernel
-## make <arch>-iso
-## make run-<arch>
-##
 ## ----------------------------------------------------------------------------------------------------------------- 
 ##                                                                                                                 
 ##     Date     Tracker  Version  Pgmr  Description                                                                         
 ##  ----------  -------  -------  ----  ---------------------------------------------------------------------------
-##  2017-04-11  Initial   0.0.0   ADCL  Initial version 
+##  2017-05-13  Initial   0.0.0   ADCL  Initial version
 ## 
 #####################################################################################################################
 
 
 #
-# -- The subordinate make files
-#    --------------------------
-KERNEL-MAKE-FRAG       			:= $(wildcard modules/kernel/src/**/Makefrag.mk)
-KERNEL-MAKE-FRAG				:= $(sort $(KERNEL-MAKE-FRAG))
+# -- The following 2 macros are used to build the object files
+#    ---------------------------------------------------------
+!i686-kernel-as = |> i686-elf-gcc -fpic -ffreestanding -x assembler-with-cpp \
+        -Wa,-I -Wa,../../../modules/kernel/src/i686 -Wa,-I -Wa,../../../modules/kernel/inc \
+        -Wa,-I -Wa,../../../inc -Wall -Werror -c -o %o %f |> %B.o
 
-
-#
-# -- Some things common to all kernels
-#    ---------------------------------
-KERNEL-SRC						:= modules/kernel/src
-KERNEL-INC						:= modules/kernel/inc
-KERNEL-OBJ						:= obj/kernel
-KERNEL-BIN						:= bin
-KERNEL-SYSROOT					:= sysroot
-
+!i686-kernel-cc = |> i686-elf-gcc -fpic -ffreestanding -I ../../../modules/kernel/src/i686 \
+        -I ../../../modules/kernel/inc -I ../../../inc -Wall -Werror -c -o %o %f |> %B.o
 
 #
-# -- Include the individual make files for each kernel architecture
-#    --------------------------------------------------------------
-include $(KERNEL-MAKE-FRAG)
-
-
-#
-# -- Make the kernel for all architectures
-#    -------------------------------------
-kernel: current-target
+# -- These are the implicit build rules for the i686 kernel object files
+#    -------------------------------------------------------------------
+: foreach ../../../modules/kernel/src/*.s |> !i686-kernel-as |>
+: foreach ../../../modules/kernel/src/i686/*.s |> !i686-kernel-as |>
+: foreach ../../../modules/kernel/src/*.c |> !i686-kernel-cc |>
+: foreach ../../../modules/kernel/src/i686/*.c |> !i686-kernel-cc |>

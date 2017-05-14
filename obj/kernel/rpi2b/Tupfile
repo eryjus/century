@@ -1,6 +1,6 @@
 #####################################################################################################################
 ##                                                                                                                 
-##  loader Makefrag.mk -- This file controls making the loader for any of its architectures (next after multioot)
+##  kernel Tupfile -- An alternative to the 'make' build system -- rpi2b kernel objects
 ##
 ##        Copyright (c)  2017 -- Adam Clark
 ##
@@ -9,49 +9,29 @@
 ##        you can do whatever you want with this stuff. If we meet some day, and you
 ##        think this stuff is worth it, you can buy me a beer in return.
 ##
-##  Within this Makefrag.mk and its subordinate ones, we need to make sure that the following make goals populate 
-##  the $(CURRENT-TARGET) macro:
-##  make
-##  make all
-##  make <arch>
-##  make loader
-##  make <arch>-loader
-##  make <arch>-iso
-##  make run-<arch>
-##
 ## ----------------------------------------------------------------------------------------------------------------- 
 ##                                                                                                                 
 ##     Date     Tracker  Version  Pgmr  Description                                                                         
 ##  ----------  -------  -------  ----  ---------------------------------------------------------------------------
-##  2017-04-13  Initial   0.0.0   ADCL  Initial version
+##  2017-05-13  Initial   0.0.0   ADCL  Initial version
 ## 
 #####################################################################################################################
 
 
 #
-# -- The subordinate make files
-#    --------------------------
-LOADER-MAKE-FRAG       			:= $(wildcard modules/loader/src/**/Makefrag.mk)
-LOADER-MAKE-FRAG				:= $(sort $(LOADER-MAKE-FRAG))
+# -- The following 2 macros are used to build the object files
+#    ---------------------------------------------------------
+!rpi2b-kernel-as = |> arm-eabi-gcc -fpic -ffreestanding -x assembler-with-cpp \
+        -Wa,-I -Wa,../../../modules/kernel/src/rpi2b -Wa,-I -Wa,../../../modules/kernel/inc \
+        -Wa,-I -Wa,../../../inc -Wall -Werror -c -o %o %f |> %B.o
 
-
-#
-# -- Some things common to all loader
-#    ---------------------------------
-LOADER-SRC						:= modules/loader/src
-LOADER-INC						:= modules/loader/inc
-LOADER-OBJ						:= obj/loader
-LOADER-BIN						:= bin
-LOADER-SYSROOT					:= sysroot
-
+!rpi2b-kernel-cc = |> arm-eabi-gcc -fpic -ffreestanding -I ../../../modules/kernel/src/rpi2b \
+        -I ../../../modules/kernel/inc -I ../../../inc -Wall -Werror -c -o %o %f |> %B.o
 
 #
-# -- Include the individual make files for each loader architecture
-#    --------------------------------------------------------------
-include $(LOADER-MAKE-FRAG)
-
-
-#
-# -- Make the loader for all architectures
-#    -------------------------------------
-loader: current-target
+# -- These are the implicit build rules for the rpi2b kernel object files
+#    --------------------------------------------------------------------
+: foreach ../../../modules/kernel/src/*.s |> !rpi2b-kernel-as |>
+: foreach ../../../modules/kernel/src/rpi2b/*.s |> !rpi2b-kernel-as |>
+: foreach ../../../modules/kernel/src/*.c |> !rpi2b-kernel-cc |>
+: foreach ../../../modules/kernel/src/rpi2b/*.c |> !rpi2b-kernel-cc |>

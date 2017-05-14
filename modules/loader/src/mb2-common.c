@@ -79,6 +79,7 @@ void ReadMB2Info(void)
 #endif
 
             struct Mb2Module *mod = (struct Mb2Module *)locn;
+            kprintf("Adding module %s\n", mod->name);
             MbLocalAddModule(mod->modStart, mod->modEnd, mod->name);
             break;
         }

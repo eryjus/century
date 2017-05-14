@@ -1,6 +1,6 @@
 #####################################################################################################################
 ##                                                                                                                 
-##  bin rpi2b/boot/Tupfile -- An alternative to the 'make' build system -- rpi2b boot files
+##  kernel Tupfile -- An alternative to the 'make' build system -- x86_64 kernel objects
 ##
 ##        Copyright (c)  2017 -- Adam Clark
 ##
@@ -13,20 +13,25 @@
 ##                                                                                                                 
 ##     Date     Tracker  Version  Pgmr  Description                                                                         
 ##  ----------  -------  -------  ----  ---------------------------------------------------------------------------
-##  2017-05-10  Initial   0.0.0   ADCL  Initial version
+##  2017-05-13  Initial   0.0.0   ADCL  Initial version
 ## 
 #####################################################################################################################
 
 
 #
-# -- The rules to make the bootable targets in this folder
-#    -----------------------------------------------------
-: ../../../obj/loader/rpi2b/*.o                                                                                 \
-        |> arm-eabi-gcc -T ../../../modules/loader/src/rpi2b/loader.ld -ffreestanding -O2 -nostdlib -o %o %f    \
-                        -lgcc -z max-page-size=0x1000;                                                          \
-        |> loader.elf
+# -- The following 2 macros are used to build the object files
+#    ---------------------------------------------------------
+!x86_64-kernel-as = |> x86_64-elf-gcc -fpic -ffreestanding -x assembler-with-cpp \
+        -Wa,-I -Wa,../../../modules/kernel/src/x86_64 -Wa,-I -Wa,../../../modules/kernel/inc \
+        -Wa,-I -Wa,../../../inc -Wall -Werror -c -o %o %f |> %B.o
 
-: ../../../obj/kernel/rpi2b/*.o                                                                                 \
-        |> arm-eabi-gcc -T ../../../modules/kernel/src/rpi2b/kernel.ld -ffreestanding -O2 -nostdlib -o %o %f    \
-                        -lgcc -z max-page-size=0x1000;                                                          \
-        |> kernel.elf
+!x86_64-kernel-cc = |> x86_64-elf-gcc -fpic -ffreestanding -I ../../../modules/kernel/src/x86_64 \
+        -I ../../../modules/kernel/inc -I ../../../inc -Wall -Werror -c -o %o %f |> %B.o
+
+#
+# -- These are the implicit build rules for the x86_64 kernel object files
+#    --------------------------------------------------------------------
+: foreach ../../../modules/kernel/src/*.s |> !x86_64-kernel-as |>
+: foreach ../../../modules/kernel/src/x86_64/*.s |> !x86_64-kernel-as |>
+: foreach ../../../modules/kernel/src/*.c |> !x86_64-kernel-cc |>
+: foreach ../../../modules/kernel/src/x86_64/*.c |> !x86_64-kernel-cc |>

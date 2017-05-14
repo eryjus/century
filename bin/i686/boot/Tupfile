@@ -24,3 +24,7 @@
 : ../../../obj/loader/i686/*.o         \
         |> i686-elf-gcc -T ../../../modules/loader/src/i686/loader.ld -ffreestanding -O2 -nostdlib -o %o %f -lgcc;    \
         |> loader.elf
+
+: ../../../obj/kernel/i686/*.o         \
+        |> i686-elf-gcc -T ../../../modules/kernel/src/i686/kernel.ld -ffreestanding -O2 -nostdlib -o %o %f -lgcc;    \
+        |> kernel.elf
