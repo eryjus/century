@@ -1,6 +1,6 @@
 //===================================================================================================================
 //
-//  loader inc/x86/physmm.c -- The Physical Memory Manager functions for x86 common architecture
+//  loader physmm.c -- The Physical Memory Manager functions 
 //
 //        Copyright (c)  2017 -- Adam Clark
 //

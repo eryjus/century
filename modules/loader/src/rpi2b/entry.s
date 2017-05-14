@@ -35,7 +35,7 @@
 @ -- The following are used to populate the multiboot v1 header
 @    ----------------------------------------------------------
 #define MAGIC   0x1badb002
-#define FLAGS   0
+#define FLAGS   1<<1 | 1<<2
 
 @
 @ -- This is the multiboot 1 header
