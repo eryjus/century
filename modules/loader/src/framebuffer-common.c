@@ -72,6 +72,7 @@ void FrameBufferClear(void)
 //-------------------------------------------------------------------------------------------------------------------
 void FrameBufferDrawChar(utf8_t ch)
 {
+    if (GetRow() > 45) return;
     if (ch & 0x80) {
         if ((ch & 0xc0) == 0xc0) ch = '?';
         else return;

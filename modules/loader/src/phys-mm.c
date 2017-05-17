@@ -12,6 +12,11 @@
 //  This is really a watered-down version of the same memory manager that will be used by the kernel.  The reason
 //  is that we really do not need to "manage" memory, just set its initial state.
 //
+//  !!!IMPORTANT NOTE!!!:
+//  Frames are not an addressed, but a number.  Frame number n is at address n << 12.  Keep that in mind!!
+//
+//  A frame is free if its flag is set; allocated or not available if the flag is clear.
+//
 // -----------------------------------------------------------------------------------------------------------------
 //
 //     Date     Tracker  Version  Pgmr  Description
@@ -24,7 +29,6 @@
 #include "types.h"
 #include "proto.h"
 #include "mb-local.h"
-#include "phys-mm.h"
 
 
 //-------------------------------------------------------------------------------------------------------------------
@@ -34,6 +38,8 @@ void PhysMMInit(void)
 {
     extern char _loaderStart[];
     extern char _loaderEnd[];
+    arch_addr_t frame;
+    arch_addr_t length;
 
     // -- Sanity check -- we cannot continue without a memory map
     if (!mbLocal.hasMmap) {
@@ -57,29 +63,99 @@ void PhysMMInit(void)
     // -- now we loop through the available memory and set the frames to be available
     for (uint32_t i = 0; i < mbLocal.numMmapEntries; i ++) {
         if (mbLocal.mmap[i].type == MMAP_FREE) {
-            uint64_t frame = mbLocal.mmap[i].baseAddr >> 12;
-            uint64_t limit = frame + (mbLocal.mmap[i].length >> 12);
+            frame = mbLocal.mmap[i].baseAddr >> 12;
+            length = mbLocal.mmap[i].length >> 12;
 
-            for ( ; frame < limit; frame ++) {
-                FreeFrame(frame);
-            }
+#ifdef DEBUG_PMM
+            kprintf(u8"PHYSMM: Freeing frames from %p to %p of type %d\n", (uint32_t)frame, (uint32_t)(frame + length), 
+                    mbLocal.mmap[i].type);
+#endif
+            FrameFreeRange(frame, length);
+
+            if ((frame + length - 1) > mbLocal.mmu) mbLocal.mmu = frame + length - 1;
         }
     }
 
-    // -- now that all our memory is available, set the kernel space to be not available; _loader* already aligned
-    uint32_t frame = ((uint32_t)_loaderStart) >> 12;
-    uint32_t limit = ((uint32_t)_loaderEnd) >> 12;
+    // -- now that all our memory is available, set the loader space to be not available; _loader* already aligned
+    FrameAllocRange(((uint32_t)_loaderStart) >> 12, ((uint32_t)_loaderEnd) >> 12);
 
-    for ( ; frame < limit; frame ++) {
-        AllocFrame(frame);
-    }
+    // -- Allocate the Frame Buffer
+    FrameAllocRange(mbLocal.fbAddr, 1024 * 768 * 2);
 
     // TODO: allocate the loaded modules
 
     // -- Finally, we have to mark the bitmap itself as used
-    for ( pages += start; start < pages; start ++) {
-        AllocFrame(frame);
-    }
+    FrameAllocRange(start >> 12, pages >> 12);
 
     kprintf(u8"Phyiscal Memory Manager Initialized\n");
 }
+
+
+//-------------------------------------------------------------------------------------------------------------------
+// FrameFree() -- Mark a frame as free (set the flag)
+//-------------------------------------------------------------------------------------------------------------------
+void FrameFree(arch_addr_t frame) 
+{ 
+    mbLocal.memBitMap[frame >> 5] |= (1 << (frame & 0x1f)); 
+}
+
+
+//-------------------------------------------------------------------------------------------------------------------
+// FrameAlloc() -- Mark a frame as allocated (clear the flag)
+//-------------------------------------------------------------------------------------------------------------------
+void FrameAlloc(arch_addr_t frame) 
+{ 
+    mbLocal.memBitMap[frame >> 5] &= (~(1 << (frame & 0x1f))); 
+}
+
+
+//-------------------------------------------------------------------------------------------------------------------
+// IsFrameAlloc() -- Returns if a frame is allocated
+//-------------------------------------------------------------------------------------------------------------------
+bool IsFrameAlloc(arch_addr_t frame) 
+{ 
+    uint32_t chk = mbLocal.memBitMap[frame >> 5] & (1 << (frame & 0x1f));
+    return chk == 0;
+}
+
+
+//-------------------------------------------------------------------------------------------------------------------
+// FrameNew() -- Allocate a frame for use (not going to do this too much here...)
+//-------------------------------------------------------------------------------------------------------------------
+arch_addr_t FrameNew(void)
+{
+    uint32_t frame = (uint32_t)mbLocal.mmu;
+
+    while (true && frame != 0) {
+        if (!IsFrameAlloc(frame)) {
+            FrameAlloc(frame);
+            return frame;
+        } else frame --;
+    }
+
+    return -1;
+}
+
+
+//-------------------------------------------------------------------------------------------------------------------
+// FrameFreeRange() -- Mark a range of frames as free (set the flag)
+//-------------------------------------------------------------------------------------------------------------------
+void FrameFreeRange(arch_addr_t frame, arch_addr_t len) 
+{ 
+    arch_addr_t end = frame + len;
+
+    while (frame < end) FrameFree(frame ++);
+}
+
+
+//-------------------------------------------------------------------------------------------------------------------
+// FrameAllocRange() -- Mark a range of frames as allocated (clear the flag)
+//-------------------------------------------------------------------------------------------------------------------
+void FrameAllocRange(arch_addr_t frame, arch_addr_t len) 
+{ 
+    arch_addr_t end = frame + len;
+
+    while (frame < end) FrameAlloc(frame ++);
+}
+
+

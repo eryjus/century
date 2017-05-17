@@ -184,6 +184,9 @@ struct MbLocal {
     uint64_t memAmount;
     uint32_t *memBitMap;            // this is an external structure that will moved;managed separately
     uint32_t memSizeFrames;         // this is the size of the bitmap in frames
+
+    // -- virtual memory tables address
+    arch_addr_t mmu;
 };
 
 

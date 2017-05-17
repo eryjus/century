@@ -95,6 +95,13 @@ void memset(void *d, int v, size_t cnt);
 
 
 //-------------------------------------------------------------------------------------------------------------------
+// From mmu.c -- common interface functions for setting up the MMU tables
+//-------------------------------------------------------------------------------------------------------------------
+void MmuTablesInit(void);
+bool MmuMapAddress(arch_addr_t addr, arch_addr_t frame);
+
+
+//-------------------------------------------------------------------------------------------------------------------
 // Prototypes that are common across all architectures, but implemented architecture-specific
 //-------------------------------------------------------------------------------------------------------------------
 const char *GetArch(void);
@@ -105,7 +112,17 @@ unsigned char UartGetC(void);
 void UartWriteBuf(const uint8_t *buffer, size_t size);
 void UartPutS(const utf8_t *str);
 
+
+//-------------------------------------------------------------------------------------------------------------------
+// From phys-mm.c -- common interface functions for the physical memory structures
+//-------------------------------------------------------------------------------------------------------------------
 void PhysMMInit(void);
+void FrameFree(arch_addr_t frame);
+void FrameAlloc(arch_addr_t frame);
+bool IsFrameAlloc(arch_addr_t frame);
+arch_addr_t FrameNew(void);
+void FrameFreeRange(arch_addr_t frame, arch_addr_t len);
+void FrameAllocRange(arch_addr_t frame, arch_addr_t len); 
 
 
 #endif

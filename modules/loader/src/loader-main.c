@@ -44,5 +44,6 @@ void LoaderMain(void)
     FrameBufferInit();
     DisplayGreeting();
     PhysMMInit();
+    MmuTablesInit();
     Halt();
 }

@@ -79,7 +79,9 @@ void ReadMB2Info(void)
 #endif
 
             struct Mb2Module *mod = (struct Mb2Module *)locn;
+#ifdef DEBUG_MB2
             kprintf("Adding module %s\n", mod->name);
+#endif
             MbLocalAddModule(mod->modStart, mod->modEnd, mod->name);
             break;
         }
@@ -112,14 +114,16 @@ void ReadMB2Info(void)
             struct Mb2MemMap *mmap = (struct Mb2MemMap *)locn;
             uint32_t s = tag->size / mmap->entrySize;
             for (uint32_t i = 0; i < s; i ++) {
-                MbLocalAddMmapEntry(mmap->entries[i].baseAddr, mmap->entries[i].length, mmap->entries[0].type);
+                MbLocalAddMmapEntry(mmap->entries[i].baseAddr, mmap->entries[i].length, mmap->entries[i].type);
                 uint64_t newLimit = mmap->entries[i].baseAddr + mmap->entries[i].length;
                 if (newLimit > GetMemAmount()) SetMemAmount(newLimit);
             }
 
+#ifdef DEBUG_MB2
             kprintf(u8"Found 0x%08lx %08lx bytes of memory\n", (uint32_t)(GetMemAmount() >> 32), (uint32_t)(GetMemAmount() & 0xffffffff));
             uint32_t memSize = (uint32_t)(GetMemAmount() >> 12);
             kprintf(u8"  0x%lx pages; bitmap frames 0x%lx\n", memSize, (memSize >> (12 + 3)) + (memSize&0x7fff?1:0));
+#endif
 
             break;
         }

@@ -27,6 +27,9 @@
 //-------------------------------------------------------------------------------------------------------------------
 bool FrameBufferInit(void)
 {
+#ifdef DEBUG_FB
+    kprintf(u8"FB: Initialized the frame buffer address to %p\n", mbLocal.fbAddr);
+#endif
     mbLocal.color = 0xffff;
     mbLocal.bgColor = 0x1234;
     FrameBufferClear();

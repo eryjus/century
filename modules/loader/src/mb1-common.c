@@ -18,7 +18,7 @@
 //===================================================================================================================
 
 
-#define DEBUG_MB1
+//#define DEBUG_MB1
 
 
 #include "types.h"
@@ -64,7 +64,9 @@ void ReadMB1Info(void)
         struct Mb1Mods *m;
 
         for (m = mb1Data->modules, i = 0; i < mb1Data->moduleCount; i ++) {
+#ifdef DEBUG_MB1
             kprintf("Adding module %s\n", m[i].modIdent);
+#endif
             MbLocalAddModule(m[i].modStart, m[i].modEnd, m[i].modIdent);
         }
     }
@@ -88,9 +90,11 @@ void ReadMB1Info(void)
             entry = (struct Mb1MmapEntry *)(((uint32_t)entry) + entry->mmapSize + 4);
         }
 
+#ifdef DEBUG_MB1
         kprintf(u8"Found 0x%08lx %08lx bytes of memory\n", (uint32_t)(GetMemAmount() >> 32), (uint32_t)(GetMemAmount() & 0xffffffff));
         uint32_t memSize = (uint32_t)(GetMemAmount() >> 12);
         kprintf(u8"  0x%lx pages; bitmap frames 0x%lx\n", memSize, (memSize >> (12 + 3)) + (memSize&0x7fff?1:0));
+#endif
     }
 
     if (mb1Data->flags & (1<<7)) {
