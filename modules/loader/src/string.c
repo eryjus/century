@@ -32,8 +32,8 @@ char *kstrncpy(char *d, const char *s, size_t n)
 {
     char *rv = d;
 
-    while (*s && (rv - d) < n) *d ++ = *s ++;
-    while ((rv - d) < n) *d ++ = '\0';
+    while (*s && (d - rv) < n) *d ++ = *s ++;
+    while ((d - rv) < n) *d ++ = '\0';
     rv[n] = *d = '\0';
     return rv;
 }

@@ -40,14 +40,14 @@
 # -- The following are used to populate the multiboot v1 header
 #    ----------------------------------------------------------
 #define MAGIC   0x1badb002
-#define FLAGS   1<<1 | 1<<2                    # get mem & set video
+#define FLAGS   (1<<1 | 1<<2)                    # get mem & set video
 
 #
 # -- The following are used to populate the multiboot v2 header
 #    ----------------------------------------------------------
 #define MAGIC2  0xe85250d6
 #define LEN     MultibootHeader2End - MultibootHeader2
-#define CHECK2  (-(MAGIC2 + 0 + LEN) & 0xffffffff)
+#define CHECK2  (-(MAGIC2 + LEN) & 0xffffffff)
 
 
 #

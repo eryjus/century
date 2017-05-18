@@ -113,3 +113,61 @@ solve it faster.  So, at this point, both the MB1 and MB2 boots of i686 match.  
 
 The MMU is not complete yet, but I will back out all my debugging code and commit an 
 intermediate checkpoint.  This is a good point to be able to roll back to if need be.
+
+I decided to take on determining why the kernel module was not presenting its name to GRUB
+when it is loaded.  I decided to try to narrow down where the problem actually lay.  Since 
+the loader is all 32-bit code for both x86_64 and i686, I can run both loader targets on 
+both architectures and determine easily where the problem lay.  So:
+
+| Loader version | qemu-i386 | qemu-x86_64 |
+|----------------|-----------|-------------|
+| iso/i686.iso   |   Works   |    Works    |
+| iso/x86_64.iso |   Fails   |    Fails    |
+
+This simple table clearly shows that my problem is with the x86_64 image.  I converted the 
+x86_64 kernel to 32-bit and the problem remained -- leading me to believe that the problem
+is not related to the elf64 format of kernel.elf.  I also copied the x86_64 loader to be
+the x86_64 kernel and the i686 kernel to be the x86_64 kernel and the results were the same:
+the kernel name did not show up.  Leading me to concluding that the kernel itself is not
+the problem.
+
+After more testing with the .iso images, I have been able to determine that there is something
+with the loader.elf image that is causing the problem.  When I use the loader image from i686,
+everything works as expected.  However, when I use the x86_64 loader image, it does not. I
+have no conditional compiles based on the architecture, so it is likely in something related
+to an architecture-specific file.
+
+After still more testing, I decided to rename my x86_64 loader and copy the i686 loader in 
+its place.  Then exhaustively, replace the files with the saved off versions, compiling and 
+testing after each step.  I was finally able to determine that the file that caused the 
+problem was arch-proto.h.  The difference between the 64-bit version and the 32-bit version
+was the `arch_addr_t` type, defined as `uint32_t` in the i686 loader and `uint64_t` in the
+x86_64 loader.
+
+Some searching through the mb2.h file found 2 uses of the `arch_addr_t` type specifically 
+in the modules sub-structure.  Well, the MB2 specification specifically calls out the sub-
+structure to look like this:
+
+> ```
+>           +-------------------+
+> u32       | type = 3          |
+> u32       | size              |
+> u_phys    | mod_start         |
+> u_phys    | mod_end           |
+> u8[n]     | string            |
+>           +-------------------+
+> ```
+
+The specification's definition of the type specifically states:
+
+> `u_phys` -- The type of unsigned data of the same size as target architecture physical
+address size.
+
+Well, I read that as 64-bits for the x86_64.  However, I now believe that even with the 
+x86_64, the target architecture is still 32-bit since MB specifies a 32-bit state.  I am
+reasonably convinced that changing the type to 32-bit makes that distinction as well.
+
+By the way, I make a few other minor corrections.  What a mess.  I think the next task will 
+be to tackle updating the phy-mm with the loaded modules and getting them mapped into the 
+VMM.
+

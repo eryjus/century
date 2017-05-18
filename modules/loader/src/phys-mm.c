@@ -26,6 +26,9 @@
 //===================================================================================================================
 
 
+//#define DEBUG_PMM
+
+
 #include "types.h"
 #include "proto.h"
 #include "mb-local.h"
@@ -83,6 +86,18 @@ void PhysMMInit(void)
     FrameAllocRange(mbLocal.fbAddr, 1024 * 768 * 2);
 
     // TODO: allocate the loaded modules
+    if (mbLocal.hasModulesLoaded) {
+        for (uint32_t i = 0; i < mbLocal.numModulesLoaded; i ++) {
+            frame = mbLocal.modules[i].modStart >> 12;
+            length = (mbLocal.modules[i].modEnd >> 12) - frame;
+
+#ifdef DEBUG_PMM
+            kprintf(u8"PHYSMM: Allocating frames from %p to %p called %s\n", (uint32_t)frame, (uint32_t)(frame + length), 
+                    &mbLocal.modules[i].modName[0]);
+#endif
+            FrameFreeRange(frame, length);
+        }
+    }
 
     // -- Finally, we have to mark the bitmap itself as used
     FrameAllocRange(start >> 12, pages >> 12);

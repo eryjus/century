@@ -1,6 +1,6 @@
 ##===================================================================================================================
 ##
-##  loader x86_64/entry.s -- This is the entry point for the x86 64-bit processors (in 32-bit protected mode)
+##  loader i686/entry.s -- This is the entry point for the x86 32-bit processors
 ##
 ##        Copyright (c)  2017 -- Adam Clark
 ##
@@ -16,7 +16,7 @@
 ##
 ##     Date     Tracker  Version  Pgmr  Description
 ##  ----------  -------  -------  ----  ---------------------------------------------------------------------------
-##  2017-04-14  Initial   0.0.0   ADCL  Initial version
+##  2017-04-09  Initial   0.0.0   ADCL  Initial version
 ##
 ##===================================================================================================================
 
@@ -40,14 +40,14 @@
 # -- The following are used to populate the multiboot v1 header
 #    ----------------------------------------------------------
 #define MAGIC   0x1badb002
-#define FLAGS   1<<1 | 1<<2                    # get mem & set video
+#define FLAGS   (1<<1 | 1<<2)                    # get mem & set video
 
 #
 # -- The following are used to populate the multiboot v2 header
 #    ----------------------------------------------------------
 #define MAGIC2  0xe85250d6
 #define LEN     MultibootHeader2End - MultibootHeader2
-#define CHECK2  (-(MAGIC2 + 0 + LEN) & 0xffffffff)
+#define CHECK2  (-(MAGIC2 + LEN) & 0xffffffff)
 
 
 #
@@ -95,7 +95,7 @@ Type4Start:
     .word       4                               # type=4
     .word       1                               # not optional
     .long       Type4End-Type4Start             # size = 12
-    .long       1<<1                            # EGA text support
+    .long       0                               # graphics support
 Type4End:
 
 .align          8
@@ -103,8 +103,8 @@ Type5Start:
     .word       5                               # graphic mode 
     .word       1                               # not optional
     .long       Type5End-Type5Start             # size = 20
-    .long       WIDTH                           # 1280
-    .long       HEIGHT                          # 1024
+    .long       WIDTH                           # 640
+    .long       HEIGHT                          # 480
     .long       DEPTH                           # 16                              
 Type5End:
 

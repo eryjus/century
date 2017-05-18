@@ -125,15 +125,17 @@ comments as it lays out some specific requirements for `sudo` to make the build 
 I use qemu as my emulator as it supports all 3 of my target architectures.
 
 Also, in case anyone is curious, I am using Visual Studio Code for my IDE and FC25 (running 
-on a vmWare ESXi server connected iSCSI to a drobo 800i SAN) as my development PC.
+on a vmWare ESXi server connected iSCSI to a drobo b800i SAN) as my development PC.
 
 
 ***VMM Address Space***
 
 As I begin to write my VMM, it helps to have a plan.  Some of this plan is taken from my 
-recollection of other iterations of Century.  However, we have bot 32-bit and 64-bit versions 
+recollection of other iterations of Century.  However, we have both 32-bit and 64-bit versions 
 of the Century OS, and x86-family and ARM-family.  The memory maps are simply going to be 
 different.
+
+**i686**
 
 I am taking inspiration from my conversation with Brendan, here: 
 http://forum.osdev.org/viewtopic.php?f=1&t=28573, meaning the best thing to do in the x86_64 
@@ -147,25 +149,30 @@ i686 architecture into 4MB chunks for mapping:
 
 | Address Usage     | * | i686 Range Start | i686 Range End  | Size  | PDE Range   |
 |-------------------|---|------------------|-----------------|-------|-------------|
-| Recursive Mapping |   | 0xffc0 0000      | 0xffff ffff     |   4MB |    1023     |
-| Kernel Stacks     | S | 0xff40 0000      | 0xffbf ffff     |   8MB | 1021 - 1022 | 
-| Temporary Mapping | T | 0xff00 0000      | 0xff3f ffff     |   4MB |    1020     |
-| Poison            | P | 0xf000 0000      | 0xfeff ffff     | 240MB |  960 - 1019 |
-| Frame Buffer      | F | 0xe000 0000      | 0xefff ffff     | 256MB |  896 - 959  |
-|   ** Unused **    |   | 0xc000 0000      | 0xdfff ffff     | 512MB |  768 - 895  |
-| Slab Space        | L | 0xa000 0000      | 0xbfff ffff     | 512MB |  640 - 767  |
-| Kernel Space      | K | 0x8000 0000      | 0x9fff ffff     | 512MB |  512 - 639  |
-| User/Driver Space |   | 0x0000 0000      | 0x7fff ffff     |   2GB |    0 - 511  |
+| Recursive Mapping |   | `0xffc0 0000`    | `0xffff ffff`   |   4MB |    1023     |
+| Kernel Stacks     | S | `0xff40 0000`    | `0xffbf ffff`   |   8MB | 1021 - 1022 | 
+| Temporary Mapping | T | `0xff00 0000`    | `0xff3f ffff`   |   4MB |    1020     |
+| Poison            | P | `0xf000 0000`    | `0xfeff ffff`   | 240MB |  960 - 1019 |
+| Frame Buffer      | F | `0xe000 0000`    | `0xefff ffff`   | 256MB |  896 - 959  |
+|   ** Unused **    |   | `0xc000 0000`    | `0xdfff ffff`   | 512MB |  768 - 895  |
+| Slab Space        | L | `0xa000 0000`    | `0xbfff ffff`   | 512MB |  640 - 767  |
+| Kernel Space      | K | `0x8000 0000`    | `0x9fff ffff`   | 512MB |  512 - 639  |
+| User/Driver Space |   | `0x0000 0000`    | `0x7fff ffff`   |   2GB |    0 - 511  |
 
 Notes:
 S) Room enough for 512 X 16K stacks
+
 T) We need a place to put frames for clearing or initialization.  This space allows for this 
 activity.  All pages will be in this space temporarily.
+
 P) Linux uses certain addresses to indicate NULL or uninitialized pointers (not 0 since that
 is reserved for user space).  The benefit is that a page fault can easily reasonably identify 
 what kind of object was incorrectly de-referenced.  The 2 drawbacks are that a simple comparison
 to 0 is not going to work and the compiler will not complain about uninitialized variables.
+
 F) This frame buffer is sized adequately size for 7680 X 4320 8K UHD (32-bit color depth).  
 There is enough room allocated for 2 frames of this size.
+
 L) The initial structure to communicate between the loader and the kernel will be placed here.
+
 K) The kernel space is specifically for the typical executable (code, data, heap).

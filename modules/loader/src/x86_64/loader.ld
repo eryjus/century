@@ -1,6 +1,6 @@
 /*******************************************************************************************************************/
 /*                                                                                                                 */ 
-/*  src/loader/src/x86_64/loader.ld -- This is the linker script for locating the sections in the target binary    */
+/*  src/loader/src/i686/loader.ld -- This is the linker script for locating the sections in the target binary      */
 /*                                                                                                                 */ 
 /*        Copyright (c)  2017 -- Adam Clark                                                                        */
 /*                                                                                                                 */ 
@@ -8,8 +8,6 @@
 /*        <hobbyos@eryjus.com> wrote this software.  As long as you retain this notice                             */
 /*        you can do whatever you want with this stuff. If we meet some day, and you                               */
 /*        think this stuff is worth it, you can buy me a beer in return.                                           */
-/*                                                                                                                 */ 
-/* TODO: make this loader relocated into upper memory when the MMU has been properly setup                         */
 /*                                                                                                                 */ 
 /* --------------------------------------------------------------------------------------------------------------- */
 /*                                                                                                                 */ 

@@ -74,9 +74,10 @@ all-iso: all i686-iso x86_64-iso rpi2b-iso
 
 i686-iso: all
 	rm -fR iso/i686.iso
+	rm -fR sysroot/i686/*
 	cp -fR bin/i686/* sysroot/i686/
 	find sysroot/i686 -type f -name Tupfile -delete
-	grub2-mkrescue -o iso/i686.iso sysroot/i686 2> /dev/null
+	grub2-mkrescue -o iso/i686.iso sysroot/i686
 
 
 run-i686: i686-iso
@@ -89,9 +90,10 @@ debug-i686: i686-iso
 
 x86_64-iso: all
 	rm -fR iso/x86_64.iso
+	rm -fR sysroot/x86_64/*
 	cp -fR bin/x86_64/* sysroot/x86_64/
 	find sysroot/x86_64 -type f -name Tupfile -delete
-	grub2-mkrescue -o iso/x86_64.iso sysroot/x86_64 2> /dev/null
+	grub2-mkrescue -o iso/x86_64.iso sysroot/x86_64
 
 
 run-x86_64: x86_64-iso

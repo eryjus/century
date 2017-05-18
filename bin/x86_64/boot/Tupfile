@@ -31,5 +31,5 @@
 
 : ../../../obj/kernel/x86_64/*.o                                                                                \
         |> x86_64-elf-gcc -T ../../../modules/kernel/src/x86_64/kernel.ld -ffreestanding -O2 -nostdlib -o %o %f \
-                        -lgcc;                                                                                  \
+                        -lgcc -z max-page-size=0x800;                                                           \
         |> kernel.elf

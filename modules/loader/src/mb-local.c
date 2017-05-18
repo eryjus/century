@@ -34,7 +34,7 @@ bool MbLocalSetCmdLine(const utf8_t *c)
     if (mbLocal.hasCommandLine) return false;
     if (!c) return false;
     if (*c == '\0') return false;
-    kstrncpy((char *)mbLocal.cmdLine, (const char *)c, MAX_MB_STRING);
+    kstrncpy((char *)&mbLocal.cmdLine[0], (const char *)c, MAX_MB_STRING);
     mbLocal.hasCommandLine = true;
     if (strlen(c) > MAX_MB_STRING) return false;
     return true;
@@ -79,7 +79,7 @@ bool MbLocalAddModule(arch_addr_t s, arch_addr_t e, utf8_t *n)
 
     mbLocal.modules[mbLocal.numModulesLoaded].modStart = s;
     mbLocal.modules[mbLocal.numModulesLoaded].modEnd = e;
-    if (n) kstrncpy((char *)mbLocal.modules[mbLocal.numModulesLoaded].modName, (char *)n, MAX_MB_STRING);
+    if (n) kstrncpy((char *)&mbLocal.modules[mbLocal.numModulesLoaded].modName[0], (char *)n, MAX_MB_STRING);
     mbLocal.hasModulesLoaded = true;
     mbLocal.numModulesLoaded ++;
 

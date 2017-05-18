@@ -95,8 +95,8 @@ struct Mb2CmdLine {
 //    ---------------
 struct Mb2Module {
     struct Mb2BasicTag tag;         // type == 3
-    arch_addr_t modStart;
-    arch_addr_t modEnd;
+    uint32_t modStart;
+    uint32_t modEnd;
     utf8_t name[0];
 } __attribute__((packed));
 
