@@ -23,8 +23,24 @@
 
 
 //
+// -- Some MMU address locations
+//    --------------------------
+#define MMU_USER_SPACE  0x00000000
+#define MMU_KERNEL      0x80000000
+#define MMU_SLAB        0xa0000000
+#define MMU_UNUSED      0xc0000000
+#define MMU_FRAME_BUF   0xe0000000
+#define MMU_POISON      0xf0000000
+#define MMU_STACKS      0xff000000
+#define MMU_TEMP        0xff800000
+#define MMU_TTL1        0xffbfc000
+#define MMU_TTL2        0xffc00000
+
+
+//
 // -- architecture-specific type sizes
 //    --------------------------------
+#define BITNESS 32
 typedef uint32_t arch_addr_t;
 typedef uint32_t addr_t;                        // This is the size of an address in the current cpu bit model
 

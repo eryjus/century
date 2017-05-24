@@ -137,10 +137,6 @@ different.
 
 **i686**
 
-I am taking inspiration from my conversation with Brendan, here: 
-http://forum.osdev.org/viewtopic.php?f=1&t=28573, meaning the best thing to do in the x86_64 
-space is to keep the kernel/fixed data in the last 2GB virtual address space.
-
 So for 32-bit address space, we have a 2-level MMU table (each 4096 bytes in total): the Page 
 Directory and the Page Table.  Each entry is 4 bytes long, resulting in 1024 entries in each
 table.  Now, each entry points to a 4K page so that each Page Directory Entry (PDE) is
@@ -150,8 +146,8 @@ i686 architecture into 4MB chunks for mapping:
 | Address Usage     | * | i686 Range Start | i686 Range End  | Size  | PDE Range   |
 |-------------------|---|------------------|-----------------|-------|-------------|
 | Recursive Mapping |   | `0xffc0 0000`    | `0xffff ffff`   |   4MB |    1023     |
-| Kernel Stacks     | S | `0xff40 0000`    | `0xffbf ffff`   |   8MB | 1021 - 1022 | 
-| Temporary Mapping | T | `0xff00 0000`    | `0xff3f ffff`   |   4MB |    1020     |
+| Temporary Mapping | T | `0xff80 0000`    | `0xffbf ffff`   |   4MB |    1022     |
+| Kernel Stacks     | S | `0xff00 0000`    | `0xff7f ffff`   |   8MB | 1020 - 1021 | 
 | Poison            | P | `0xf000 0000`    | `0xfeff ffff`   | 240MB |  960 - 1019 |
 | Frame Buffer      | F | `0xe000 0000`    | `0xefff ffff`   | 256MB |  896 - 959  |
 |   ** Unused **    |   | `0xc000 0000`    | `0xdfff ffff`   | 512MB |  768 - 895  |
@@ -160,15 +156,17 @@ i686 architecture into 4MB chunks for mapping:
 | User/Driver Space |   | `0x0000 0000`    | `0x7fff ffff`   |   2GB |    0 - 511  |
 
 Notes:
+
 S) Room enough for 512 X 16K stacks
 
 T) We need a place to put frames for clearing or initialization.  This space allows for this 
-activity.  All pages will be in this space temporarily.
+activity.  All pages will be in this space temporarily. 
 
 P) Linux uses certain addresses to indicate NULL or uninitialized pointers (not 0 since that
 is reserved for user space).  The benefit is that a page fault can easily reasonably identify 
-what kind of object was incorrectly de-referenced.  The 2 drawbacks are that a simple comparison
-to 0 is not going to work and the compiler will not complain about uninitialized variables.
+what kind of object was incorrectly de-referenced.  The 2 drawbacks are that a simple 
+comparison to 0 is not going to work and the compiler will not complain about uninitialized 
+variables.
 
 F) This frame buffer is sized adequately size for 7680 X 4320 8K UHD (32-bit color depth).  
 There is enough room allocated for 2 frames of this size.
@@ -176,3 +174,112 @@ There is enough room allocated for 2 frames of this size.
 L) The initial structure to communicate between the loader and the kernel will be placed here.
 
 K) The kernel space is specifically for the typical executable (code, data, heap).
+
+**rpi2b**
+
+The architecture is different than i686.  Brilliant deduction, right?  My point here is that 
+it's a pretty neat trick to be able to recursively map the MMU structures on the i686 -- a
+trick that is only possible since the L1 table structure matches all the other levels.  This
+is not the case on the ARM architecture.
+
+The Translation Table Level 1 (TTL1) is 16K of 4-byte entries, or 4 frames.  This is 4096
+entries where each entry controls 4MB of memory.  This is still a nice even multiple of 
+the 4K frame size, so all is good.
+
+The Translation Table Level 2 (TTL2) is 1K of 4-byte entries, or 1/4 frame!  This is 256
+entries where each entry will point to 4K of memory.  The 4K page size nicely matches the 4K
+frame size, but the TTL2 being 1K is size...  it just fine as well.  We can fit 4 TTL2 tables
+in a single 4K frame.  All we need to do is make sure we allocate them 1 frame at a time and 
+make sure we map all 4 consecutive aligned entries in the TTL1 table to these 4 TTL2 tables 
+in this frame and we are good.  In fact, there is very little memory overhead to do this,
+assuming everything would be allocated anyway.
+
+Now, how to maintain the table structures?  Well, we will map the upper 4MB to the actual 
+TTL2 tables, maintaining these tables are we need.  Then, we will take the previous 16K of 
+memory addressing and point that to the TTL1 table.  This will take 16K away from the 
+Temporary Mapping space to give it to the Recursive Mapping (but not really) space.
+
+The end result is a single 16K reallocation versus the i686 memory map.  Not too bad, I 
+think.  Here is the rpi2b memory map:
+
+| Address Usage     | * | i686 Range Start | i686 Range End  |   Size  | TTL1 Range  |
+|-------------------|---|------------------|-----------------|---------|-------------|
+| TTL Table Mapping |   | `0xffbf c000`    | `0xffff ffff`   | 4MB+16K | 4092 - 4095 |
+| Temporary Mapping | T | `0xff80 0000`    | `0xffbf bfff`   | 4MB-16K | 4088 - 4091 |
+| Kernel Stacks     | S | `0xff00 0000`    | `0xff7f ffff`   |     8MB | 4080 - 4087 |
+| Poison            | P | `0xf000 0000`    | `0xfeff ffff`   |   240MB | 3840 - 4079 |
+| Frame Buffer      | F | `0xe000 0000`    | `0xefff ffff`   |   256MB | 3584 - 3839 |
+|   ** Unused **    |   | `0xc000 0000`    | `0xdfff ffff`   |   512MB | 3072 - 3583 |
+| Slab Space        | L | `0xa000 0000`    | `0xbfff ffff`   |   512MB | 2560 - 3071 |
+| Kernel Space      | K | `0x8000 0000`    | `0x9fff ffff`   |   512MB | 2048 - 2559 |
+| User/Driver Space |   | `0x0000 0000`    | `0x7fff ffff`   |     2GB |    0 - 2047 |
+
+Notes:
+
+\* Not exactly broken on a boundary.  The extra 16K is used for the TTL1 table mapping.
+
+S) Room enough for 512 X 16K stacks
+
+T) We need a place to put frames for clearing or initialization.  This space allows for this 
+activity.  All pages will be in this space temporarily. 
+
+P) Linux uses certain addresses to indicate NULL or uninitialized pointers (not 0 since that
+is reserved for user space).  The benefit is that a page fault can easily reasonably identify 
+what kind of object was incorrectly de-referenced.  The 2 drawbacks are that a simple 
+comparison to 0 is not going to work and the compiler will not complain about uninitialized 
+variables.
+
+F) This frame buffer is sized adequately size for 7680 X 4320 8K UHD (32-bit color depth).  
+There is enough room allocated for 2 frames of this size.
+
+L) The initial structure to communicate between the loader and the kernel will be placed here.
+
+K) The kernel space is specifically for the typical executable (code, data, heap).
+
+**x86_64**
+
+I am taking inspiration from my conversation with Brendan, here: 
+http://forum.osdev.org/viewtopic.php?f=1&t=28573, meaning the best thing to do in the x86_64 
+space is to keep the kernel/fixed data in the last 2GB virtual address space.
+
+So for 64-bit address space, we have a 4-level MMU table (each 4096 bytes in total): the 
+PML4 Table, the Page Directory Pointer Table, the Page Directory and the Page Table.  Each 
+entry is 8 bytes long, resulting in 512 entries in each table.  Now, each entry points to a 
+4K page, and each PML4 Entry controls 512GB memory range.  Therefore, it makes sense to break 
+the 64-bit x86_64 architecture into 512GB chunks for mapping (which is a ludicrous amount of
+memory space):
+
+| Address Usage     | * |     i686 Range Start    |     i686 Range End      | Size  | PML4 Range  |
+|-------------------|---|-------------------------|-------------------------|-------|-------------|
+| Recursive Mapping |   | `0xffff ff80 0000 0000` | `0xffff ffff ffff ffff` | 512GB |     511     |
+| Temporary Mapping | T | `0xffff ff40 0000 0000` | `0xffff ff7f ffff ffff` | 256GB |    510*     |
+| Kernel Stacks     | S | `0xffff ff00 0000 0000` | `0xffff ff3f ffff ffff` | 256GB |    510*     | 
+| Poison            | P | `0xffff f000 0000 0000` | `0xffff feff ffff ffff` |  15TB |  480 - 509  |
+| Frame Buffer      | F | `0xffff e000 0000 0000` | `0xffff efff ffff ffff` |  16TB |  448 - 479  |
+|   ** Unused **    |   | `0xffff c000 0000 0000` | `0xffff dfff ffff ffff` |  32TB |  384 - 447  |
+| Slab Space        | L | `0xffff a000 0000 0000` | `0xffff bfff ffff ffff` |  32TB |  320 - 383  |
+| Kernel Space      | K | `0xffff 8000 0000 0000` | `0xffff 9fff ffff ffff` |  32TB |  256 - 319  |
+| User/Driver Space |   | `0x0000 0000 0000 0000` | `0x0000 7fff ffff ffff` | 128TB |    0 - 255  |
+
+Notes:
+
+\*) This ares is split in 2 the separate uses
+
+S) Room enough for 4M X 64K stacks
+
+T) We need a place to put frames for clearing or initialization.  This space allows for this 
+activity.  All pages will be in this space temporarily. 
+
+P) Linux uses certain addresses to indicate NULL or uninitialized pointers (not 0 since that
+is reserved for user space).  The benefit is that a page fault can easily reasonably identify 
+what kind of object was incorrectly de-referenced.  The 2 drawbacks are that a simple 
+comparison to 0 is not going to work and the compiler will not complain about uninitialized 
+variables.
+
+F) This frame buffer is sized adequately size for 7680 X 4320 8K UHD (64-bit color depth).  
+There is enough room allocated for 32,000 frames of this size.
+
+L) The initial structure to communicate between the loader and the kernel will be placed here.
+
+K) The kernel space is specifically for the typical executable (code, data, heap).
+

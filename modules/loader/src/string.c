@@ -44,7 +44,7 @@ char *kstrncpy(char *d, const char *s, size_t n)
 //-------------------------------------------------------------------------------------------------------------------
 void memmove(uint8_t *d, const uint8_t *s, size_t cnt)
 {
-    for (int i = i; i < cnt; i ++) d[i] = s[i];
+    for (int i = 0; i < cnt; i ++) d[i] = s[i];
 }
 
 
@@ -53,5 +53,5 @@ void memmove(uint8_t *d, const uint8_t *s, size_t cnt)
 //-------------------------------------------------------------------------------------------------------------------
 void memset(void *d, int v, size_t cnt)
 {
-    for (int i = i; i < cnt; i ++) ((char *)d)[i] = v;
+    for (int i = 0; i < cnt; i ++) ((char *)d)[i] = v;
 }

@@ -1,2 +1,1 @@
-
-void MmuTablesInit(void) {}
+void MmuTablesInit(void){}

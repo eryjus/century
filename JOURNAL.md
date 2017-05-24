@@ -168,6 +168,146 @@ x86_64, the target architecture is still 32-bit since MB specifies a 32-bit stat
 reasonably convinced that changing the type to 32-bit makes that distinction as well.
 
 By the way, I make a few other minor corrections.  What a mess.  I think the next task will 
-be to tackle updating the phy-mm with the loaded modules and getting them mapped into the 
+be to tackle updating the phys-mm with the loaded modules and getting them mapped into the 
 VMM.
 
+---
+
+***2017-May-18***
+
+Taking care of the phys-mm modules was easy to address.  The VMM of the kernel was not mapped
+yet (I want to take another look at the kernel.ld script for the kernel before I take that 
+on).  However, the bulk of the evening was spent reading up on and digesting the ARM MMU 
+structures and considering how I would implement them.
+
+Some special requirements I need to come to terms with:
+* The Level1 Translation Table needs to be allocated 16K contiguous and must be 16K aligned.
+There will be a special need for a function to address this need.
+* The Level2 Translation Tables are 1K in length.  If I am allocating chunks in 4K increments,
+I need to be able to carve those 4K frames into 4 X 1K L2 tables and keep track of them and
+be able to reuse them.  This sounds a lot like a stack, but not sure how to implement this
+yet.
+* Is there a method that will allow for recursive mapping???
+* I think I need to clean up the phys-mm initialization functions for rpi2b (I think the MB1
+mmap tables are empty).
+* What is the purpose of the P bit [9] in the L1 Table?  Bits [1:0] == 0b00 indicate a fault,
+so I'm not sure is this would mean "Present" or not.
+
+---
+
+***2017-May-19***
+
+So having thought about the concerns overnight, I have some plans I can execute against.
+Breaking this down a little bit, here is where I am at so far:
+
+* **Align TTL1 to 16K** -- This is relatively easy to implement...  I will need a special
+purpose function to allocate a 16K aligned 16K block of frames.  Since I may want this in 
+the x86-family architecture, I will make this a common function.  I will probably also 
+need to make this generic (looking ahead to future things).
+* **Align TTL2 to 1K and each table is 1K long** -- Well, this one puzzled me a bit.  However,
+it finally dawned on me to continue to handle 4K frames and just allocate 4 of them for the 
+correct offsets.  Therefore, if I am looking for TTL2 table at 0x01, then I can allocate 4
+X 1K tables intended for offset 0x00 and then set all 4 of them from 0x00 to 0x03.  In this
+way, there is no need to keep track of partial frame allocations or stacks of free partial 
+frames when I hand off the state to the kernel. 
+* **Frame Granularity** -- This was not identified last night, but if I set this as a guiding
+principle for the loader/kernel, then things will become simpler to keep together.  I am 
+using 4K frames for the x86-family and 16K is a multiple of 4K, and 1K is a divisor of 4K, 
+and 4K is one of the page sizes for the ARM architecture overall (including my rpi2b), so 
+it makes sense to keep this as a principle.  Done.
+* **TTL1[P]** -- In reviewing the ARM Architecture Reference Manual, I read the the P bit
+(specifically bit [9] in the TTL1 table) is _implementation defined_.  The ARM ARM goes on
+to define that _implementation defined_ (I'm not sure yet if this is referring to the rpi2b
+or the software): 
+
+> Means that the behavior is not architecturally defined, but must be defined and 
+> documented by individual implementations. 
+
+I have not yet had the opportunity to white-board **Recursive Mapping**, and the **phys-mm**
+cleanup will be a to-do.
+
+Well, it occurs to me that the beauty of the x86-family of recursive mapping is the fact 
+that the Level 2 table looks exactly like the L1 table, and any L3 tables looks exactly like
+the L1 and the L2 tables.  Well with the ARM, the L1 and L2 tables are completely different.
+This leads me to the conclusion that recursive mapping for the rpi2b architecture is not going
+to work.
+
+However, we are able to do something similar that will take up a similar amount of memory as 
+the x86-family.  The sum total of all the TTL2 tables is 4MB -- the same as the 32-bit 
+recursive map loss.  I could easily define the same memory region for these level 2 tables.
+This then only leaves the 16K TTL1 table.  It would be trivial to map a 16K region of 
+memory to be used to map to this table.  I am going to take this approach.
+
+So, with these decisions, it's time to start laying out the memory map for rpi2b and writing
+the structure code for the implementation.
+
+After reviewing my i686 memory map, I made a change so that the Temporary mapping range was 
+immediately below the Recursive mapping space.  This allows me (on the rpi2b) to set the
+additional 16K memory space right below the analogous recursive mapping space and achieve 
+very similar results with the rpi2b architecture.
+
+---
+
+***2017-May-20***
+
+I had several false starts to lay this code for the TTL1 and TTL2 tables in a readable format.
+
+---
+
+***2017-May-21***
+
+More research and more thinking and more false starts.
+
+I did manage to get the functions written today.  They turned out to be surprisingly simple 
+considering the overall complexity of the ARM table differences.  I also ran the rpi2b loader
+and it did not crash.  It doesn't mean they are correct.  I will test some tomorrow.
+
+By the way, I was also responding to the following post in the forums on osdev.org today and 
+I decided to take my own advice: http://forum.osdev.org/viewtopic.php?f=1&t=31934.  I wrote 
+several functions to simplify the management.
+
+---
+
+***2017-May-22***
+
+OK, I will need to revisit the i686 implementation of the paging tables.  I will do that once
+I get the x86_64 tables mapped.  That way I can keep the i686 as a reference while I develop 
+the x86_64 version in case I need it, and then when I have everything dialed in I can use the 
+x86_64 version as a reference for the i686.
+
+However, it all comes apart again!!!  I have just realized that I am mixing bit-ness (again) 
+and may not be updating the structures I think I should be at the address I should be.  The 
+structures and functions I have created will work perfectly for the kernel with paging 
+already enabled.  However, for initialization, they are completely wrong.  
+
+One of the lessons here is that the 64-bit initialization will be most telling if it is 
+wrong.  The key symptom is that the addresses during the initialization are 32-bit but 
+initialization is preparing for 64-bit memory addresses.  The frame allocator needs to only 
+hand out 32-bit frames during initialization.  I also need to write an integrity checker so 
+that I can trap errors in runtime quickly.  I will have to take on the following tomorrow:
+* Change the FrameNew() function to only allocate 32-bit frames
+* Move the mmu.c files to the kernel (surrounding code with `#if 0`|`#endif`)
+* Start the integrity checker and build that out ahead of the next step
+* Rewrite the initialization
+
+---
+
+***2017-May-23***
+
+I started my day today by moving all 3 mmu.c files to the kernel module where they wil be 
+picked up and polished at a later time.  I then did a global search an all references to 
+the arch_addr_t type and verified that all usages were legitimate.  Several changes were 
+required.
+
+It's disheartening to have to admit to myself that the majority of the new programming
+I have done over the last week has been unusable (at least for the task at hand).  I will 
+be able to reclaim some of that work in the kernel, but it still stings a bit today.  At
+least the debugging work will still sound.
+
+Through the course of my debugging today, I found a stupid error in memset() and memmove().
+Despite the expletives, I now have it working.  I have created an initialization for the 
+64-bit 4-level paging structures that I can easily leverage for the i686 architecture (copy 
+and modify, not reuse).  I will move on to dumping the paging structures.
+
+At the end of the day, I feel I have a decent set of working functions.  More testing 
+tomorrow.

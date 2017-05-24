@@ -98,7 +98,8 @@ void memset(void *d, int v, size_t cnt);
 // From mmu.c -- common interface functions for setting up the MMU tables
 //-------------------------------------------------------------------------------------------------------------------
 void MmuTablesInit(void);
-bool MmuMapAddress(arch_addr_t addr, arch_addr_t frame);
+bool MmuMapAddress(arch_addr_t addr, uint32_t frame);
+void MmuDumpTables(uint64_t addr);
 
 
 //-------------------------------------------------------------------------------------------------------------------
@@ -117,12 +118,12 @@ void UartPutS(const utf8_t *str);
 // From phys-mm.c -- common interface functions for the physical memory structures
 //-------------------------------------------------------------------------------------------------------------------
 void PhysMMInit(void);
-void FrameFree(arch_addr_t frame);
-void FrameAlloc(arch_addr_t frame);
-bool IsFrameAlloc(arch_addr_t frame);
-arch_addr_t FrameNew(void);
-void FrameFreeRange(arch_addr_t frame, arch_addr_t len);
-void FrameAllocRange(arch_addr_t frame, arch_addr_t len); 
+void FrameFree(uint32_t frame);
+void FrameAlloc(uint32_t frame);
+bool IsFrameAlloc(uint32_t frame);
+uint32_t FrameNew(void);
+void FrameFreeRange(uint32_t frame, uint32_t len);
+void FrameAllocRange(uint32_t frame, uint32_t len); 
 
 
 #endif

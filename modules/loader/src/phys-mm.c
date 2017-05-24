@@ -79,6 +79,15 @@ void PhysMMInit(void)
         }
     }
 
+#ifdef DEBUG_PMM
+#if BITNESS == 64
+    kprintf(u8"PHYSMM: The new expected mmu location is at 0x%08x %08x\n", (uint32_t)(mbLocal.mmu >> 32), 
+            (uint32_t)mbLocal.mmu);
+#else
+    kprintf(u8"PHYSMM: The new expected mmu location is at %p\n", (uint32_t)mbLocal.mmu);
+#endif
+#endif
+
     // -- now that all our memory is available, set the loader space to be not available; _loader* already aligned
     FrameAllocRange(((uint32_t)_loaderStart) >> 12, ((uint32_t)_loaderEnd) >> 12);
 
@@ -109,7 +118,7 @@ void PhysMMInit(void)
 //-------------------------------------------------------------------------------------------------------------------
 // FrameFree() -- Mark a frame as free (set the flag)
 //-------------------------------------------------------------------------------------------------------------------
-void FrameFree(arch_addr_t frame) 
+void FrameFree(uint32_t frame) 
 { 
     mbLocal.memBitMap[frame >> 5] |= (1 << (frame & 0x1f)); 
 }
@@ -118,7 +127,7 @@ void FrameFree(arch_addr_t frame)
 //-------------------------------------------------------------------------------------------------------------------
 // FrameAlloc() -- Mark a frame as allocated (clear the flag)
 //-------------------------------------------------------------------------------------------------------------------
-void FrameAlloc(arch_addr_t frame) 
+void FrameAlloc(uint32_t frame) 
 { 
     mbLocal.memBitMap[frame >> 5] &= (~(1 << (frame & 0x1f))); 
 }
@@ -127,7 +136,7 @@ void FrameAlloc(arch_addr_t frame)
 //-------------------------------------------------------------------------------------------------------------------
 // IsFrameAlloc() -- Returns if a frame is allocated
 //-------------------------------------------------------------------------------------------------------------------
-bool IsFrameAlloc(arch_addr_t frame) 
+bool IsFrameAlloc(uint32_t frame) 
 { 
     uint32_t chk = mbLocal.memBitMap[frame >> 5] & (1 << (frame & 0x1f));
     return chk == 0;
@@ -137,13 +146,21 @@ bool IsFrameAlloc(arch_addr_t frame)
 //-------------------------------------------------------------------------------------------------------------------
 // FrameNew() -- Allocate a frame for use (not going to do this too much here...)
 //-------------------------------------------------------------------------------------------------------------------
-arch_addr_t FrameNew(void)
+uint32_t FrameNew(void)
 {
-    uint32_t frame = (uint32_t)mbLocal.mmu;
+    uint32_t frame;
+
+    if (mbLocal.mmu > 0x000fffff) frame = 0x000fffff;
+    else frame = (uint32_t)mbLocal.mmu;
 
     while (true && frame != 0) {
         if (!IsFrameAlloc(frame)) {
             FrameAlloc(frame);
+
+#ifdef DEBUG_PMM
+            kprintf(u8"PHYSMM: Allocating brand new frame %p\n", (uint32_t)frame);
+#endif
+
             return frame;
         } else frame --;
     }
@@ -155,9 +172,9 @@ arch_addr_t FrameNew(void)
 //-------------------------------------------------------------------------------------------------------------------
 // FrameFreeRange() -- Mark a range of frames as free (set the flag)
 //-------------------------------------------------------------------------------------------------------------------
-void FrameFreeRange(arch_addr_t frame, arch_addr_t len) 
+void FrameFreeRange(uint32_t frame, uint32_t len) 
 { 
-    arch_addr_t end = frame + len;
+    uint32_t end = frame + len;
 
     while (frame < end) FrameFree(frame ++);
 }
@@ -166,9 +183,9 @@ void FrameFreeRange(arch_addr_t frame, arch_addr_t len)
 //-------------------------------------------------------------------------------------------------------------------
 // FrameAllocRange() -- Mark a range of frames as allocated (clear the flag)
 //-------------------------------------------------------------------------------------------------------------------
-void FrameAllocRange(arch_addr_t frame, arch_addr_t len) 
+void FrameAllocRange(uint32_t frame, uint32_t len) 
 { 
-    arch_addr_t end = frame + len;
+    uint32_t end = frame + len;
 
     while (frame < end) FrameAlloc(frame ++);
 }
