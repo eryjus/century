@@ -99,7 +99,7 @@ void memset(void *d, int v, size_t cnt);
 //-------------------------------------------------------------------------------------------------------------------
 void MmuTablesInit(void);
 bool MmuMapAddress(arch_addr_t addr, uint32_t frame);
-void MmuDumpTables(uint64_t addr);
+void MmuDumpTables(arch_addr_t addr);
 
 
 //-------------------------------------------------------------------------------------------------------------------

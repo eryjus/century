@@ -73,7 +73,7 @@ static struct PageEntry *GetAddrFromEntry(struct PageEntry *entry)
 //-------------------------------------------------------------------------------------------------------------------
 // GetTableEntry() -- From the address, get the table entry shifting properly
 //-------------------------------------------------------------------------------------------------------------------
-static struct PageEntry *GetTableEntry(struct PageEntry *table, uint64_t addr, int shift)
+static struct PageEntry *GetTableEntry(struct PageEntry *table, arch_addr_t addr, int shift)
 {
     uint32_t index = (addr >> shift) & 0x1ff;
     struct PageEntry *rv = &table[index];
@@ -169,10 +169,10 @@ void MmuTablesInit(void)
     // 
     // -- OK, there are a few additional things that will need to be mapped, some of which will be mapped
     //    below and others we will need to map in other sections.  Examples:
-    //    * The frame bitmap (which will be relocated before transferring control)
+    //    * Map the frame buffer (done)
+    //    * The PhysMM frame bitmap (which will be relocated before transferring control)
     //    * The kernel space (which should be able to be mapped here, once we have the memory map finalized)
     //    * The additional modules (should those be done in the kernel proper?)
-    //    * Map the frame buffer
     //    * The structure to pass data from the loader to the kernel (will be relocated so we will do this later)
     //    -------------------------------------------------------------------------------------------------------
     for (frame = 0; frame < 384; frame ++) {
@@ -188,7 +188,7 @@ void MmuTablesInit(void)
     MmuDumpTables(0xa0000);
     MmuDumpTables(0x100000);
     MmuDumpTables(0xffffffffffffffff);
-    MmuDumpTables(mbLocal.fbAddr);
+    MmuDumpTables(MMU_FRAME_BUF);
 }
 
 

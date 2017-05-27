@@ -311,3 +311,34 @@ and modify, not reuse).  I will move on to dumping the paging structures.
 
 At the end of the day, I feel I have a decent set of working functions.  More testing 
 tomorrow.
+
+---
+
+***2017-05-25***
+
+My day job got to me yesterday.  I was not able to do anything but sleep by the time my day
+was done.
+
+So tonight I was able to copy the x86_64 version to i686 and strip it down to be 32-bit.
+This activity also exposed several small things in the x86_64 version which got fixed.
+
+---
+
+***2017-05-26***
+
+Today's task is to take the i686 version of the mmu initialization and adapt and change it
+for the rpi2b architecture.
+
+---
+
+***2017-05-27***
+
+Before I started in on my day's other activities, I thought I would take a shot at some 
+debugging.  It turns out that I was able to complete most of it last night and I only had
+a couple of small things left this morning.  They were easily identified on a fresh night's 
+sleep.
+
+So as I write and commit this, I now have the MMU initialized for all 3 architectures, and
+tested to the best of my ability until I am able to put the systems into their native modes.
+While I am "out and about" today, I'm going to ponder a bit what is remaining to be able 
+to pull that trigger.
