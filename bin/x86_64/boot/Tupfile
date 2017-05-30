@@ -25,11 +25,11 @@
 # -- The rules to make the bootable targets in this folder
 #    -----------------------------------------------------
 : ../../../obj/loader/x86_64/*.o                                                                                \
-        |> i686-elf-gcc -T ../../../modules/loader/src/x86_64/loader.ld -ffreestanding -O2 -nostdlib -o %o %f   \
+        |> i686-elf-gcc -g -T ../../../modules/loader/src/x86_64/loader.ld -ffreestanding -O2 -nostdlib -o %o %f   \
                         -lgcc;                                                                                  \
         |> loader.elf
 
 : ../../../obj/kernel/x86_64/*.o                                                                                \
-        |> x86_64-elf-gcc -T ../../../modules/kernel/src/x86_64/kernel.ld -ffreestanding -O2 -nostdlib -o %o %f \
+        |> x86_64-elf-gcc -g -T ../../../modules/kernel/src/x86_64/kernel.ld -ffreestanding -O2 -nostdlib -o %o %f \
                         -lgcc -z max-page-size=0x800;                                                           \
         |> kernel.elf

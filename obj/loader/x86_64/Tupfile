@@ -21,11 +21,11 @@
 #
 # -- The following 2 macros are used to build the object files
 #    ---------------------------------------------------------
-!x86_64-loader-as = |> x86_64-elf-gcc -m32 -fpic -ffreestanding -x assembler-with-cpp \
+!x86_64-loader-as = |> x86_64-elf-gcc -m32 -fpic -ffreestanding -x assembler-with-cpp -g \
         -Wa,-I -Wa,../../../modules/loader/src/x86_64 -Wa,-I -Wa,../../../modules/loader/inc \
         -Wa,-I -Wa,../../../inc -Wall -Werror -c -o %o %f |> %B.o
 
-!x86_64-loader-cc = |> x86_64-elf-gcc -m32 -fpic -ffreestanding -I ../../../modules/loader/src/x86_64 \
+!x86_64-loader-cc = |> x86_64-elf-gcc -m32 -fpic -ffreestanding -I ../../../modules/loader/src/x86_64 -g \
         -I ../../../modules/loader/inc -I ../../../inc -Wall -Werror -c -o %o %f |> %B.o
 
 #

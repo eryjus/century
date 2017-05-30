@@ -127,6 +127,11 @@ bool MmuMapAddress(arch_addr_t addr, uint32_t frame)
 //-------------------------------------------------------------------------------------------------------------------
 void MmuTablesInit(void)
 {
+    //
+    // -- Start by picking up a leftover PhysMM bit of initialization for this architecture
+    //    ---------------------------------------------------------------------------------
+    FrameAlloc(0);
+
     extern char _loaderStart[];
     extern char _loaderEnd[];
 

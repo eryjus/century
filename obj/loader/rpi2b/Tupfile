@@ -21,11 +21,11 @@
 #
 # -- The following 2 macros are used to build the object files
 #    ---------------------------------------------------------
-!rpi2b-loader-as = |> arm-eabi-gcc -fpic -ffreestanding -x assembler-with-cpp \
+!rpi2b-loader-as = |> arm-eabi-gcc -fpic -ffreestanding -x assembler-with-cpp -g \
         -Wa,-I -Wa,../../../modules/loader/src/rpi2b -Wa,-I -Wa,../../../modules/loader/inc \
         -Wa,-I -Wa,../../../inc -Wall -Werror -c -o %o %f |> %B.o
 
-!rpi2b-loader-cc = |> arm-eabi-gcc -fpic -ffreestanding -I ../../../modules/loader/src/rpi2b \
+!rpi2b-loader-cc = |> arm-eabi-gcc -fpic -ffreestanding -I ../../../modules/loader/src/rpi2b -g \
         -I ../../../modules/loader/inc -I ../../../inc -Wall -Werror -c -o %o %f |> %B.o
 
 #

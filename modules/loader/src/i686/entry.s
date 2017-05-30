@@ -122,8 +122,8 @@ Type6End:
 MultibootHeader2End:
 
 GdtDesc:
-    .word       24-1                            # size minus one...
-    .long       gdt                             # this is the addresss
+    .word       (16*8)-1                        # size minus one...
+    .long       0                               # this is the addresss
 
 
 #
@@ -132,10 +132,23 @@ GdtDesc:
 .section        .init
 
 _start:
+    push        %eax
+    push        %ebx
+
+    push        $(16*8)
+    lea         gdt,%eax
+    push        %eax
+    push        $0
+    call        memmove
+    add         $12,%esp
+
+    pop         %ebx
+    pop         %eax
+
     mov         $GdtDesc,%ecx                   # Get the gdt address
     lgdt        (%ecx)                          # and load the GDT
 
-    mov         $0x10,%ecx
+    mov         $0x08<<3,%ecx
     mov         %cx,%ds
     mov         %cx,%es
     mov         %cx,%fs
@@ -143,7 +156,7 @@ _start:
     mov         %cx,%ss                         # halts interrupts for one more instruction to set up stack
     mov         $0x200000,%esp                  # set up a stack
     
-    push        $0x08
+    push        $0x07<<3
     push        $newGDT
     retf                                        # an almost jump, returning to an address rather than jump    
 

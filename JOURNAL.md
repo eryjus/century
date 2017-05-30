@@ -342,3 +342,137 @@ So as I write and commit this, I now have the MMU initialized for all 3 architec
 tested to the best of my ability until I am able to put the systems into their native modes.
 While I am "out and about" today, I'm going to ponder a bit what is remaining to be able 
 to pull that trigger.
+
+So, with some thought today, it appears that my todo list is rather short now:
+* Create an ELF loader to set up the kernel
+* Create the permanent GDT appropriate to each x86 architecture
+* Set up the IDT (some thinking required here; not sure what this will mean for rpi2b)
+* Relocate the PhysMM bitmap (mapping the memory of course)
+* Relocate the structure to communicate with the kernel (mapping the memory of course)
+
+---
+
+***2017-05-28***
+
+Well my honey-do list got the better of me last night, and a good part of the day today
+as well.  I'm not too sure how much I will be able to get through is a short sitting.  So,
+I though I might start with some objective analysis of the to-do list from yesterday.
+
+I nearly absolutely have to write an ELF loader to jump to my kernel.  The alternative would 
+be to produce the kernel as a binary file (which has some merit), but that is not something 
+I am wanting to do.  The key reason is that I would have to give up the ability to have
+my symbol table loaded at the same time.  While I am not going to use it right away, it
+it not really something I want to give up either short term or long term.  However, I 
+will most likely tackle it last to postpone a final decision on whether to ELF or not
+to ELF.
+
+The GDT is not in its final form.  It does not exist on the rpi2b, so there is nothing
+to address there.  The i686 is technically correct but not in the right spot.  Perhaps
+I can take care of that in the startup and just hard-code the address there and "inform" 
+the PhysMM what frame I am using.
+
+The 64-bit version is a little more interesting and may drive some back-peddling on the
+i686 setup.  Again, it is not in the correct place.  I may be able to address it in the 
+same manner as I would for the i686.  But then I may also need to re-address it when 
+changing to long mode.  And then I start to wonder.  Do I **need** to have another GDT?
+
+So here is what I am thinking...  Maybe I have a 64-bit GDT already prepared where I 
+have some 32-bit offsets already set up that I use for the loader and then when I am 
+switching to long mode I can use an offset for a 64-bit GDT Entry.  This would mean
+that my segment selector would be quite a bit higher than 0x08 and 0x10.  But that
+does not appear to be a deal-breaker.  I'm going to have to research on this a little
+bit more before I can call this one.
+
+I really do not need an IDT before I change to the kernel.  I have been back and forth
+on whether I want a common handler or have ability to hook straight into an IDT entry
+without the jump tables.  A bit more thinking is set here, but this is technically not 
+required before I jump into the native mode (in other words not having one will not 
+prevent this jump), so it comes off the table.
+
+The last 2 items are nearly trivial with memmove().  So they will be completed.
+
+So, my list of 5 things has become 4.  And one really has my interest.  So, I start with
+the GDT research.
+
+This research confirms that I can do what I want.  Both the 32-bit and 64-bit modes use
+64-bits to describe the GDT entries.  Therefore they can coexist.  However, the order
+is quite important if we are to use SYSENTER and SYSEXIT for system calls.  I have not
+made any decision on this either way, but I also want to make sure that any decision I
+make in this next step will not limit my choices to a single option either.  Therefore,
+wherever these selectors are, they must appear in this order: 
+1.  Kernel Code
+2.  Kernel Stack (this may be kernel data as well)
+3.  User Code
+4.  User Stack (and this may be data as well)
+
+Not to mention I will also need space for a TSS, or more to the point one for each core
+(and that can/may be extended to 1 GDT per core each with its own unique TSS).  I also
+think it is important to note that xv6 uses a very short segment selector for CPU-specific
+data (like 8 bytes, if I recall).  *However, that construct cannot be used easily in 64-bit
+more since there are no limits on the selector entries* (**is this really true????**).  I
+believe I will need to map that CPU-specific data to a single page and have separate cr3
+values for each core.
+
+But, before I go on, I need to standardize the GDT layout for both i686 and x86_64 
+architectures.  The goal is to make them common and maintain the above 4 segment selectors
+in their proper order.  So, my thoughts are:
+* Separate data from stack?
+* Need special loader segments
+* TSS last to make sure I have room for growth (each TSS entry is 128 bits)
+* More out of convention than need, I think I want the kernel code to be 0x08
+
+---
+
+***2017-05-29***
+
+So, first to complete the outstanding item from yesterday:
+
+> *However, that construct cannot be used easily in 64-bit more since there are no limits 
+> on the selector entries* (**is this really true????**).
+
+The Intel SDM, Vol3A, Section 5.3.1 addresses this:
+
+> In 64-bit mode, the processor does not perform runtime limit checking on code or data 
+> segments. However, the processor does check descriptor-table limits.
+
+So my statement above is correct.  In 64-bit mode segment limits are irrelevant.  Likewise,
+the rpi2b does not have limits (in fact, no segmentation -- it's all flat).  So, I will
+treat the i686 in the same way: the limits will be from beginning to end.  It also means
+that the special trick with the extremely short segment with CPU-specific data is not going
+to happen.  It will be a page for each CPU, with each CPU having its own paging tables.
+
+So, that leaves the GDT layout.  Here is the target layout:
+* 0x00<<3: NULL descriptor
+* 0x01<<3: Kernel Code
+* 0x02<<3: Kernel Data (includes stacks)
+* 0x03<<3: User Code
+* 0x04<<3: User Data (includes stacks)
+* 0x05<<3: Unused (left open for user data if I want it later)
+* 0x06<<3: Unused (left open for kernel data if I want it later)
+* 0x07<<3: Loader Code
+* 0x08<<3: Loader Data
+* 0x09<<3: TSS
+* 0x0a<<3: TSS Second half (for 64-bit; NULL for 32-bit)
+* 0x0b<<3: Future use call gate? (need to research the rpi2b capabilities)
+* 0x0c<<3: Future use call gate?
+* 0x0d<<3: Future use call gate?
+* 0x0e<<3: Future use call gate?
+* 0x0f<<3: Future use call gate?
+
+For now, I will use only 16 GDT entries.  This will be frame aligned and have some room to 
+grow.  The call gates may be able to be aligned with the SVC instruction for rpi2b.  That's
+later.
+
+One of the things to discuss is the TSS.  One of my goals for the loader is to complete all 
+the 1-time initialization.  One such task is to execute the `ltr` instruction immediately 
+after the jump to long mode.  On the other hand, the jump to long mode will happen at the 
+same time as the jump to the kernel ELF file.  With with the choice to either complete the 
+jump to long mode completely inside the loader or to execute this small bit of initialization
+in the kernel, I am going to add this to the other things that need to be done in the kernel.
+Another thing I simply cannot do in the loader is to release the page memory for the loader.
+
+OK, back on topic: I should be able to complete the TSS initialization in the loader, but 
+that will take a bit more work.  However, it is not critical for jumping to the kernel.
+
+As for the GDT, I was able to get that moved to its final home at frame 0.  It will be 
+permanent in that location.

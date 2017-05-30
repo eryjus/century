@@ -1,6 +1,8 @@
 ***Century OS***
 
-Century is a Hobby Operating System.
+Century is a Hobby Operating System.  Its objective is to run a *relatively* "common"
+kernel across multiple architectures.  Currently, I am targeting i686, x86_64, and 
+rpi2b.  I am developing for these architectures these in parallel.
 
         Copyright (c)  2017 -- Adam Clark (see LICENSE for the specifics)
 

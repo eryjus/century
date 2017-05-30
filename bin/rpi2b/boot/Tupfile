@@ -22,11 +22,11 @@
 # -- The rules to make the bootable targets in this folder
 #    -----------------------------------------------------
 : ../../../obj/loader/rpi2b/*.o                                                                                 \
-        |> arm-eabi-gcc -T ../../../modules/loader/src/rpi2b/loader.ld -ffreestanding -O2 -nostdlib -o %o %f    \
+        |> arm-eabi-gcc -g -T ../../../modules/loader/src/rpi2b/loader.ld -ffreestanding -O2 -nostdlib -o %o %f    \
                         -lgcc -z max-page-size=0x1000;                                                          \
         |> loader.elf
 
 : ../../../obj/kernel/rpi2b/*.o                                                                                 \
-        |> arm-eabi-gcc -T ../../../modules/kernel/src/rpi2b/kernel.ld -ffreestanding -O2 -nostdlib -o %o %f    \
+        |> arm-eabi-gcc -g -T ../../../modules/kernel/src/rpi2b/kernel.ld -ffreestanding -O2 -nostdlib -o %o %f    \
                         -lgcc -z max-page-size=0x1000;                                                          \
         |> kernel.elf
